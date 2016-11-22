@@ -4,7 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ChartViewMoudle.iml" filepath="$PROJECT_DIR$/ChartViewMoudle.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/canvaslib-release/canvaslib-release.iml" filepath="$PROJECT_DIR$/canvaslib-release/canvaslib-release.iml" />
       <module fileurl="file://$PROJECT_DIR$/chartviewlib/chartviewlib.iml" filepath="$PROJECT_DIR$/chartviewlib/chartviewlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/viewcontrollib-release/viewcontrollib-release.iml" filepath="$PROJECT_DIR$/viewcontrollib-release/viewcontrollib-release.iml" />
     </modules>
   </component>
 </project>
