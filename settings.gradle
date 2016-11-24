@@ -1,1 +1,1 @@
-include ':app', ':chartviewlib', ':canvaslib-release', ':viewcontrollib-release'
+include ':app', ':chartviewlib', ':viewcontrollib-release', ':canvaslib'

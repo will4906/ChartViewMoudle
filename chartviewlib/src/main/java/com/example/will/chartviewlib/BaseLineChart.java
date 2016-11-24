@@ -1,12 +1,20 @@
 package com.example.will.chartviewlib;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
+import com.example.will.canvaslib.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
+import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
+import com.example.will.chartviewlib.ChartInfo.IChartViewInfo;
+import com.example.will.chartviewlib.DrawFactory.DrawEngine;
+import com.example.will.viewcontrollib.ViewInsideTool;
 
 /**
  * 线性表的父类，主要用来做信息的接口
@@ -14,100 +22,76 @@ import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
  * @Time 2016/11/22.
  */
 
-public class BaseLineChart extends View implements IScaleInfo{
-
-    private ChartBgInfo chartBgInfo = new ChartBgInfo();
+public class BaseLineChart extends View  {
 
     /**
-     * 对坐标轴数据的枚举
+     * 是否绘制过背景
      */
-    protected enum ScaleInfoEnum{
-        LEFT(new ScaleInfo()),BOTTOM(new ScaleInfo()),RIGHT(new ScaleInfo()),TOP(new ScaleInfo());
-        private ScaleInfo scaleInfo;
-        public ScaleInfo getScaleInfo(){
-            return scaleInfo;
-        }
-        public void setScaleInfo(ScaleInfo scaleInfo){
-            this.scaleInfo = scaleInfo;
-        }
-        private ScaleInfoEnum(ScaleInfo scaleInfo){
-            this.scaleInfo = scaleInfo;
-        }
+    protected boolean bHasDrawTheBackground = false;
+
+    public boolean hasDrawTheBackground(){
+        return bHasDrawTheBackground;
     }
 
-    @Override
-    public void setScaleColor(int color){
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setScaleColor(color);
-        }
+    protected void setbHasDrawTheBackground(boolean hasDrawTheBackground){
+        this.bHasDrawTheBackground = hasDrawTheBackground;
     }
 
-    @Override
-    public void setScaleColor(int whichScale,int color){
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleColor(color);
-    }
+    /**
+     * 背景类全局位图，因为背景若无改变只需绘制一次便可重复使用，所以定义为类全局
+     */
+    protected Bitmap backgroundBitmap;
+    /**
+     * 绘图引擎
+     */
+    protected DrawEngine drawEngine = new DrawEngine();
 
-    @Override
-    public void setScaleWidth(float width){
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setScaleWidth(width);
-        }
-    }
-
-    @Override
-    public void setScaleWidth(int whichScale, float width){
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleWidth(width);
-    }
-
-    @Override
-    public void setScaleInfo(int whichScale, ScaleInfo scaleInfo) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].setScaleInfo(scaleInfo);
-    }
-
-    @Override
-    public void setScaleHasTriangle(boolean hasTriangle) {
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setbHasTriangle(hasTriangle);
-        }
-    }
-
-    @Override
-    public void setScaleHasTriangle(int whichScale, boolean hasTriangle) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setbHasTriangle(hasTriangle);
-    }
-
-    @Override
-    public void setScaleHasData(boolean hasData) {
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setHasData(hasData);
-        }
-    }
-
-    @Override
-    public void setScaleHasData(int whichScale, boolean hasData) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setHasData(hasData);
-    }
-
-    @Override
-    public void setScaleTitle(int whichScale, String strTitle) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleTitle(strTitle);
-    }
+    /**
+     * view工具类，放置一些与view处理相关的函数
+     */
+    protected ViewInsideTool viewInsideTool = ViewInsideTool.getInstance();
 
     public BaseLineChart(Context context) {
         super(context);
+//        initBaseLineChart(context);
     }
 
     public BaseLineChart(Context context, AttributeSet attrs) {
         super(context, attrs);
+//        initBaseLineChart(context);
     }
 
     public BaseLineChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+//        initBaseLineChart(context);
     }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = viewInsideTool.getUserSize(500,widthMeasureSpec);
+        int height = viewInsideTool.getUserSize(500,heightMeasureSpec);
+        setMeasuredDimension(width,height);
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        CanvasTool canvasTool = new CanvasTool(canvas);
+        //绘制背景位图并显示在view上
+        if (hasDrawTheBackground() == false){
+            backgroundBitmap = drawEngine.drawChartViewBackground(canvas.getWidth(),canvas.getHeight());
+            setbHasDrawTheBackground(true);
+        }
+        canvasTool.drawBitmap(backgroundBitmap,0,canvas.getHeight());
+    }
+
+//    /**
+//     * 初始化信息
+//     * @param context
+//     */
+//    private void initBaseLineChart(Context context){
+//        TextView textView = new TextView(context);
+//        setTextSize(textView.getTextSize());
+//    }
 }

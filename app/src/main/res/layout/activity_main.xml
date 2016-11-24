@@ -10,11 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.will.chartviewmoudle.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
-
     <com.example.will.chartviewlib.LineChartView
         android:id="@+id/line_chart_view"
         android:layout_width="match_parent"

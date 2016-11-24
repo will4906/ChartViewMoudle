@@ -41,14 +41,14 @@ public interface IScaleInfo {
      * 统一设置坐标轴是否拥有三角形
      * @param hasTriangle
      */
-    void setScaleHasTriangle(boolean hasTriangle);
+//    void setScaleHasTriangle(boolean hasTriangle);
 
     /**
-     * 设置单个坐标轴是否拥有三角形
+     * 设置单个坐标轴是否拥有三角形，已被
      * @param whichScale
      * @param hasTriangle
      */
-    void setScaleHasTriangle(int whichScale, boolean hasTriangle);
+//    void setScaleHasTriangle(int whichScale, boolean hasTriangle);
 
     /**
      * 统一设置坐标轴初始化时是否拥有数据
@@ -68,4 +68,11 @@ public interface IScaleInfo {
      * @param strTitle
      */
     void setScaleTitle(int whichScale, String strTitle);
+
+    /**
+     * 设置y轴范围，不在针对哪个坐标轴进行依赖，默认以左Y轴和下x轴作为依赖，以后的依赖在重新考虑是否设置
+     * @param min
+     * @param max
+     */
+    void setYRange(float min, float max);
 }

@@ -1,6 +1,13 @@
 package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 
 import android.graphics.Color;
+import android.graphics.Paint;
+
+//静态导入，jdk5新特性
+import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
+import static com.example.will.chartviewlib.LineChartView.LEFT_SCALE;
+import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
+import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
 
 /**
  * @author will4906.
@@ -8,18 +15,7 @@ import android.graphics.Color;
  */
 
 public class ChartBgInfo {
-    /**
-     * 背景色
-     * 缺省值：默认为透明
-     */
-    int bgColor = Color.TRANSPARENT;
-    public int getBgColor() {
-        return bgColor;
-    }
 
-    public void setBgColor(int bgColor) {
-        this.bgColor = bgColor;
-    }
     /**
      * 是否有坐标轴
      * 缺省值：有
@@ -34,22 +30,15 @@ public class ChartBgInfo {
     }
 
     /**
-     * 对坐标轴的宏定义
-     */
-    public static final int LEFT_SCALE = 0;
-    public static final int BOTTOM_SCALE = 1;
-    public static final int RIGHT_SCALE = 2;
-    public static final int TOP_SCALE = 3;
-    /**
      * 有哪个坐标轴，按左Y轴，下X轴，右Y轴，上X轴的顺序
      * 缺省值：左Y轴，下X轴
      */
     boolean bWhichScale[] = new boolean[]{true,true,false,false};
-    public boolean[] getbWhichScale() {
+    public boolean[] getWhichScaleEnable() {
         return bWhichScale;
     }
 
-    public void setbWhichScale(boolean[] bWhichScale) {
+    public void enableScales(boolean[] bWhichScale) {
         for (boolean whichScale:bWhichScale) {
             if (whichScale){
                 this.setbHasScale(true);
@@ -57,25 +46,25 @@ public class ChartBgInfo {
         }
         this.bWhichScale = bWhichScale;
     }
-    public void setLeftYScale(boolean bHas){
+    public void enableLeftScale(boolean bHas){
         if (bHas){
             this.setbHasScale(true);
         }
         bWhichScale[LEFT_SCALE] = bHas;
     }
-    public void setBottomXScale(boolean bHas){
+    public void enableBottomScale(boolean bHas){
         if (bHas){
             this.setbHasScale(true);
         }
         bWhichScale[BOTTOM_SCALE] = bHas;
     }
-    public void setRightYScale(boolean bHas){
+    public void enableRightScale(boolean bHas){
         if (bHas){
             this.setbHasScale(true);
         }
         bWhichScale[RIGHT_SCALE] = bHas;
     }
-    public void setTopXScale(boolean bHas){
+    public void enableTopScale(boolean bHas){
         if (bHas){
             this.setbHasScale(true);
         }
@@ -85,13 +74,25 @@ public class ChartBgInfo {
      * 背景线
      * 缺省值：无
      */
-    boolean bHasBgLine = false;
-    public boolean isbHasBgLine() {
+    boolean bHasBgLine = true;
+    public boolean hasBgLine() {
         return bHasBgLine;
     }
 
-    public void setbHasBgLine(boolean bHasBgLine) {
+    public void enableBgLine(boolean bHasBgLine) {
         this.bHasBgLine = bHasBgLine;
     }
 
+    /**
+     * 使用默认背景线
+     */
+    private boolean useDefaultBgLines = true;
+
+    public boolean isUseDefaultBgLines() {
+        return useDefaultBgLines;
+    }
+
+    public void setUseDefaultBgLines(boolean useDefaultBgLines) {
+        this.useDefaultBgLines = useDefaultBgLines;
+    }
 }
