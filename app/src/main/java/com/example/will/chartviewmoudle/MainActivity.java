@@ -23,16 +23,19 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"你不好");
         lineChartView.setScaleTitle(LineChartView.TOP_SCALE,"我试试");
         lineChartView.setScaleTitle(LineChartView.BOTTOM_SCALE,"你猜猜");
+//        lineChartView.setScaleWidth(20);
 //        lineChartView.setBackgroundColor(Color.BLUE);
         lineChartView.setDefaultLineColor(Color.RED);
         lineChartView.setDefaultLineIsDotted(true);
         lineChartView.enableDefaultVerticalBackgroundLine(true);
         lineChartView.enableDefaultHorizontalBackgroundLine(true);
-        lineChartView.setScaleWidth(5);
+//        lineChartView.setScaleWidth(5);
+//        lineChartView.setYRange(0,100000000);
         lineChartView.setScaleColor(Color.GRAY);
         lineChartView.enableLeftScale(true);
         lineChartView.enableTopScale(true);
         lineChartView.enableRightScale(true);
         lineChartView.enableBottomScale(true);
+//        lineChartView.setYRange(0,10000);
     }
 }

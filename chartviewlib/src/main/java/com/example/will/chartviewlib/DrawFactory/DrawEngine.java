@@ -12,6 +12,7 @@ import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.LineChartView;
 
 import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
@@ -19,7 +20,10 @@ import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
 import static com.example.will.chartviewlib.LineChartView.LEFT_SCALE;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author will4906.
@@ -140,7 +144,8 @@ public class DrawEngine {
         ScaleInfo scaleInfo = scaleInfos[LineChartView.LEFT_SCALE];
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
-        canvasTool.drawLine(space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace(), space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace(), paint);
+        canvasTool.drawLine(space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
+                space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2, paint);
         paint.setTextAlign(Paint.Align.LEFT);
         if (scaleInfos[LineChartView.TOP_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawText(scaleInfo.getScaleTitle(),0,height - textSize,paint);
@@ -149,8 +154,8 @@ public class DrawEngine {
             String strMax = String.valueOf(scaleInfo.getMaxValue());
             String strMin = String.valueOf(scaleInfo.getMinVale());
             paint.setTextAlign(Paint.Align.RIGHT);
-            canvasTool.drawText(strMax,space - 1,height - scaleInfos[TOP_SCALE].getSpace() - textSize,paint);
-            canvasTool.drawText(strMin,space - 1,scaleInfos[BOTTOM_SCALE].getSpace(),paint);
+            canvasTool.drawText(strMax,space - scaleInfo.getLineWidth() / 2,height - scaleInfos[TOP_SCALE].getSpace() - textSize,paint);
+            canvasTool.drawText(strMin,space - scaleInfo.getLineWidth() / 2,scaleInfos[BOTTOM_SCALE].getSpace(),paint);
         }
     }
 
@@ -190,7 +195,8 @@ public class DrawEngine {
         ScaleInfo scaleInfo = scaleInfos[LineChartView.RIGHT_SCALE];
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
-        canvasTool.drawLine(width - space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace(),width - space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace(),paint);
+        canvasTool.drawLine(width - space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
+                width - space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2,paint);
         paint.setTextAlign(Paint.Align.RIGHT);
         if (scaleInfos[LineChartView.TOP_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawText(scaleInfo.getScaleTitle(),width,height - textSize,paint);
@@ -224,8 +230,6 @@ public class DrawEngine {
     public void drawBackground(CanvasTool canvasTool, int width, int height){
 
     }
-
-//    private BgLineInfo tmpBgLineInfo = new BgLineInfo();
 
     /**
      * 绘制背景线函数
@@ -317,10 +321,34 @@ public class DrawEngine {
         }
     }
 
+    private List<MainLineInfo> mainLineInfoList;
+    private List<List<Float>> dataList;
+
+
+    public List<MainLineInfo> getMainLineInfoList() {
+        return mainLineInfoList;
+    }
+
+    public void setMainLineInfoList(List<MainLineInfo> mainLineInfoList) {
+        this.mainLineInfoList = mainLineInfoList;
+    }
+
+    public List<List<Float>> getDataList() {
+        return dataList;
+    }
+
+    public void setDataList(List<List<Float>> dataList) {
+        this.dataList = dataList;
+    }
+
     /**
      * 画波形图
      */
-    public void drawMainLine() {
-
+    public void drawMainLine(CanvasTool canvasTool, int width, int height) {
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            canvasTool.startDrawOnABitmap();
+//            for (int i = 0; i < )
+            canvasTool.flushBitmap();
+        }
     }
 }

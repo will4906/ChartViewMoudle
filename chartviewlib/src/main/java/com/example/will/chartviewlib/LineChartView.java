@@ -15,6 +15,10 @@ import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
 import com.example.will.chartviewlib.ChartInfo.IChartViewInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.IMainLineInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.IMainPointInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.MainPointInfo;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.chartviewlib.DrawFactory.OnDrawBackgroundListener;
 import com.example.will.viewcontrollib.ViewInsideTool;
@@ -26,7 +30,7 @@ import java.util.List;
  * Created by will on 2016/11/21.
  */
 
-public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo {
+public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo {
 
     /**
      * 对坐标轴的宏定义
@@ -72,29 +76,73 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         initLineChartView(context);
     }
 
-    protected ChartBgInfo chartBgInfo = new ChartBgInfo();
-    protected ChartViewInfo chartViewInfo = new ChartViewInfo();
-    protected List<BgLineInfo> bgLineInfoList = new ArrayList<>();
-    protected DefaultBgLineInfo defaultBgLineInfo = new DefaultBgLineInfo();
     /**
-     * 初始化图表
+     * 图背景信息
      */
-    private void initLineChartView(Context context){
-        TextView textView = new TextView(context);
-        setTextSize(textView.getTextSize() / 4 * 3);
-        drawEngine.setDefaultBgLineInfo(defaultBgLineInfo);
-        drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
-        drawEngine.setCharBgInfo(chartBgInfo);
-        drawEngine.setChartViewInfo(chartViewInfo);
-        drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
+    protected ChartBgInfo chartBgInfo = new ChartBgInfo();
+    /**
+     * 图主要信息
+     */
+    protected ChartViewInfo chartViewInfo = new ChartViewInfo();
+    /**
+     * 背景线链表
+     */
+    protected List<BgLineInfo> bgLineInfoList = new ArrayList<>();
+    /**
+     * 默认背景线信息
+     */
+    protected DefaultBgLineInfo defaultBgLineInfo = new DefaultBgLineInfo();
+
+    public ChartBgInfo getChartBgInfo() {
+        return chartBgInfo;
     }
 
+    public void setChartBgInfo(ChartBgInfo chartBgInfo) {
+        this.chartBgInfo = chartBgInfo;
+    }
+
+    public DefaultBgLineInfo getDefaultBgLineInfo() {
+        return defaultBgLineInfo;
+    }
+
+    public void setDefaultBgLineInfo(DefaultBgLineInfo defaultBgLineInfo) {
+        this.defaultBgLineInfo = defaultBgLineInfo;
+    }
+
+    public ChartViewInfo getChartViewInfo() {
+        return chartViewInfo;
+    }
+
+    public void setChartViewInfo(ChartViewInfo chartViewInfo) {
+        this.chartViewInfo = chartViewInfo;
+    }
+
+    /**
+     * 用户自定义背景线信息，目前是没有任何作用的，因为画图引擎没有实现，以后再行添加
+     * @return
+     */
     public List<BgLineInfo> getBgLineInfoList() {
         return bgLineInfoList;
     }
 
     public void setBgLineInfoList(List<BgLineInfo> bgLineInfoList) {
         this.bgLineInfoList = bgLineInfoList;
+    }
+
+    /**
+     * 初始化图表
+     */
+    private void initLineChartView(Context context){
+        TextView textView = new TextView(context);
+        setTextSize(textView.getTextSize() / 4 * 3);
+        setScaleWidth(textView.getTextSize() / 7);
+        drawEngine.setDefaultBgLineInfo(defaultBgLineInfo);
+        drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
+        drawEngine.setCharBgInfo(chartBgInfo);
+        drawEngine.setChartViewInfo(chartViewInfo);
+        drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
+        drawEngine.setMainLineInfoList(mainLineInfoList);
+        drawEngine.setDataList(dataList);
     }
 
     @Override
@@ -209,8 +257,25 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
 
     @Override
     public void setYRange(int min, int max) {
-        ScaleInfoEnum.LEFT.getScaleInfo().setMaxValue(max);
-        ScaleInfoEnum.RIGHT.getScaleInfo().setMinVale(min);
+        ScaleInfo scaleInfo = ScaleInfoEnum.LEFT.getScaleInfo();
+        String strMax = String.valueOf(max);
+        String strMin = String.valueOf(min);
+        int oldLen = String.valueOf(scaleInfo.getMaxValue()).length() > String.valueOf(scaleInfo.getMinVale()).length()
+                ? String.valueOf(scaleInfo.getMaxValue()).length() : String.valueOf(scaleInfo.getMinVale()).length();
+        if (strMax.length() > oldLen|| strMin.length() > oldLen){
+            int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
+            len = (len + 1) / 2;
+            scaleInfo.setSpace(scaleInfo.getSpace() + chartViewInfo.getTextSize() / 12 * 7 * len);
+        }else{
+            int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
+            len = (len + 1) / 2;
+            scaleInfo.setSpace(scaleInfo.getSpace() - chartViewInfo.getTextSize() / 12 * 7 * len);
+        }
+        scaleInfo.setMaxValue(max);
+        scaleInfo.setMinVale(min);
+        if (hasDrawTheBackground()){
+            invalidate();
+        }
     }
 
     @Override
@@ -261,5 +326,92 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     @Override
     public void setDefaultLineIsDotted(boolean isDotted) {
         defaultBgLineInfo.setIsDotted(isDotted);
+    }
+
+    /**
+     * 波形线的链表
+     */
+    private List<MainLineInfo> mainLineInfoList = new ArrayList<>();
+    private List<List<Float>> dataList = new ArrayList<>();
+
+    public List<MainLineInfo> getMainLineInfoList() {
+        return mainLineInfoList;
+    }
+
+    public void setMainLineInfoList(List<MainLineInfo> mainLineInfoList) {
+        this.mainLineInfoList = mainLineInfoList;
+    }
+
+    private void addDataList(List<Float> data){
+        this.dataList.add(data);
+    }
+    @Override
+    public void setMainLineWidth(int index, float lineWidth) {
+        mainLineInfoList.get(index).setLineWidth(lineWidth);
+    }
+
+    @Override
+    public void setMainLineColor(int index, int color) {
+        mainLineInfoList.get(index).setLineColor(color);
+    }
+
+    @Override
+    public void setMainLineIsDotted(int index, boolean isDotted) {
+        mainLineInfoList.get(index).setIsDotted(isDotted);
+    }
+
+    @Override
+    public void setHasPoints(int index, boolean hasPoints) {
+        mainLineInfoList.get(index).setHasPoint(hasPoints);
+    }
+
+    @Override
+    public void setHasLine(int index, boolean hasLine) {
+        mainLineInfoList.get(index).setHasLine(hasLine);
+    }
+
+    @Override
+    public void setMainLinePointStyle(int index, MainPointInfo mainLinePointStyle) {
+        mainLineInfoList.get(index).setMainPointInfo(mainLinePointStyle);
+    }
+
+    @Override
+    public void addMainLine() {
+        MainLineInfo mainLineInfo = new MainLineInfo();
+        mainLineInfoList.add(mainLineInfo);
+        dataList.add(new ArrayList<Float>());
+    }
+
+    @Override
+    public void addMainLine(MainLineInfo mainLineInfo) {
+        mainLineInfoList.add(mainLineInfo);
+        dataList.add(new ArrayList<Float>());
+    }
+
+    @Override
+    public void removeMainLine(int index) {
+        mainLineInfoList.remove(index);
+    }
+
+    @Override
+    public void removeAllMainLine() {
+        while (mainLineInfoList.size() > 0){
+            mainLineInfoList.remove(0);
+        }
+    }
+
+    @Override
+    public void setMainPointColor(int index, int color) {
+        mainLineInfoList.get(index).getMainPointInfo().setColor(color);
+    }
+
+    @Override
+    public void setMainPointRadius(int index, float radius) {
+        mainLineInfoList.get(index).getMainPointInfo().setRadius(radius);
+    }
+
+    @Override
+    public void setIsStroke(int index, boolean isStroke) {
+        mainLineInfoList.get(index).getMainPointInfo().setStroke(isStroke);
     }
 }

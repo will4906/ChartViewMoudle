@@ -4,20 +4,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.example.will.canvaslib.CanvasTool;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IScaleInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
-import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
-import com.example.will.chartviewlib.ChartInfo.IChartViewInfo;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.viewcontrollib.ViewInsideTool;
 
+import java.util.List;
+
 /**
- * 线性表的父类，主要用来做信息的接口
+ * 线性表的父类，画图的处理
  * @author will4906.
  * @Time 2016/11/22.
  */
@@ -84,10 +81,19 @@ public class BaseLineChart extends View  {
             setbHasDrawTheBackground(true);
         }
         canvasTool.drawBitmap(backgroundBitmap,0,canvas.getHeight());
-        drawEngine.drawMainLine();
+        drawEngine.drawMainLine(canvasTool, canvas.getWidth(),canvas.getHeight());
     }
 
-//    /**
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+        switch (action){
+
+        }
+        return super.onTouchEvent(event);
+    }
+
+    //    /**
 //     * 初始化信息
 //     * @param context
 //     */

@@ -3,36 +3,22 @@ package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
+
 /**
  * Created by will on 2016/11/22.
  */
 
-public class ScaleInfo {
-    public ScaleInfo(){
-        paint.setAntiAlias(true);
-    }
-    /**
-     * 坐标轴信息核心
-     */
-    private Paint paint = new Paint();
-
-    public Paint getPaint() {
-        return paint;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
-    }
-
+public class ScaleInfo extends BaseLineInfo{
     /**
      * 坐标轴颜色处理
      */
     public int getScaleColor() {
-        return paint.getColor();
+        return super.getLineColor();
     }
 
     public void setScaleColor(int scaleColor) {
-        paint.setColor(scaleColor);
+        super.setLineColor(scaleColor);
     }
 
     /**
@@ -40,11 +26,11 @@ public class ScaleInfo {
      */
 
     public float getScaleWidth() {
-        return paint.getStrokeWidth();
+        return super.getLineWidth();
     }
 
     public void setScaleWidth(float scaleWidth) {
-        paint.setStrokeWidth(scaleWidth);
+        super.setLineWidth(scaleWidth);
     }
 
     /**
