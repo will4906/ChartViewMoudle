@@ -84,6 +84,7 @@ public class BaseLineChart extends View  {
             setbHasDrawTheBackground(true);
         }
         canvasTool.drawBitmap(backgroundBitmap,0,canvas.getHeight());
+        drawEngine.drawMainLine();
     }
 
 //    /**

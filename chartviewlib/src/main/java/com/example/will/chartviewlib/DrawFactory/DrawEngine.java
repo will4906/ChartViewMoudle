@@ -9,6 +9,7 @@ import android.graphics.Path;
 import com.example.will.canvaslib.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
+import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
 import com.example.will.chartviewlib.LineChartView;
@@ -40,6 +41,15 @@ public class DrawEngine {
     private ChartBgInfo charBgInfo;
     private ScaleInfo[] scaleInfos;
     private List<BgLineInfo> bgLineInfoList;
+    private DefaultBgLineInfo defaultBgLineInfo;
+
+    public DefaultBgLineInfo getDefaultBgLineInfo() {
+        return defaultBgLineInfo;
+    }
+
+    public void setDefaultBgLineInfo(DefaultBgLineInfo defaultBgLineInfo) {
+        this.defaultBgLineInfo = defaultBgLineInfo;
+    }
 
     public ChartBgInfo getCharBgInfo() {
         return charBgInfo;
@@ -135,6 +145,13 @@ public class DrawEngine {
         if (scaleInfos[LineChartView.TOP_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawText(scaleInfo.getScaleTitle(),0,height - textSize,paint);
         }
+        if (scaleInfo.isHasData()){
+            String strMax = String.valueOf(scaleInfo.getMaxValue());
+            String strMin = String.valueOf(scaleInfo.getMinVale());
+            paint.setTextAlign(Paint.Align.RIGHT);
+            canvasTool.drawText(strMax,space - 1,height - scaleInfos[TOP_SCALE].getSpace() - textSize,paint);
+            canvasTool.drawText(strMin,space - 1,scaleInfos[BOTTOM_SCALE].getSpace(),paint);
+        }
     }
 
     /**
@@ -152,6 +169,13 @@ public class DrawEngine {
         canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), space, width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), space, paint);
         if (scaleInfos[LineChartView.RIGHT_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawTextOnPath(scaleInfo.getScaleTitle(),width,height / 2,width,10, 0,textSize,paint);
+        }
+        if (scaleInfo.isHasData()){
+            String strMax = String.valueOf(scaleInfo.getMaxValue());
+            String strMin = String.valueOf(scaleInfo.getMinVale());
+            canvasTool.drawText(strMax,width - scaleInfos[RIGHT_SCALE].getSpace(),space - textSize,paint);
+            paint.setTextAlign(Paint.Align.LEFT);
+            canvasTool.drawText(strMin,scaleInfos[LEFT_SCALE].getSpace(),space - textSize,paint);
         }
     }
 
@@ -201,7 +225,7 @@ public class DrawEngine {
 
     }
 
-    private BgLineInfo tmpBgLineInfo = new BgLineInfo();
+//    private BgLineInfo tmpBgLineInfo = new BgLineInfo();
 
     /**
      * 绘制背景线函数
@@ -225,38 +249,78 @@ public class DrawEngine {
      * @param height
      */
     private void drawDefaultBgLine(CanvasTool canvasTool, int width, int height){
+
+        Paint paint = defaultBgLineInfo.getPaint();
+        if (defaultBgLineInfo.isVertical()){
+            drawVerticalBgLine(canvasTool,width,height,paint);
+        }
+        if (defaultBgLineInfo.isHorizontal()){
+            drawHorizontalBgLine(canvasTool,width,height,paint);
+        }
+    }
+
+    /**
+     * 绘制纵向背景线
+     * @param canvasTool
+     * @param width
+     * @param height
+     * @param paint
+     */
+    private void drawVerticalBgLine(CanvasTool canvasTool, int width, int height, Paint paint){
         float widthIndex = scaleInfos[LEFT_SCALE].getSpace();
         float heightIndex = scaleInfos[BOTTOM_SCALE].getSpace();
         widthIndex += 100;
-        Paint paint = tmpBgLineInfo.getPaint();
-        paint.setColor(Color.GRAY);
-        paint.setStrokeWidth(2);
         while (widthIndex < width - scaleInfos[RIGHT_SCALE].getSpace()){
-            while (heightIndex < height - scaleInfos[TOP_SCALE].getSpace()){
-                if (heightIndex + 20 >= height - scaleInfos[TOP_SCALE].getSpace()){
-                    canvasTool.drawLine(widthIndex, heightIndex, widthIndex, height - scaleInfos[TOP_SCALE].getSpace(), paint);
-                }else{
-                    canvasTool.drawLine(widthIndex, heightIndex, widthIndex, heightIndex + 20, paint);
+            if (defaultBgLineInfo.isbIsDotted()){                                               //画虚线
+                while (heightIndex < height - scaleInfos[TOP_SCALE].getSpace()){
+                    if (heightIndex + 20 >= height - scaleInfos[TOP_SCALE].getSpace()){
+                        canvasTool.drawLine(widthIndex, heightIndex, widthIndex, height - scaleInfos[TOP_SCALE].getSpace(), paint);
+                    }else{
+                        canvasTool.drawLine(widthIndex, heightIndex, widthIndex, heightIndex + 20, paint);
+                    }
+                    heightIndex += 40;
                 }
-                heightIndex += 40;
+                heightIndex = scaleInfos[BOTTOM_SCALE].getSpace();
+            }else{                                                                              //画实线
+                canvasTool.drawLine(widthIndex,scaleInfos[BOTTOM_SCALE].getSpace(),widthIndex,height - scaleInfos[TOP_SCALE].getSpace(),paint);
             }
-            heightIndex = scaleInfos[BOTTOM_SCALE].getSpace();
             widthIndex += 100;
         }
-        widthIndex = scaleInfos[LEFT_SCALE].getSpace();
-        heightIndex = scaleInfos[BOTTOM_SCALE].getSpace();
+    }
+
+    /**
+     * 绘制横向背景线
+     * @param canvasTool
+     * @param width
+     * @param height
+     * @param paint
+     */
+    private void drawHorizontalBgLine(CanvasTool canvasTool, int width, int height, Paint paint){
+        float widthIndex = scaleInfos[LEFT_SCALE].getSpace();
+        float heightIndex = scaleInfos[BOTTOM_SCALE].getSpace();
         heightIndex += 100;
         while (heightIndex < height - scaleInfos[TOP_SCALE].getSpace()){
-            while (widthIndex < width - scaleInfos[RIGHT_SCALE].getSpace()){
-                if (widthIndex + 20 >= width - scaleInfos[RIGHT_SCALE].getSpace()){
-                    canvasTool.drawLine(widthIndex,heightIndex,width - scaleInfos[RIGHT_SCALE].getSpace(), heightIndex,paint);
-                }else{
-                    canvasTool.drawLine(widthIndex,heightIndex,widthIndex + 20, heightIndex,paint);
+            if (defaultBgLineInfo.isbIsDotted()){
+                while (widthIndex < width - scaleInfos[RIGHT_SCALE].getSpace()){
+                    if (widthIndex + 20 >= width - scaleInfos[RIGHT_SCALE].getSpace()){
+                        canvasTool.drawLine(widthIndex,heightIndex,width - scaleInfos[RIGHT_SCALE].getSpace(), heightIndex,paint);
+                    }else{
+                        canvasTool.drawLine(widthIndex,heightIndex,widthIndex + 20, heightIndex,paint);
+                    }
+                    widthIndex += 40;
                 }
-                widthIndex += 40;
+                widthIndex = scaleInfos[LEFT_SCALE].getSpace();
+            }else{
+                canvasTool.drawLine(scaleInfos[LEFT_SCALE].getSpace(),heightIndex,width - scaleInfos[RIGHT_SCALE].getSpace(),heightIndex,paint);
             }
-            widthIndex = scaleInfos[LEFT_SCALE].getSpace();
             heightIndex += 100;
         }
+    }
+
+    /**
+     * 画波形图
+     */
+    public void drawMainLine() {
+
     }
 }

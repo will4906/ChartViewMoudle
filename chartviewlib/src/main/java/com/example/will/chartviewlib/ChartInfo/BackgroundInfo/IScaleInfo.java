@@ -74,5 +74,5 @@ public interface IScaleInfo {
      * @param min
      * @param max
      */
-    void setYRange(float min, float max);
+    void setYRange(int min, int max);
 }

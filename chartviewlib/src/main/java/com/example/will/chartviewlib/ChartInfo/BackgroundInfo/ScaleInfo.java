@@ -104,22 +104,22 @@ public class ScaleInfo {
     /**
      * 最大值，最小值
      */
-    private float maxValue = 100;
-    private float minVale = 0;
+    private int maxValue = 100;
+    private int minVale = 0;
 
-    public float getMaxValue() {
+    public int getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(float maxValue) {
+    public void setMaxValue(int maxValue) {
         this.maxValue = maxValue;
     }
 
-    public float getMinVale() {
+    public int getMinVale() {
         return minVale;
     }
 
-    public void setMinVale(float minVale) {
+    public void setMinVale(int minVale) {
         this.minVale = minVale;
     }
 

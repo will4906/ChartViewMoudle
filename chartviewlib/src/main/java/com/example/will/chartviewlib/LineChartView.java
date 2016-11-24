@@ -7,8 +7,10 @@ import android.widget.TextView;
 import com.example.will.canvaslib.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
+import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IChartBgInfo;
+import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IDefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
@@ -24,7 +26,7 @@ import java.util.List;
  * Created by will on 2016/11/21.
  */
 
-public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo,IBgLineInfo {
+public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo {
 
     /**
      * 对坐标轴的宏定义
@@ -70,21 +72,22 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         initLineChartView(context);
     }
 
+    protected ChartBgInfo chartBgInfo = new ChartBgInfo();
+    protected ChartViewInfo chartViewInfo = new ChartViewInfo();
+    protected List<BgLineInfo> bgLineInfoList = new ArrayList<>();
+    protected DefaultBgLineInfo defaultBgLineInfo = new DefaultBgLineInfo();
     /**
      * 初始化图表
      */
     private void initLineChartView(Context context){
         TextView textView = new TextView(context);
         setTextSize(textView.getTextSize() / 4 * 3);
+        drawEngine.setDefaultBgLineInfo(defaultBgLineInfo);
         drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
         drawEngine.setCharBgInfo(chartBgInfo);
         drawEngine.setChartViewInfo(chartViewInfo);
         drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
     }
-
-    protected ChartBgInfo chartBgInfo = new ChartBgInfo();
-    protected ChartViewInfo chartViewInfo = new ChartViewInfo();
-    protected List<BgLineInfo> bgLineInfoList = new ArrayList<>();
 
     public List<BgLineInfo> getBgLineInfoList() {
         return bgLineInfoList;
@@ -205,7 +208,7 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
-    public void setYRange(float min, float max) {
+    public void setYRange(int min, int max) {
         ScaleInfoEnum.LEFT.getScaleInfo().setMaxValue(max);
         ScaleInfoEnum.RIGHT.getScaleInfo().setMinVale(min);
     }
@@ -233,5 +236,30 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     @Override
     public void enableTopScale(boolean bHas) {
         chartBgInfo.enableTopScale(bHas);
+    }
+
+    @Override
+    public void setDefaultLineWidth(float lineWidth) {
+        defaultBgLineInfo.setLineWidth(lineWidth);
+    }
+
+    @Override
+    public void setDefaultLineColor(int lineColor) {
+        defaultBgLineInfo.setLineColor(lineColor);
+    }
+
+    @Override
+    public void enableDefaultVerticalBackgroundLine(boolean enable) {
+        defaultBgLineInfo.enableVertical(enable);
+    }
+
+    @Override
+    public void enableDefaultHorizontalBackgroundLine(boolean enable) {
+        defaultBgLineInfo.enableHorizontal(enable);
+    }
+
+    @Override
+    public void setDefaultLineIsDotted(boolean isDotted) {
+        defaultBgLineInfo.setIsDotted(isDotted);
     }
 }
