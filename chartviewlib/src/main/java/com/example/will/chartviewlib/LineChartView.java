@@ -1,6 +1,8 @@
 package com.example.will.chartviewlib;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -142,7 +144,6 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         drawEngine.setChartViewInfo(chartViewInfo);
         drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
         drawEngine.setMainLineInfoList(mainLineInfoList);
-        drawEngine.setDataList(dataList);
     }
 
     @Override
@@ -266,7 +267,7 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
             int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
             len = (len + 1) / 2;
             scaleInfo.setSpace(scaleInfo.getSpace() + chartViewInfo.getTextSize() / 12 * 7 * len);
-        }else{
+        }else if (strMax.length() != oldLen && strMin.length() != oldLen){
             int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
             len = (len + 1) / 2;
             scaleInfo.setSpace(scaleInfo.getSpace() - chartViewInfo.getTextSize() / 12 * 7 * len);
@@ -332,7 +333,6 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
      * 波形线的链表
      */
     private List<MainLineInfo> mainLineInfoList = new ArrayList<>();
-    private List<List<Float>> dataList = new ArrayList<>();
 
     public List<MainLineInfo> getMainLineInfoList() {
         return mainLineInfoList;
@@ -342,9 +342,6 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         this.mainLineInfoList = mainLineInfoList;
     }
 
-    private void addDataList(List<Float> data){
-        this.dataList.add(data);
-    }
     @Override
     public void setMainLineWidth(int index, float lineWidth) {
         mainLineInfoList.get(index).setLineWidth(lineWidth);
@@ -379,13 +376,11 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     public void addMainLine() {
         MainLineInfo mainLineInfo = new MainLineInfo();
         mainLineInfoList.add(mainLineInfo);
-        dataList.add(new ArrayList<Float>());
     }
 
     @Override
     public void addMainLine(MainLineInfo mainLineInfo) {
         mainLineInfoList.add(mainLineInfo);
-        dataList.add(new ArrayList<Float>());
     }
 
     @Override
@@ -414,4 +409,63 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     public void setIsStroke(int index, boolean isStroke) {
         mainLineInfoList.get(index).getMainPointInfo().setStroke(isStroke);
     }
+
+    @Override
+    public void setHorizontalReslution(float horizontalReslution) {
+        chartViewInfo.setHorizontalReslution(horizontalReslution);
+    }
+
+    public static final int ASK_FOR_DRAW_WAVE = 0x01;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case ASK_FOR_DRAW_WAVE:
+                    invalidate();
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+    /**
+     * 单独更新某条波形图
+     * @param index
+     * @param data
+     */
+    public void drawWave(int index, float data){
+        mainLineInfoList.get(index).addData(data);
+        Message message = new Message();
+        message.what = ASK_FOR_DRAW_WAVE;
+        handler.sendMessage(message);
+    }
+
+    /**
+     * 更新全部波形图，前提是有点的假如，否则只是重新绘制了图片而已
+     */
+    public void drawWave(){
+        Message message = new Message();
+        message.what = ASK_FOR_DRAW_WAVE;
+        handler.sendMessage(message);
+    }
+
+    /**
+     * 为每条波形增加点
+     * @param data
+     */
+    public void addPoint(float data){
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.addData(data);
+        }
+    }
+
+    /**
+     * 为某条波形增加点
+     * @param index
+     * @param data
+     */
+    public void addPoint(int index, float data){
+        mainLineInfoList.get(index).addData(data);
+    }
+
+
 }

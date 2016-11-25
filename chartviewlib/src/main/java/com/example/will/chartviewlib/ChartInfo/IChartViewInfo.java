@@ -11,4 +11,10 @@ public interface IChartViewInfo {
      * @param textSize
      */
     void setTextSize(float textSize);
+
+    /**
+     * 设置横向分辨率
+     * @param horizontalReslution
+     */
+    void setHorizontalReslution(float horizontalReslution);
 }

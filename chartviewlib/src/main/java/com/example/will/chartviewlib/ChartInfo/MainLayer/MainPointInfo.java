@@ -1,5 +1,7 @@
 package com.example.will.chartviewlib.ChartInfo.MainLayer;
 
+import android.graphics.Color;
+
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BasePointInfo;
 
 /**
@@ -9,4 +11,8 @@ import com.example.will.chartviewlib.ChartInfo.BaseInfo.BasePointInfo;
 
 public class MainPointInfo extends BasePointInfo {
 
+    public MainPointInfo(){
+        setColor(Color.GREEN);
+        setRadius(5);
+    }
 }

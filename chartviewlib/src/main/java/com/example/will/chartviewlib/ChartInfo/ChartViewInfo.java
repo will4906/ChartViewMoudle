@@ -32,4 +32,18 @@ public class ChartViewInfo {
     public void setTextSize(float textSize) {
         paint.setTextSize(textSize);
     }
+
+    /**
+     * 横向分辨率
+     */
+    public float horizontalReslution = 0;
+
+    public float getHorizontalReslution() {
+        return horizontalReslution;
+    }
+
+    public void setHorizontalReslution(float horizontalReslution) {
+        this.horizontalReslution = horizontalReslution;
+    }
+
 }

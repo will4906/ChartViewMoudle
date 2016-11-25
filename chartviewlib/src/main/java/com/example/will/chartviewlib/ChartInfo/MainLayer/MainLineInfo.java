@@ -4,6 +4,9 @@ import android.graphics.Color;
 
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * @author will4906.
@@ -13,6 +16,7 @@ import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
 public class MainLineInfo extends BaseLineInfo{
 
     public MainLineInfo(){
+        setLineWidth(10);
         setLineColor(Color.GREEN);
     }
     /**
@@ -51,5 +55,53 @@ public class MainLineInfo extends BaseLineInfo{
 
     public void setMainPointInfo(MainPointInfo mainPointInfo) {
         this.mainPointInfo = mainPointInfo;
+    }
+
+    private List<Float> dataList = new ArrayList<>();
+
+    public List<Float> getDataList() {
+        return dataList;
+    }
+
+    public void setDataList(List<Float> dataList) {
+        this.dataList = dataList;
+    }
+
+    public void addData(float data){
+        this.dataList.add(data);
+    }
+
+    public void removeData(int index){
+        this.dataList.remove(index);
+    }
+
+    public void removeAllData(){
+        this.dataList.clear();
+    }
+
+    /**
+     * 图的显示起始标志
+     */
+    public int startIndex = 0;
+
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
+    }
+
+    /**
+     * 是否充满界面
+     */
+    private boolean isFullView = false;
+
+    public boolean isFullView() {
+        return isFullView;
+    }
+
+    public void setFullView(boolean fullView) {
+        isFullView = fullView;
     }
 }

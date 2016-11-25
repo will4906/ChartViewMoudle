@@ -322,8 +322,6 @@ public class DrawEngine {
     }
 
     private List<MainLineInfo> mainLineInfoList;
-    private List<List<Float>> dataList;
-
 
     public List<MainLineInfo> getMainLineInfoList() {
         return mainLineInfoList;
@@ -333,22 +331,59 @@ public class DrawEngine {
         this.mainLineInfoList = mainLineInfoList;
     }
 
-    public List<List<Float>> getDataList() {
-        return dataList;
-    }
-
-    public void setDataList(List<List<Float>> dataList) {
-        this.dataList = dataList;
-    }
-
     /**
      * 画波形图
      */
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
+        int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList){
             canvasTool.startDrawOnABitmap();
-//            for (int i = 0; i < )
+            int startIndex = mainLineInfo.getStartIndex();
+            List<Float> dataList = mainLineInfo.getDataList();
+            //表的理论宽度
+            float chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
+            float oldcX = -100;
+            float oldcY = -100;
+            for (int i = startIndex; i < computePoints(index, width) + startIndex; i ++){
+                if (i < dataList.size()){
+                    if (mainLineInfo.isHasPoint()){
+                        float pointHeight = changeUserDataToChartViewData(dataList.get(i),width,height);
+                        float radius = mainLineInfo.getMainPointInfo().getRadius();
+                        float cx = (i - startIndex) * (radius + chartViewInfo.getHorizontalReslution()) + scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2;
+                        canvasTool.drawCircle(cx, pointHeight,radius,mainLineInfo.getMainPointInfo().getPaint());
+                        if (oldcX != -100){
+                            canvasTool.drawLine(oldcX,oldcY,cx,pointHeight,mainLineInfo.getPaint());
+                        }
+                        oldcX = cx;
+                        oldcY = pointHeight;
+                        if (i == computePoints(index, width) + startIndex - 1){
+                            mainLineInfo.setStartIndex(++startIndex);
+                        }
+                    }
+                }
+            }
             canvasTool.flushBitmap();
+            index++;
         }
+    }
+
+    private float changeUserDataToChartViewData(float userData, int width, int height){
+        float chartViewData = 0;
+        float max = Float.valueOf(scaleInfos[LEFT_SCALE].getMaxValue());
+        float min = Float.valueOf(scaleInfos[LEFT_SCALE].getMinVale());
+        float div = (max - min) / (height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace());
+        chartViewData = (userData - min) / div + scaleInfos[BOTTOM_SCALE].getSpace();
+        return chartViewData;
+    }
+
+    public int computePoints(int index, int width){
+        float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
+        float viewlen = scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + radius / 2;
+        int pointIndex = 0;
+        while (viewlen < width - scaleInfos[RIGHT_SCALE].getSpace()){
+            pointIndex ++;
+            viewlen += radius + chartViewInfo.getHorizontalReslution();
+        }
+        return pointIndex;
     }
 }

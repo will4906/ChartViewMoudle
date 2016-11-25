@@ -57,4 +57,5 @@ public interface IMainLineInfo {
     void removeMainLine(int index);
 
     void removeAllMainLine();
+
 }

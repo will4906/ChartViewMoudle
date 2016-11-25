@@ -36,7 +36,7 @@ public class BasePointInfo {
     /**
      * 点的半径
      */
-    private float radius = (float) 0.5;
+    private float radius = 2;
 
     public float getRadius() {
         return radius;

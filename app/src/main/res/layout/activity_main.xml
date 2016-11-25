@@ -14,4 +14,12 @@
         android:id="@+id/line_chart_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/button_hello"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="hello"
+        android:layout_below="@+id/line_chart_view"
+        android:layout_alignBottom="@id/activity_main"/>
 </RelativeLayout>
