@@ -66,8 +66,9 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableRightScale(true);
         lineChartView.enableBottomScale(true);
         lineChartView.addMainLine();
+//        lineChartView.addMainLine();
 //        lineChartView.setHorizontalReslution(10);
-        timer.schedule(timerTask,1000,1000);
+        timer.schedule(timerTask,1000,1);
         button = (Button)findViewById(R.id.button_hello);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,13 +77,15 @@ public class MainActivity extends AppCompatActivity {
                     if (data >= 99){
                         addFlag = true;
                     }
-                    if (data == 1){
+                    if (data == -20){
                         addFlag = false;
                     }
                     if (addFlag == false){
-                        lineChartView.addPoint(data++);
+                        lineChartView.addPoint(0,data++);
+//                        lineChartView.addPoint(1,data * (float)3);
                     }else{
-                        lineChartView.addPoint(data--);
+                        lineChartView.addPoint(0,data--);
+//                        lineChartView.addPoint(1,data * (float)3);
                     }
                 }
                 lineChartView.drawWave();

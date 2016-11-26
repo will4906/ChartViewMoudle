@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Log;
 
 import com.example.will.canvaslib.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
@@ -349,10 +350,12 @@ public class DrawEngine {
                     if (mainLineInfo.isHasPoint()){
                         float pointHeight = changeUserDataToChartViewData(dataList.get(i),width,height);
                         float radius = mainLineInfo.getMainPointInfo().getRadius();
-                        float cx = (i - startIndex) * (radius + chartViewInfo.getHorizontalReslution()) + scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2;
-                        canvasTool.drawCircle(cx, pointHeight,radius,mainLineInfo.getMainPointInfo().getPaint());
-                        if (oldcX != -100){
-                            canvasTool.drawLine(oldcX,oldcY,cx,pointHeight,mainLineInfo.getPaint());
+                        float cx = radius + (i - startIndex) * (radius + chartViewInfo.getHorizontalReslution()) + scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2;
+                        if (dataList.get(i) >= scaleInfos[LEFT_SCALE].getMinVale() && dataList.get(i) <= scaleInfos[LEFT_SCALE].getMaxValue()){
+                            canvasTool.drawCircle(cx, pointHeight,radius,mainLineInfo.getMainPointInfo().getPaint());
+                            if (oldcX != -100){
+                                canvasTool.drawLine(oldcX,oldcY,cx,pointHeight,mainLineInfo.getPaint());
+                            }
                         }
                         oldcX = cx;
                         oldcY = pointHeight;
@@ -367,6 +370,13 @@ public class DrawEngine {
         }
     }
 
+    /**
+     * 将用户传进来的数据转换为像素数据
+     * @param userData
+     * @param width
+     * @param height
+     * @return
+     */
     private float changeUserDataToChartViewData(float userData, int width, int height){
         float chartViewData = 0;
         float max = Float.valueOf(scaleInfos[LEFT_SCALE].getMaxValue());
@@ -376,6 +386,12 @@ public class DrawEngine {
         return chartViewData;
     }
 
+    /**
+     * 计算一个图表里应该有多少数据
+     * @param index
+     * @param width
+     * @return
+     */
     public int computePoints(int index, int width){
         float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
         float viewlen = scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + radius / 2;
@@ -384,6 +400,6 @@ public class DrawEngine {
             pointIndex ++;
             viewlen += radius + chartViewInfo.getHorizontalReslution();
         }
-        return pointIndex;
+        return --pointIndex;
     }
 }

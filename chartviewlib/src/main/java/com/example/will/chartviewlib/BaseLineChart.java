@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.will.canvaslib.CanvasTool;
+import com.example.will.chartviewlib.ChartInfo.TouchListener.TouchEngine;
+import com.example.will.chartviewlib.ChartInfo.TouchListener.TouchMode;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.viewcontrollib.ViewInsideTool;
 
@@ -84,11 +86,26 @@ public class BaseLineChart extends View  {
         drawEngine.drawMainLine(canvasTool, canvas.getWidth(),canvas.getHeight());
     }
 
+    private TouchEngine touchEngine = new TouchEngine();
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
-        switch (action){
-
+        switch (action & MotionEvent.ACTION_MASK){
+            case MotionEvent.ACTION_MOVE:
+//                drawEngine.getChartViewInfo()touchEngine.answerSingleTouch(event);
+                break;
+            case MotionEvent.ACTION_DOWN:
+                touchEngine.setTouchMode(TouchMode.SINGLE_TOUCH);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                touchEngine.setTouchMode(TouchMode.DOUBLE_TOUCH);
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                touchEngine.setTouchMode(TouchMode.NO_TOUCH);
+                break;
+            default:
+                break;
         }
         return super.onTouchEvent(event);
     }
