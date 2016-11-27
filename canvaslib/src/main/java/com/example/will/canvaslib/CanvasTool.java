@@ -239,6 +239,14 @@ public class CanvasTool {
         clearBufferCanvas();
     }
 
+    public void flushBitmap(float x, float y){
+        if (oldCanvas != null){
+            canvas = oldCanvas;
+            drawBitmap(cacheBitmap,x,y);
+            canvas = cacheCanvas;
+        }
+        clearBufferCanvas();
+    }
     /**
      * 清空缓存
      */

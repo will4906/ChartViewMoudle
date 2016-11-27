@@ -21,9 +21,8 @@ import com.example.will.chartviewlib.ChartInfo.MainLayer.IMainLineInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.IMainPointInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.MainPointInfo;
-import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.chartviewlib.DrawFactory.OnDrawBackgroundListener;
-import com.example.will.viewcontrollib.ViewInsideTool;
+import com.example.will.chartviewlib.TouchFactory.ITouchInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ import java.util.List;
  * Created by will on 2016/11/21.
  */
 
-public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo {
+public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo, ITouchInfo {
 
     /**
      * 对坐标轴的宏定义
@@ -415,7 +414,36 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         chartViewInfo.setHorizontalReslution(horizontalReslution);
     }
 
+    @Override
+    public void setAllowTouchEvent(boolean allowTouchEvent) {
+        touchEngine.getTouchInfo().setAllowTouchEvent(allowTouchEvent);
+    }
+
+    @Override
+    public void setAllowTouchX(boolean allowTouchX) {
+        touchEngine.getTouchInfo().setAllowTouchX(allowTouchX);
+    }
+
+    @Override
+    public void setAllowTouchY(boolean allowTouchY) {
+        touchEngine.getTouchInfo().setAllowTouchY(allowTouchY);
+    }
+
+    @Override
+    public void setAllowZoom(boolean allowZoom) {
+        touchEngine.getTouchInfo().setAllowZoom(allowZoom);
+    }
+
+    @Override
+    public void setAllowTranslation(boolean allowTranslation) {
+        touchEngine.getTouchInfo().setAllowTranslation(allowTranslation);
+    }
+
     public static final int ASK_FOR_DRAW_WAVE = 0x01;
+
+    /**
+     * 开启一个Handler防止用户在非ui线程中调用绘图函数
+     */
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -427,6 +455,7 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
             super.handleMessage(msg);
         }
     };
+
     /**
      * 单独更新某条波形图
      * @param index
@@ -466,6 +495,5 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     public void addPoint(int index, float data){
         mainLineInfoList.get(index).addData(data);
     }
-
 
 }

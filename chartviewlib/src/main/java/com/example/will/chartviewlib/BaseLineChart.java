@@ -3,17 +3,17 @@ package com.example.will.chartviewlib;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.will.canvaslib.CanvasTool;
-import com.example.will.chartviewlib.ChartInfo.TouchListener.TouchEngine;
-import com.example.will.chartviewlib.ChartInfo.TouchListener.TouchMode;
+import com.example.will.chartviewlib.TouchFactory.TouchEngine;
+import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.viewcontrollib.ViewInsideTool;
-
-import java.util.List;
 
 /**
  * 线性表的父类，画图的处理
@@ -52,17 +52,17 @@ public class BaseLineChart extends View  {
 
     public BaseLineChart(Context context) {
         super(context);
-//        initBaseLineChart(context);
+        initBaseLineChart(context);
     }
 
     public BaseLineChart(Context context, AttributeSet attrs) {
         super(context, attrs);
-//        initBaseLineChart(context);
+        initBaseLineChart(context);
     }
 
     public BaseLineChart(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-//        initBaseLineChart(context);
+        initBaseLineChart(context);
     }
 
     @Override
@@ -86,36 +86,53 @@ public class BaseLineChart extends View  {
         drawEngine.drawMainLine(canvasTool, canvas.getWidth(),canvas.getHeight());
     }
 
-    private TouchEngine touchEngine = new TouchEngine();
+    protected TouchEngine touchEngine = new TouchEngine();
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         switch (action & MotionEvent.ACTION_MASK){
             case MotionEvent.ACTION_MOVE:
-//                drawEngine.getChartViewInfo()touchEngine.answerSingleTouch(event);
+                //一旦符合重绘条件就重绘
+                if (touchEngine.answerTouch(event)){
+                    invalidate();
+                }
                 break;
             case MotionEvent.ACTION_DOWN:
-                touchEngine.setTouchMode(TouchMode.SINGLE_TOUCH);
+                touchEngine.setTouchMode(TouchParam.SINGLE_TOUCH);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                touchEngine.setTouchMode(TouchMode.DOUBLE_TOUCH);
+                touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
+                touchEngine.setDoubleTapX(event.getX(0),event.getX(1));
+                touchEngine.setDoubleTapY(event.getY(0),event.getY(1));
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                touchEngine.setTouchMode(TouchMode.NO_TOUCH);
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+                    }
+                },5000);
                 break;
             default:
                 break;
         }
-        return super.onTouchEvent(event);
+        //此处需改为true，否则双指的条件无法执行
+        return true;
     }
 
-    //    /**
-//     * 初始化信息
-//     * @param context
-//     */
-//    private void initBaseLineChart(Context context){
-//        TextView textView = new TextView(context);
-//        setTextSize(textView.getTextSize());
-//    }
+        /**
+     * 初始化信息
+     * @param context
+     */
+    private void initBaseLineChart(Context context){
+        touchEngine.setDrawEngine(drawEngine);
+    }
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
 }

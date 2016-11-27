@@ -104,4 +104,17 @@ public class MainLineInfo extends BaseLineInfo{
     public void setFullView(boolean fullView) {
         isFullView = fullView;
     }
+
+    /**
+     * 线相对于x轴偏移
+     */
+    private float offsetX = 0;
+
+    public float getOffsetX() {
+        return offsetX;
+    }
+
+    public void setOffsetX(float offsetX) {
+        this.offsetX = offsetX;
+    }
 }

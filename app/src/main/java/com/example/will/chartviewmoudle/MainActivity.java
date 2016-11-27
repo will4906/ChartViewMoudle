@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
-            if (data >= 99){
+            if (data >= 199){
                 addFlag = true;
             }
             if (data == 1){
@@ -67,8 +67,10 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableBottomScale(true);
         lineChartView.addMainLine();
 //        lineChartView.addMainLine();
-//        lineChartView.setHorizontalReslution(10);
-        timer.schedule(timerTask,1000,1);
+        lineChartView.setMainPointRadius(0,10);
+//        lineChartView.setHorizontalReslution(80);
+        timer.schedule(timerTask,1000,42);        //每秒24帧的放映速度
+//        timer.schedule(timerTask,1000,1000);
         button = (Button)findViewById(R.id.button_hello);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

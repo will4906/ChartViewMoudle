@@ -1,11 +1,7 @@
 package com.example.will.chartviewlib.DrawFactory;
 
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.util.Log;
 
 import com.example.will.canvaslib.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
@@ -14,17 +10,16 @@ import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
+import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.LineChartView;
 
+import static android.view.View.X;
 import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
 import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
 import static com.example.will.chartviewlib.LineChartView.LEFT_SCALE;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author will4906.
@@ -32,6 +27,26 @@ import java.util.Map;
  */
 
 public class DrawEngine {
+
+    private int backgroundHeight = 0;
+    private int backgroundWidth = 0;
+
+    public int getBackgroundHeight() {
+        return backgroundHeight;
+    }
+
+    public void setBackgroundHeight(int backgroundHeight) {
+        this.backgroundHeight = backgroundHeight;
+    }
+
+    public int getBackgroundWidth() {
+        return backgroundWidth;
+    }
+
+    public void setBackgroundWidth(int backgroundWidth) {
+        this.backgroundWidth = backgroundWidth;
+    }
+
     private OnDrawBackgroundListener onDrawBackgroundListener;
 
     public OnDrawBackgroundListener getOnDrawBackgroundListener() {
@@ -47,6 +62,15 @@ public class DrawEngine {
     private ScaleInfo[] scaleInfos;
     private List<BgLineInfo> bgLineInfoList;
     private DefaultBgLineInfo defaultBgLineInfo;
+    private TouchParam touchParam;
+
+    public TouchParam getTouchParam() {
+        return touchParam;
+    }
+
+    public void setTouchParam(TouchParam touchParam) {
+        this.touchParam = touchParam;
+    }
 
     public DefaultBgLineInfo getDefaultBgLineInfo() {
         return defaultBgLineInfo;
@@ -89,6 +113,8 @@ public class DrawEngine {
     }
 
     public Bitmap drawChartViewBackground(int width, int height){
+        backgroundHeight = height;
+        backgroundWidth = width;
         CanvasTool canvasTool = new CanvasTool();
         CanvasTool customCanvasTool = new CanvasTool();
         Bitmap bitmap;
@@ -337,35 +363,57 @@ public class DrawEngine {
      */
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
         int index = 0;
-        for (MainLineInfo mainLineInfo : mainLineInfoList){
-            canvasTool.startDrawOnABitmap();
-            int startIndex = mainLineInfo.getStartIndex();
-            List<Float> dataList = mainLineInfo.getDataList();
+        for (MainLineInfo mainLineInfo : mainLineInfoList) {
             //表的理论宽度
             float chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
+            //理论高度
+            float chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
+            canvasTool.startDrawOnABitmap((int) chartWidth, (int) chartHeight);
+            int startIndex = mainLineInfo.getStartIndex();
+            float radius = mainLineInfo.getMainPointInfo().getRadius();
+            List<Float> dataList = mainLineInfo.getDataList();
+
             float oldcX = -100;
             float oldcY = -100;
-            for (int i = startIndex; i < computePoints(index, width) + startIndex; i ++){
-                if (i < dataList.size()){
-                    if (mainLineInfo.isHasPoint()){
-                        float pointHeight = changeUserDataToChartViewData(dataList.get(i),width,height);
-                        float radius = mainLineInfo.getMainPointInfo().getRadius();
-                        float cx = radius + (i - startIndex) * (radius + chartViewInfo.getHorizontalReslution()) + scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2;
-                        if (dataList.get(i) >= scaleInfos[LEFT_SCALE].getMinVale() && dataList.get(i) <= scaleInfos[LEFT_SCALE].getMaxValue()){
-                            canvasTool.drawCircle(cx, pointHeight,radius,mainLineInfo.getMainPointInfo().getPaint());
-                            if (oldcX != -100){
-                                canvasTool.drawLine(oldcX,oldcY,cx,pointHeight,mainLineInfo.getPaint());
+            float Xoffset = mainLineInfo.getOffsetX();
+            int chatPointsSum = computePoints(index, chartWidth);
+            synchronized (this) {
+
+//                if (touchParam.getTouchMode() == TouchParam.NO_TOUCH){
+                if (dataList.size() - chatPointsSum > 0) {
+                    Xoffset = (dataList.size() - chatPointsSum) * (chartViewInfo.getHorizontalReslution() + radius * 2);
+                    startIndex = dataList.size() - chatPointsSum;
+                } else {
+                    Xoffset = 0;
+                    startIndex = 0;
+                }
+                mainLineInfo.setStartIndex(startIndex);
+                mainLineInfo.setOffsetX(Xoffset);
+//                }
+//            else{
+//                Xoffset = mainLineInfo.getOffsetX();
+//            }
+            }
+            int i;
+            for (i = startIndex; i < chatPointsSum + startIndex; i++) {
+                if (i < dataList.size()) {
+                    if (mainLineInfo.isHasPoint()) {
+                        float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartWidth, chartHeight);
+                        float cx = radius + i * (radius * 2 + chartViewInfo.getHorizontalReslution()) - Xoffset;
+                        if (dataList.get(i) >= scaleInfos[LEFT_SCALE].getMinVale() && dataList.get(i) <= scaleInfos[LEFT_SCALE].getMaxValue()) {
+                            canvasTool.drawCircle(cx, pointHeight, radius, mainLineInfo.getMainPointInfo().getPaint());
+                        }
+                        if (i != startIndex) {
+                            if (mainLineInfo.isHasLine()) {
+                                canvasTool.drawLine(oldcX, oldcY, cx, pointHeight, mainLineInfo.getPaint());
                             }
                         }
                         oldcX = cx;
                         oldcY = pointHeight;
-                        if (i == computePoints(index, width) + startIndex - 1){
-                            mainLineInfo.setStartIndex(++startIndex);
-                        }
                     }
                 }
             }
-            canvasTool.flushBitmap();
+            canvasTool.flushBitmap(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2, height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2);
             index++;
         }
     }
@@ -377,12 +425,12 @@ public class DrawEngine {
      * @param height
      * @return
      */
-    private float changeUserDataToChartViewData(float userData, int width, int height){
+    private float changeUserDataToChartViewData(float userData, float width, float height){
         float chartViewData = 0;
         float max = Float.valueOf(scaleInfos[LEFT_SCALE].getMaxValue());
         float min = Float.valueOf(scaleInfos[LEFT_SCALE].getMinVale());
-        float div = (max - min) / (height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace());
-        chartViewData = (userData - min) / div + scaleInfos[BOTTOM_SCALE].getSpace();
+        float div = (max - min) / height;
+        chartViewData = (userData - min) / div;
         return chartViewData;
     }
 
@@ -392,14 +440,9 @@ public class DrawEngine {
      * @param width
      * @return
      */
-    public int computePoints(int index, int width){
+    public int computePoints(int index, float width){
         float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
-        float viewlen = scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + radius / 2;
-        int pointIndex = 0;
-        while (viewlen < width - scaleInfos[RIGHT_SCALE].getSpace()){
-            pointIndex ++;
-            viewlen += radius + chartViewInfo.getHorizontalReslution();
-        }
-        return --pointIndex;
+        int pointSum = (int)(width / (radius * 2 + chartViewInfo.getHorizontalReslution()));
+        return ++pointSum;
     }
 }
