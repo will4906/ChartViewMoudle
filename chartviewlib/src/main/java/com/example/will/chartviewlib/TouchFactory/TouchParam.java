@@ -100,4 +100,39 @@ public class TouchParam {
     public void setStartY2(float startY2) {
         this.startY2 = startY2;
     }
+
+    /**
+     * 初次单指触摸对应横纵坐标值
+     */
+    private float downX = 0;
+    private float downY = 0;
+
+    public float getDownX() {
+        return downX;
+    }
+
+    public void setDownX(float downX) {
+        this.downX = downX;
+    }
+
+    public float getDownY() {
+        return downY;
+    }
+
+    public void setDownY(float downY) {
+        this.downY = downY;
+    }
+
+    /**
+     * 手指触摸偏移
+     */
+    private float touchOffsetX = 0;
+
+    public float getTouchOffsetX() {
+        return touchOffsetX;
+    }
+
+    public void setTouchOffsetX(float touchOffsetX) {
+        this.touchOffsetX = touchOffsetX;
+    }
 }

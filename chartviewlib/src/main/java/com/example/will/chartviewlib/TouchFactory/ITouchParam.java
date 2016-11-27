@@ -31,4 +31,22 @@ public interface ITouchParam {
      * @param y2
      */
     void setDoubleTapY(float y1, float y2);
+
+    /**
+     * 设置单指初次触摸是的x
+     * @param downX
+     */
+    void setDownX(float downX);
+
+    /**
+     * 设置单指初次触摸的Y
+     * @param downY
+     */
+    void setDownY(float downY);
+
+    /**
+     * 设置触摸手指偏移量
+     * @param touchOffsetX
+     */
+    void setTouchOffsetX(float touchOffsetX);
 }

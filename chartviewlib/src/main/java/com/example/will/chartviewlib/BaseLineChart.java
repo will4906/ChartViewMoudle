@@ -15,6 +15,9 @@ import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.viewcontrollib.ViewInsideTool;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * 线性表的父类，画图的处理
  * @author will4906.
@@ -87,9 +90,11 @@ public class BaseLineChart extends View  {
     }
 
     protected TouchEngine touchEngine = new TouchEngine();
+    private int nowAction;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        nowAction = action;
         switch (action & MotionEvent.ACTION_MASK){
             case MotionEvent.ACTION_MOVE:
                 //一旦符合重绘条件就重绘
@@ -99,6 +104,8 @@ public class BaseLineChart extends View  {
                 break;
             case MotionEvent.ACTION_DOWN:
                 touchEngine.setTouchMode(TouchParam.SINGLE_TOUCH);
+                touchEngine.setDownX(event.getX());
+                touchEngine.setDownY(event.getY());
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
@@ -107,12 +114,6 @@ public class BaseLineChart extends View  {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        touchEngine.setTouchMode(TouchParam.NO_TOUCH);
-                    }
-                },5000);
                 break;
             default:
                 break;
@@ -121,18 +122,38 @@ public class BaseLineChart extends View  {
         return true;
     }
 
-        /**
+    private int changeTouchModeIndex = 0;
+
+    public int getChangeTouchModeIndex() {
+        return changeTouchModeIndex;
+    }
+
+    public void setChangeTouchModeIndex(int changeTouchModeIndex) {
+        this.changeTouchModeIndex = changeTouchModeIndex;
+    }
+
+    private Timer timer = new Timer();
+    private TimerTask timerTask = new TimerTask() {
+        @Override
+        public void run() {
+            if (nowAction == MotionEvent.ACTION_UP || nowAction == MotionEvent.ACTION_CANCEL){
+                if (changeTouchModeIndex >= 5){
+                    touchEngine.setTouchOffsetX(0);
+                    touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+                }
+                changeTouchModeIndex++;
+            }else{
+                changeTouchModeIndex = 0;
+            }
+        }
+    };
+    /**
      * 初始化信息
      * @param context
      */
     private void initBaseLineChart(Context context){
         touchEngine.setDrawEngine(drawEngine);
+        timer.schedule(timerTask,1,1000);
     }
 
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-        }
-    };
 }

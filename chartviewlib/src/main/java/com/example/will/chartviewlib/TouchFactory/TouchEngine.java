@@ -57,10 +57,25 @@ public class TouchEngine implements ITouchParam {
         touchParam.setDoubleTouchDistanceY(Math.abs(y1 - y2));
     }
 
+    @Override
+    public void setDownX(float downX) {
+        touchParam.setDownX(downX);
+    }
+
+    @Override
+    public void setDownY(float downY) {
+        touchParam.setDownY(downY);
+    }
+
+    @Override
+    public void setTouchOffsetX(float touchOffsetX) {
+        touchParam.setTouchOffsetX(touchOffsetX);
+    }
+
     /**
      * 缩放比例，防止过快的缩放，这个应该不打算让用户调整
      */
-    public static int MAGNIFICATION = 100;
+    public static int MAGNIFICATION = 80;
     /**
      * 处理触摸事件
      * @param event
@@ -79,6 +94,9 @@ public class TouchEngine implements ITouchParam {
                 case TouchParam.SINGLE_TOUCH:{
                     float x = event.getX();
                     float y = event.getY();
+                    if (touchInfo.isAllowTranslation()){
+                        bAskForReDraw = answerSingleTouch(event);
+                    }
                 }
                 break;
                 default:
@@ -96,34 +114,42 @@ public class TouchEngine implements ITouchParam {
      */
     private boolean answerDoubleTouch(MotionEvent event){
         boolean bAskForReDraw = false;
+        boolean bX = false;
+        boolean bY = false;
         int cnt = event.getPointerCount();
         if (cnt == 2){
             if (touchInfo.isAllowTouchX()){
-                bAskForReDraw = answerDoubleTouchX(event);
+                bX = answerDoubleTouchX(event);
             }
             if (touchInfo.isAllowTouchY()){
-                bAskForReDraw = answerDoubleTouchY(event);
+                bY = answerDoubleTouchY(event);
+            }
+            if (bX || bY){
+                bAskForReDraw = true;
             }
         }
         return bAskForReDraw;
     }
 
+    private float addXResolution = 0;
     /**
      * 应答双指按压横向数据处理
      * @param event
      */
     private boolean answerDoubleTouchX(MotionEvent event){
         float nowXlen = Math.abs(event.getX(0) - event.getX(1));
-        float addXResolution = (nowXlen - touchParam.getDoubleTouchDistanceX()) / MAGNIFICATION;
-        float newXResolution = drawEngine.getChartViewInfo().getHorizontalReslution() + addXResolution;
-        if (newXResolution < 0){
+        addXResolution += nowXlen - touchParam.getDoubleTouchDistanceX();
+        float newXResolution = drawEngine.getChartViewInfo().getHorizontalReslution() + addXResolution / MAGNIFICATION;
+        if (newXResolution < 0) {
             newXResolution = 0;
         }
-        if (newXResolution > drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace()){
+        if (newXResolution > drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace()) {
             newXResolution = drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace();
         }
         drawEngine.getChartViewInfo().setHorizontalReslution(newXResolution);
-        //目前基本是直接return true就好，不排除将来会有其他情况
+        addXResolution = 0;
+        //必须要，不然会导致放大夸张，缩小极难
+        touchParam.setDoubleTouchDistanceX(nowXlen);
         return true;
     }
 
@@ -135,6 +161,42 @@ public class TouchEngine implements ITouchParam {
         float nowYlen = Math.abs(event.getY(0) - event.getY(1));
 
         //目前基本是直接return true就好，不排除将来会有其他情况
+        return false;
+    }
+
+    /**
+     * 应答单指按压数据处理
+     * @param event
+     * @return
+     */
+    private boolean answerSingleTouch(MotionEvent event){
+        boolean bX = false;
+        boolean bY = false;
+        if (touchInfo.isAllowTouchX()){
+            bX = answerSingleTouchX(event);
+        }
+        if (touchInfo.isAllowTouchY()){
+
+        }
+        if (bX || bY){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 应答横向处理数据
+     * @param event
+     * @return
+     */
+    private boolean answerSingleTouchX(MotionEvent event){
+        float downX = touchParam.getDownX();
+        float nowX = event.getX();
+        float oldOffsetX = touchParam.getTouchOffsetX();
+        touchParam.setTouchOffsetX(downX - nowX + oldOffsetX);
+        //必须要，否则会导致反向难
+        touchParam.setDownX(nowX);
         return true;
     }
 }

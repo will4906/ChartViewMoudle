@@ -21,24 +21,29 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private Button button;
-    int data = 20;
+    int data = 0;
     boolean addFlag = false;
     private LineChartView lineChartView;
     private Timer timer = new Timer();
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
-            if (data >= 199){
-                addFlag = true;
+//            if (data >= 30){
+//                addFlag = true;
+//            }
+//            if (data <= -30){
+//                addFlag = false;
+//            }
+//            if (addFlag == false){
+                data++;
+                lineChartView.addPoint((float) Math.sin((data * Math.PI) / 100));
+            if (data >= 200){
+                data = 0;
             }
-            if (data == 1){
-                addFlag = false;
-            }
-            if (addFlag == false){
-                lineChartView.addPoint(data++);
-            }else{
-                lineChartView.addPoint(data--);
-            }
+//            }else{
+//                data--;
+//                lineChartView.addPoint((float) Math.sin(Math.PI / data));
+//            }
             lineChartView.drawWave();
         }
     };
@@ -59,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableDefaultVerticalBackgroundLine(true);
         lineChartView.enableDefaultHorizontalBackgroundLine(true);
 //        lineChartView.setScaleWidth(5);
-        lineChartView.setYRange(0,200);
+        lineChartView.setYRange(-1,1);
         lineChartView.setScaleColor(Color.GRAY);
         lineChartView.enableLeftScale(true);
         lineChartView.enableTopScale(true);
@@ -67,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableBottomScale(true);
         lineChartView.addMainLine();
 //        lineChartView.addMainLine();
-        lineChartView.setMainPointRadius(0,10);
+//        lineChartView.setMainPointRadius(0, (float) 0.5);
+        lineChartView.setMainPointRadius(0, 1);
+//        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
         timer.schedule(timerTask,1000,42);        //每秒24帧的放映速度
 //        timer.schedule(timerTask,1000,1000);
@@ -86,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                         lineChartView.addPoint(0,data++);
 //                        lineChartView.addPoint(1,data * (float)3);
                     }else{
+                        data -= 10;
                         lineChartView.addPoint(0,data--);
 //                        lineChartView.addPoint(1,data * (float)3);
                     }
