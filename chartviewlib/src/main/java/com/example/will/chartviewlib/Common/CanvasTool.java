@@ -1,4 +1,4 @@
-package com.example.will.canvaslib;
+package com.example.will.chartviewlib.Common;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

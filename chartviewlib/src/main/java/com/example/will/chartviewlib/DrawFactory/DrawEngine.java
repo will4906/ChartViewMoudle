@@ -2,10 +2,8 @@ package com.example.will.chartviewlib.DrawFactory;
 
 import android.graphics.Bitmap;
 import android.graphics.Paint;
-import android.util.Log;
-import android.view.MotionEvent;
 
-import com.example.will.canvaslib.CanvasTool;
+import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
@@ -15,7 +13,6 @@ import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.LineChartView;
 
-import static android.view.View.X;
 import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
 import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
@@ -432,7 +429,7 @@ public class DrawEngine {
                     if (dataList.get(i) >= scaleInfos[LEFT_SCALE].getMinVale() && dataList.get(i) <= scaleInfos[LEFT_SCALE].getMaxValue()) {
                         canvasTool.drawCircle(cx, pointHeight, radius, mainLineInfo.getMainPointInfo().getPaint());
                     }
-                    if (i != startIndex) {
+                    if (i != start) {
                         if (mainLineInfo.isHasLine()) {
                             canvasTool.drawLine(oldcX, oldcY, cx, pointHeight, mainLineInfo.getPaint());
                         }
@@ -442,7 +439,7 @@ public class DrawEngine {
                 }
             }
         }
-        if (i < dataList.size()){
+        if (i < dataList.size() && oldcX != -100){
             float cx = radius + i * (radius * 2 + chartViewInfo.getHorizontalReslution()) - Xoffset;
             float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartWidth, chartHeight);
             canvasTool.drawLine(oldcX, oldcY, cx, pointHeight, mainLineInfo.getPaint());

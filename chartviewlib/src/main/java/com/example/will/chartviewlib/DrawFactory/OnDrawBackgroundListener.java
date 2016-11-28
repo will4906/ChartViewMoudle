@@ -1,6 +1,6 @@
 package com.example.will.chartviewlib.DrawFactory;
 
-import com.example.will.canvaslib.CanvasTool;
+import com.example.will.chartviewlib.Common.CanvasTool;
 
 /**
  * @author will4906.

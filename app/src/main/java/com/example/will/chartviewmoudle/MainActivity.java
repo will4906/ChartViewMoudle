@@ -1,18 +1,11 @@
 package com.example.will.chartviewmoudle;
 
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.example.will.canvaslib.CanvasTool;
-import com.example.will.chartviewlib.DrawFactory.OnDrawBackgroundListener;
 import com.example.will.chartviewlib.LineChartView;
 
 import java.util.Timer;

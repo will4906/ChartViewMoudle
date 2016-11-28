@@ -3,17 +3,15 @@ package com.example.will.chartviewlib;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.os.Handler;
-import android.os.Message;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.example.will.canvaslib.CanvasTool;
+import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.TouchFactory.TouchEngine;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
-import com.example.will.viewcontrollib.ViewInsideTool;
+import com.example.will.chartviewlib.Common.ViewInsideTool;
 
 import java.util.Timer;
 import java.util.TimerTask;

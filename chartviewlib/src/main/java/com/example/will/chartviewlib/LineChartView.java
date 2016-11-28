@@ -6,7 +6,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.example.will.canvaslib.CanvasTool;
+import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;

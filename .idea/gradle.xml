@@ -10,9 +10,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/canvaslib" />
             <option value="$PROJECT_DIR$/chartviewlib" />
-            <option value="$PROJECT_DIR$/viewcontrollib-release" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
