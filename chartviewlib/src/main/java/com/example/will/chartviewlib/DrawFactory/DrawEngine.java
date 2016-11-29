@@ -2,6 +2,7 @@ package com.example.will.chartviewlib.DrawFactory;
 
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
@@ -13,6 +14,7 @@ import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.LineChartView;
 
+import static android.view.View.inflate;
 import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
 import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
@@ -395,54 +397,60 @@ public class DrawEngine {
         }
     }
 
+    /**
+     * 画单个波形函数
+     * @param canvasTool
+     * @param mainLineInfo
+     * @param chartPointsSum
+     * @param dataList
+     * @param chartWidth
+     * @param chartHeight
+     */
     private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int chartPointsSum, List<Float> dataList, float chartWidth, float chartHeight){
-        float oldcX = -100;
-        float oldcY = -100;
 
         float radius = mainLineInfo.getMainPointInfo().getRadius();
-        float Xoffset = mainLineInfo.getOffsetX();
-        int startIndex = mainLineInfo.getStartIndex();
-        int i;
-
-        //此处还有bug，明天再修，主要是偏移造成的小bug
-        int left = 0;
-        int right = 0;
-        if (touchParam.getTouchOffsetX() < 0){
-            left = (int)(Math.abs(touchParam.getTouchOffsetX()) / (radius + chartViewInfo.getHorizontalReslution()));
-        }else{
-            right = (int)(Math.abs(touchParam.getTouchOffsetX()) / (radius + chartViewInfo.getHorizontalReslution()));
+        //显示屏幕移动距离
+        if (touchParam.getTouchMode() == TouchParam.NO_TOUCH){
+            float tmpSreenPos = dataList.size() * (chartViewInfo.getHorizontalResolution() + radius * 2) - chartWidth;
+            if (tmpSreenPos < 0){
+                tmpSreenPos = 0;
+            }
+            chartViewInfo.setScreenPos(tmpSreenPos);
+        }else if (touchParam.getTouchMode() == TouchParam.SINGLE_TOUCH){
+            chartViewInfo.setScreenPos(chartViewInfo.getScreenPos() + touchParam.getTouchOffsetX());
+            touchParam.setTouchOffsetX(0);
+        } else if (touchParam.getTouchMode() == TouchParam.DOUBLE_TOUCH){
+            float middle = touchParam.getTwoPointsMiddleX();
+            float newXResolution = touchParam.getAddResolutionX() + chartViewInfo.getHorizontalResolution();
+            if (newXResolution < 0) {
+                newXResolution = 0;
+            }
+            if (newXResolution > chartWidth) {
+                newXResolution = chartWidth;
+            }
+            chartViewInfo.setHorizontalResolution(newXResolution);
+            touchParam.setAddResolutionX(0);
         }
-        int start = startIndex - left;
-        int end = chartPointsSum + startIndex + right;
+        float screenMove = chartViewInfo.getScreenPos();
+        int start = (int)((screenMove - radius) / (chartViewInfo.getHorizontalResolution() + radius * 2));
         if (start < 0){
             start = 0;
         }
-        if (end > dataList.size()){
-            end = dataList.size();
+        if (start > dataList.size()){
+            start = dataList.size();
         }
-        for (i = start; i < end; i++) {
-            if (i < dataList.size()) {
-                if (mainLineInfo.isHasPoint()) {
-                    float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartWidth, chartHeight);
-                    float cx = radius + i * (radius * 2 + chartViewInfo.getHorizontalReslution()) - Xoffset;
-
-                    if (dataList.get(i) >= scaleInfos[LEFT_SCALE].getMinVale() && dataList.get(i) <= scaleInfos[LEFT_SCALE].getMaxValue()) {
-                        canvasTool.drawCircle(cx, pointHeight, radius, mainLineInfo.getMainPointInfo().getPaint());
-                    }
-                    if (i != start) {
-                        if (mainLineInfo.isHasLine()) {
-                            canvasTool.drawLine(oldcX, oldcY, cx, pointHeight, mainLineInfo.getPaint());
-                        }
-                    }
-                    oldcX = cx;
-                    oldcY = pointHeight;
-                }
+        for (int i = start; i < dataList.size(); i ++){
+            //点的理论横坐标
+            float pointX = radius + i * (chartViewInfo.getHorizontalResolution() + radius * 2);
+            //点在屏幕上显示的横坐标
+            float cx =  pointX - screenMove;
+            float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartHeight);
+            if (mainLineInfo.isHasPoint()){
+                canvasTool.drawCircle(cx,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),mainLineInfo.getMainPointInfo().getPaint());
             }
-        }
-        if (i < dataList.size() && oldcX != -100){
-            float cx = radius + i * (radius * 2 + chartViewInfo.getHorizontalReslution()) - Xoffset;
-            float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartWidth, chartHeight);
-            canvasTool.drawLine(oldcX, oldcY, cx, pointHeight, mainLineInfo.getPaint());
+            if (mainLineInfo.isHasLine() && i != 0){
+                canvasTool.drawLine(cx - (chartViewInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1), chartHeight),cx,pointHeight,mainLineInfo.getPaint());
+            }
         }
     }
     /**
@@ -452,37 +460,15 @@ public class DrawEngine {
      * @param mainLineInfo
      */
     private void processOffsetAndStartIndex(int size, int chartPointsSum, MainLineInfo mainLineInfo){
-        float Xoffset;
-        int startIndex = mainLineInfo.getStartIndex();
-        float radius = mainLineInfo.getMainPointInfo().getRadius();
-        if (touchParam.getTouchMode() == TouchParam.NO_TOUCH) {
-            if (size - chartPointsSum > 0) {
-                Xoffset = (size - chartPointsSum) * (chartViewInfo.getHorizontalReslution() + radius * 2);
-                startIndex = size - chartPointsSum;
-            } else {
-                Xoffset = 0;
-                startIndex = 0;
-            }
-            mainLineInfo.setStartIndex(startIndex);
-            mainLineInfo.setOffsetX(Xoffset);
-        }else{
-            if (size - chartPointsSum > 0) {
-                Xoffset = startIndex * (chartViewInfo.getHorizontalReslution() + radius * 2);
-            } else {
-                Xoffset = 0;
-            }
-            mainLineInfo.setOffsetX(Xoffset);
-        }
-        mainLineInfo.setOffsetX(mainLineInfo.getOffsetX() + touchParam.getTouchOffsetX());
+
     }
     /**
      * 将用户传进来的数据转换为像素数据
      * @param userData
-     * @param width
      * @param height
      * @return
      */
-    private float changeUserDataToChartViewData(float userData, float width, float height){
+    private float changeUserDataToChartViewData(float userData, float height){
         float chartViewData = 0;
         float max = Float.valueOf(scaleInfos[LEFT_SCALE].getMaxValue());
         float min = Float.valueOf(scaleInfos[LEFT_SCALE].getMinVale());
@@ -499,7 +485,7 @@ public class DrawEngine {
      */
     public int computePoints(int index, float width){
         float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
-        int pointSum = (int)(width / (radius * 2 + chartViewInfo.getHorizontalReslution()));
+        int pointSum = (int)(width / (radius * 2 + chartViewInfo.getHorizontalResolution()));
         return ++pointSum;
     }
 }

@@ -14,7 +14,7 @@ public interface IChartViewInfo {
 
     /**
      * 设置横向分辨率
-     * @param horizontalReslution
+     * @param horizontalResolution
      */
-    void setHorizontalReslution(float horizontalReslution);
+    void setHorizontalResolution(float horizontalResolution);
 }

@@ -36,14 +36,26 @@ public class ChartViewInfo {
     /**
      * 横向分辨率
      */
-    public float horizontalReslution = 0;
+    public float horizontalResolution = 0;
 
-    public float getHorizontalReslution() {
-        return horizontalReslution;
+    public float getHorizontalResolution() {
+        return horizontalResolution;
     }
 
-    public void setHorizontalReslution(float horizontalReslution) {
-        this.horizontalReslution = horizontalReslution;
+    public void setHorizontalResolution(float horizontalResolution) {
+        this.horizontalResolution = horizontalResolution;
     }
 
+    /**
+     * 用户可见屏幕理论位置
+     */
+    private float screenPos = 0;
+
+    public float getScreenPos() {
+        return screenPos;
+    }
+
+    public void setScreenPos(float screenPos) {
+        this.screenPos = screenPos;
+    }
 }

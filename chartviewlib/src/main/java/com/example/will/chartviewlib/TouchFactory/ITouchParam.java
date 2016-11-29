@@ -49,4 +49,16 @@ public interface ITouchParam {
      * @param touchOffsetX
      */
     void setTouchOffsetX(float touchOffsetX);
+
+    /**
+     * 设置双指触摸时两指中间的横坐标
+     * @param twoPointsMiddleX
+     */
+    void setTwoPointsMiddleX(float twoPointsMiddleX);
+
+    /**
+     * 设置双指触摸时增加的横向分辨率
+     * @param addResolutionX
+     */
+    void setAddResolutionX(float addResolutionX);
 }

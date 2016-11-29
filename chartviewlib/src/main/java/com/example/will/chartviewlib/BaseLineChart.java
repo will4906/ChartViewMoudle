@@ -135,7 +135,7 @@ public class BaseLineChart extends View  {
         @Override
         public void run() {
             if (nowAction == MotionEvent.ACTION_UP || nowAction == MotionEvent.ACTION_CANCEL){
-                if (changeTouchModeIndex >= 5){
+                if (changeTouchModeIndex >= 4){             //临时测试原为5
                     touchEngine.setTouchOffsetX(0);
                     touchEngine.setTouchMode(TouchParam.NO_TOUCH);
                 }

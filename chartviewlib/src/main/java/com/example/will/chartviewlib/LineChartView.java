@@ -410,8 +410,8 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
-    public void setHorizontalReslution(float horizontalReslution) {
-        chartViewInfo.setHorizontalReslution(horizontalReslution);
+    public void setHorizontalResolution(float horizontalResolution) {
+        chartViewInfo.setHorizontalResolution(horizontalResolution);
     }
 
     @Override

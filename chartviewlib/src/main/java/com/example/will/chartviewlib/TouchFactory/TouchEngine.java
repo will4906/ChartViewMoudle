@@ -72,10 +72,20 @@ public class TouchEngine implements ITouchParam {
         touchParam.setTouchOffsetX(touchOffsetX);
     }
 
+    @Override
+    public void setTwoPointsMiddleX(float twoPointsMiddleX) {
+        touchParam.setTwoPointsMiddleX(twoPointsMiddleX);
+    }
+
+    @Override
+    public void setAddResolutionX(float addResolutionX) {
+        touchParam.setAddResolutionX(addResolutionX);
+    }
+
     /**
      * 缩放比例，防止过快的缩放，这个应该不打算让用户调整
      */
-    public static int MAGNIFICATION = 80;
+    public static int MAGNIFICATION = 10;
     /**
      * 处理触摸事件
      * @param event
@@ -92,8 +102,6 @@ public class TouchEngine implements ITouchParam {
                 }
                 break;
                 case TouchParam.SINGLE_TOUCH:{
-                    float x = event.getX();
-                    float y = event.getY();
                     if (touchInfo.isAllowTranslation()){
                         bAskForReDraw = answerSingleTouch(event);
                     }
@@ -137,16 +145,19 @@ public class TouchEngine implements ITouchParam {
      * @param event
      */
     private boolean answerDoubleTouchX(MotionEvent event){
+        float middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(0);
+        setTwoPointsMiddleX(middle);
         float nowXlen = Math.abs(event.getX(0) - event.getX(1));
         addXResolution += nowXlen - touchParam.getDoubleTouchDistanceX();
-        float newXResolution = drawEngine.getChartViewInfo().getHorizontalReslution() + addXResolution / MAGNIFICATION;
-        if (newXResolution < 0) {
-            newXResolution = 0;
-        }
-        if (newXResolution > drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace()) {
-            newXResolution = drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace();
-        }
-        drawEngine.getChartViewInfo().setHorizontalReslution(newXResolution);
+        setAddResolutionX(addXResolution / MAGNIFICATION);
+//        float newXResolution = drawEngine.getChartViewInfo().getHorizontalResolution() + addXResolution / MAGNIFICATION;
+//        if (newXResolution < 0) {
+//            newXResolution = 0;
+//        }
+//        if (newXResolution > drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace()) {
+//            newXResolution = drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace();
+//        }
+//        drawEngine.getChartViewInfo().setHorizontalResolution(newXResolution);
         addXResolution = 0;
         //必须要，不然会导致放大夸张，缩小极难
         touchParam.setDoubleTouchDistanceX(nowXlen);
@@ -194,7 +205,8 @@ public class TouchEngine implements ITouchParam {
         float downX = touchParam.getDownX();
         float nowX = event.getX();
         float oldOffsetX = touchParam.getTouchOffsetX();
-        touchParam.setTouchOffsetX(downX - nowX + oldOffsetX);
+//        touchParam.setTouchOffsetX(downX - nowX + oldOffsetX);
+        touchParam.setTouchOffsetX(downX - nowX);
         //必须要，否则会导致反向难
         touchParam.setDownX(nowX);
         return true;

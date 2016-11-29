@@ -66,7 +66,9 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.addMainLine();
 //        lineChartView.addMainLine();
 //        lineChartView.setMainPointRadius(0, (float) 0.5);
-        lineChartView.setMainPointRadius(0, 1);
+        lineChartView.setMainPointRadius(0, 10);
+        lineChartView.setMainLineWidth(0,10);
+//        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
         timer.schedule(timerTask,1000,42);        //每秒24帧的放映速度

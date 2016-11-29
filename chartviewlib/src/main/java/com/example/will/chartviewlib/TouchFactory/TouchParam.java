@@ -135,4 +135,30 @@ public class TouchParam {
     public void setTouchOffsetX(float touchOffsetX) {
         this.touchOffsetX = touchOffsetX;
     }
+
+    /**
+     * 双指触摸时，两指中间的横坐标
+     */
+    private float twoPointsMiddleX = 0;
+
+    public float getTwoPointsMiddleX() {
+        return twoPointsMiddleX;
+    }
+
+    public void setTwoPointsMiddleX(float twoPointsMiddleX) {
+        this.twoPointsMiddleX = twoPointsMiddleX;
+    }
+
+    /**
+     * 双指缩放时增加的分辨率
+     */
+    private float addResolutionX = 0;
+
+    public float getAddResolutionX() {
+        return addResolutionX;
+    }
+
+    public void setAddResolutionX(float addResolutionX) {
+        this.addResolutionX = addResolutionX;
+    }
 }
