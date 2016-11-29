@@ -106,6 +106,15 @@ public class BaseLineChart extends View  {
                 touchEngine.setDownY(event.getY());
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
+                if (event.getPointerCount() >= 2){
+                    float middle;
+                    if (event.getX(0) > event.getX(1)){
+                        middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(1);
+                    }else{
+                        middle = (event.getX(1) - event.getX(0)) / 2 + event.getX(0);
+                    }
+                    touchEngine.setTwoPointsMiddleX(middle);
+                }
                 touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
                 touchEngine.setDoubleTapX(event.getX(0),event.getX(1));
                 touchEngine.setDoubleTapY(event.getY(0),event.getY(1));
@@ -135,7 +144,7 @@ public class BaseLineChart extends View  {
         @Override
         public void run() {
             if (nowAction == MotionEvent.ACTION_UP || nowAction == MotionEvent.ACTION_CANCEL){
-                if (changeTouchModeIndex >= 4){             //临时测试原为5
+                if (changeTouchModeIndex >= 4){             //临时测试原为4
                     touchEngine.setTouchOffsetX(0);
                     touchEngine.setTouchMode(TouchParam.NO_TOUCH);
                 }

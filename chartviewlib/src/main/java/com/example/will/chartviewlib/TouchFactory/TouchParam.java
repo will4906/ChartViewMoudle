@@ -161,4 +161,14 @@ public class TouchParam {
     public void setAddResolutionX(float addResolutionX) {
         this.addResolutionX = addResolutionX;
     }
+
+    private float tmpOffsetX = 0;
+
+    public float getTmpOffsetX() {
+        return tmpOffsetX;
+    }
+
+    public void setTmpOffsetX(float tmpOffsetX) {
+        this.tmpOffsetX = tmpOffsetX;
+    }
 }

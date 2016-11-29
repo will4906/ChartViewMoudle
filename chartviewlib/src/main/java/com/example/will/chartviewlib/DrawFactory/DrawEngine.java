@@ -409,18 +409,50 @@ public class DrawEngine {
     private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int chartPointsSum, List<Float> dataList, float chartWidth, float chartHeight){
 
         float radius = mainLineInfo.getMainPointInfo().getRadius();
+        //计算
+        computeResolutionAndOffset(dataList.size(),radius,chartWidth);
+
+        float screenMove = chartViewInfo.getScreenPos();
+        int start = computeStart(screenMove,radius,dataList.size());
+
+        //绘图
+        drawFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
+    }
+
+    private int middlePioint = -1;
+    private float offsetX = 0;
+    /**
+     * 计算屏幕分辨率和偏移
+     * @param size
+     * @param radius
+     * @param chartWidth
+     */
+    private void computeResolutionAndOffset(int size, float radius, float chartWidth){
         //显示屏幕移动距离
         if (touchParam.getTouchMode() == TouchParam.NO_TOUCH){
-            float tmpSreenPos = dataList.size() * (chartViewInfo.getHorizontalResolution() + radius * 2) - chartWidth;
+            float tmpSreenPos = size * (chartViewInfo.getHorizontalResolution() + radius * 2) - chartWidth;
             if (tmpSreenPos < 0){
                 tmpSreenPos = 0;
             }
             chartViewInfo.setScreenPos(tmpSreenPos);
+            middlePioint = -1;
         }else if (touchParam.getTouchMode() == TouchParam.SINGLE_TOUCH){
-            chartViewInfo.setScreenPos(chartViewInfo.getScreenPos() + touchParam.getTouchOffsetX());
+            float tmpScreenPos = chartViewInfo.getScreenPos() + touchParam.getTouchOffsetX();
+            if (tmpScreenPos < 0){
+                tmpScreenPos = 0;
+            }
+            chartViewInfo.setScreenPos(tmpScreenPos);
             touchParam.setTouchOffsetX(0);
+            middlePioint = -1;
         } else if (touchParam.getTouchMode() == TouchParam.DOUBLE_TOUCH){
+            //获取两指中间对应横坐标
             float middle = touchParam.getTwoPointsMiddleX();
+            if (middlePioint == -1){                        //如果已经定过位就不需要再重新定位了，免得总是偏移
+                //获取距离两指中间对应横坐标最近的点的索引
+                middlePioint = (int)((chartViewInfo.getScreenPos() + middle - radius) / (chartViewInfo.getHorizontalResolution() + radius * 2));
+            }
+            //获取距离两指中间横坐标最近的点在屏幕显示上实际的位置
+            float lockPoint = middlePioint * (chartViewInfo.getHorizontalResolution() + radius * 2) - chartViewInfo.getScreenPos();
             float newXResolution = touchParam.getAddResolutionX() + chartViewInfo.getHorizontalResolution();
             if (newXResolution < 0) {
                 newXResolution = 0;
@@ -429,16 +461,43 @@ public class DrawEngine {
                 newXResolution = chartWidth;
             }
             chartViewInfo.setHorizontalResolution(newXResolution);
+            //先把刚才获取到的点移到最左在移到原来屏幕所在的位置
+            float tmpSreenPos = middlePioint * (chartViewInfo.getHorizontalResolution() + radius * 2) - lockPoint;
+            if (tmpSreenPos < 0){
+                tmpSreenPos = 0;
+            }
+            chartViewInfo.setScreenPos(tmpSreenPos);
             touchParam.setAddResolutionX(0);
         }
-        float screenMove = chartViewInfo.getScreenPos();
+    }
+    /**
+     * 计算起始位置
+     * @param screenMove
+     * @param radius
+     * @param size
+     * @return
+     */
+    private int computeStart(float screenMove, float radius, int size){
         int start = (int)((screenMove - radius) / (chartViewInfo.getHorizontalResolution() + radius * 2));
         if (start < 0){
             start = 0;
         }
-        if (start > dataList.size()){
-            start = dataList.size();
+        if (start > size){
+            start = size;
         }
+        return start;
+    }
+    /**
+     * 绘制函数
+     * @param canvasTool
+     * @param start
+     * @param radius
+     * @param dataList
+     * @param screenMove
+     * @param chartHeight
+     * @param mainLineInfo
+     */
+    private void drawFunction(CanvasTool canvasTool, int start, float radius, List<Float> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
         for (int i = start; i < dataList.size(); i ++){
             //点的理论横坐标
             float pointX = radius + i * (chartViewInfo.getHorizontalResolution() + radius * 2);

@@ -1,5 +1,6 @@
 package com.example.will.chartviewlib.TouchFactory;
 
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
@@ -145,19 +146,9 @@ public class TouchEngine implements ITouchParam {
      * @param event
      */
     private boolean answerDoubleTouchX(MotionEvent event){
-        float middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(0);
-        setTwoPointsMiddleX(middle);
         float nowXlen = Math.abs(event.getX(0) - event.getX(1));
         addXResolution += nowXlen - touchParam.getDoubleTouchDistanceX();
         setAddResolutionX(addXResolution / MAGNIFICATION);
-//        float newXResolution = drawEngine.getChartViewInfo().getHorizontalResolution() + addXResolution / MAGNIFICATION;
-//        if (newXResolution < 0) {
-//            newXResolution = 0;
-//        }
-//        if (newXResolution > drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace()) {
-//            newXResolution = drawEngine.getBackgroundWidth() - drawEngine.getScaleInfos()[LineChartView.RIGHT_SCALE].getSpace() - drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getSpace();
-//        }
-//        drawEngine.getChartViewInfo().setHorizontalResolution(newXResolution);
         addXResolution = 0;
         //必须要，不然会导致放大夸张，缩小极难
         touchParam.setDoubleTouchDistanceX(nowXlen);
@@ -204,8 +195,9 @@ public class TouchEngine implements ITouchParam {
     private boolean answerSingleTouchX(MotionEvent event){
         float downX = touchParam.getDownX();
         float nowX = event.getX();
-        float oldOffsetX = touchParam.getTouchOffsetX();
+//        float oldOffsetX = touchParam.getTouchOffsetX();
 //        touchParam.setTouchOffsetX(downX - nowX + oldOffsetX);
+        touchParam.setTmpOffsetX(touchParam.getTouchOffsetX() + downX - nowX);
         touchParam.setTouchOffsetX(downX - nowX);
         //必须要，否则会导致反向难
         touchParam.setDownX(nowX);
