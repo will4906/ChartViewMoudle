@@ -58,4 +58,11 @@ public interface IMainLineInfo {
 
     void removeAllMainLine();
 
+    /**
+     * 设置横向分辨率
+     * @param horizontalResolution
+     */
+    void setHorizontalResolution(float horizontalResolution);
+
+    void setHorizontalResolution(int index, float horizontalResolution);
 }

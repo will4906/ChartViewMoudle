@@ -117,4 +117,30 @@ public class MainLineInfo extends BaseLineInfo{
     public void setOffsetX(float offsetX) {
         this.offsetX = offsetX;
     }
+
+    /**
+     * 用户可见屏幕理论位置
+     */
+    private float screenPos = 0;
+
+    public float getScreenPos() {
+        return screenPos;
+    }
+
+    public void setScreenPos(float screenPos) {
+        this.screenPos = screenPos;
+    }
+
+    /**
+     * 横向分辨率
+     */
+    public float horizontalResolution = 0;
+
+    public float getHorizontalResolution() {
+        return horizontalResolution;
+    }
+
+    public void setHorizontalResolution(float horizontalResolution) {
+        this.horizontalResolution = horizontalResolution;
+    }
 }

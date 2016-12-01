@@ -256,23 +256,12 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
-    public void setYRange(int min, int max) {
+    public void setYRange(float min, float max) {
         ScaleInfo scaleInfo = ScaleInfoEnum.LEFT.getScaleInfo();
-        String strMax = String.valueOf(max);
-        String strMin = String.valueOf(min);
-        int oldLen = String.valueOf(scaleInfo.getMaxValue()).length() > String.valueOf(scaleInfo.getMinVale()).length()
-                ? String.valueOf(scaleInfo.getMaxValue()).length() : String.valueOf(scaleInfo.getMinVale()).length();
-        if (strMax.length() > oldLen|| strMin.length() > oldLen){
-            int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
-            len = (len + 1) / 2;
-            scaleInfo.setSpace(scaleInfo.getSpace() + chartViewInfo.getTextSize() / 12 * 7 * len);
-        }else if (strMax.length() != oldLen && strMin.length() != oldLen){
-            int len = strMax.length() > strMin.length() ? strMax.length() : strMin.length();
-            len = (len + 1) / 2;
-            scaleInfo.setSpace(scaleInfo.getSpace() - chartViewInfo.getTextSize() / 12 * 7 * len);
-        }
         scaleInfo.setMaxValue(max);
+        scaleInfo.setUserMax(max);
         scaleInfo.setMinVale(min);
+        scaleInfo.setUserMin(min);
         if (hasDrawTheBackground()){
             invalidate();
         }
@@ -411,7 +400,14 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
 
     @Override
     public void setHorizontalResolution(float horizontalResolution) {
-        chartViewInfo.setHorizontalResolution(horizontalResolution);
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.setHorizontalResolution(horizontalResolution);
+        }
+    }
+
+    @Override
+    public void setHorizontalResolution(int index, float horizontalResolution) {
+        mainLineInfoList.get(index).setHorizontalResolution(horizontalResolution);
     }
 
     @Override

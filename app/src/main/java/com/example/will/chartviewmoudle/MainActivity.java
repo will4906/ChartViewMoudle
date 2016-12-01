@@ -14,7 +14,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     private Button button;
-    int data = 0;
+    float data = 0;
     boolean addFlag = false;
     private LineChartView lineChartView;
     private Timer timer = new Timer();
@@ -29,8 +29,9 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //            if (addFlag == false){
                 data++;
-                lineChartView.addPoint((float) Math.sin((data * Math.PI) / 100));
-            if (data >= 200){
+                lineChartView.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+            lineChartView.addPoint(1,(float)Math.cos((data * Math.PI) / 50));
+            if (data >= 100){
                 data = 0;
             }
 //            }else{
@@ -57,17 +58,22 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableDefaultVerticalBackgroundLine(true);
         lineChartView.enableDefaultHorizontalBackgroundLine(true);
 //        lineChartView.setScaleWidth(5);
-        lineChartView.setYRange(-1,1);
+        lineChartView.setYRange(-1,1E-4f);
         lineChartView.setScaleColor(Color.GRAY);
         lineChartView.enableLeftScale(true);
         lineChartView.enableTopScale(true);
         lineChartView.enableRightScale(true);
         lineChartView.enableBottomScale(true);
         lineChartView.addMainLine();
+        lineChartView.addMainLine();
+        lineChartView.setMainLineWidth(1,4);
+        lineChartView.setMainLineColor(1,Color.BLUE);
+        lineChartView.setMainPointColor(1,Color.BLUE);
 //        lineChartView.addMainLine();
-//        lineChartView.setMainPointRadius(0, (float) 0.5);
-        lineChartView.setMainPointRadius(0, 10);
-        lineChartView.setMainLineWidth(0,10);
+        lineChartView.setMainPointRadius(0, 2);
+        lineChartView.setMainPointRadius(1, 2);
+//        lineChartView.setMainPointRadius(0, 10);
+        lineChartView.setMainLineWidth(0,4);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);

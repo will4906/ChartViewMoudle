@@ -150,6 +150,19 @@ public class TouchParam {
     }
 
     /**
+     * 双指触摸时，两指中间的纵坐标
+     */
+    private float twoPointsMiddleY = 0;
+
+    public float getTwoPointsMiddleY() {
+        return twoPointsMiddleY;
+    }
+
+    public void setTwoPointsMiddleY(float twoPointsMiddleY) {
+        this.twoPointsMiddleY = twoPointsMiddleY;
+    }
+
+    /**
      * 双指缩放时增加的分辨率
      */
     private float addResolutionX = 0;

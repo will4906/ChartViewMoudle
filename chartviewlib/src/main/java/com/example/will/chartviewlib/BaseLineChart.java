@@ -4,7 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.example.will.chartviewlib.Common.CanvasTool;
@@ -23,6 +26,8 @@ import java.util.TimerTask;
  */
 
 public class BaseLineChart extends View  {
+
+    private GestureDetector gestureDetector;
 
     /**
      * 是否绘制过背景
@@ -82,6 +87,7 @@ public class BaseLineChart extends View  {
         if (hasDrawTheBackground() == false){
             backgroundBitmap = drawEngine.drawChartViewBackground(canvas.getWidth(),canvas.getHeight());
             setbHasDrawTheBackground(true);
+            touchEngine.setChangeBackground(false);
         }
         canvasTool.drawBitmap(backgroundBitmap,0,canvas.getHeight());
         drawEngine.drawMainLine(canvasTool, canvas.getWidth(),canvas.getHeight());
@@ -89,14 +95,19 @@ public class BaseLineChart extends View  {
 
     protected TouchEngine touchEngine = new TouchEngine();
     private int nowAction;
+    private boolean isFling = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         int action = event.getAction();
         nowAction = action;
-        switch (action & MotionEvent.ACTION_MASK){
+        switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_MOVE:
                 //一旦符合重绘条件就重绘
-                if (touchEngine.answerTouch(event)){
+                if (touchEngine.answerTouch(event)) {
+                    if (touchEngine.isChangeBackground()){
+                        setbHasDrawTheBackground(false);
+                    }
                     invalidate();
                 }
                 break;
@@ -106,18 +117,24 @@ public class BaseLineChart extends View  {
                 touchEngine.setDownY(event.getY());
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (event.getPointerCount() >= 2){
+                if (event.getPointerCount() >= 2) {
                     float middle;
-                    if (event.getX(0) > event.getX(1)){
+                    if (event.getX(0) > event.getX(1)) {
                         middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(1);
-                    }else{
+                    } else {
                         middle = (event.getX(1) - event.getX(0)) / 2 + event.getX(0);
                     }
                     touchEngine.setTwoPointsMiddleX(middle);
+                    if (event.getY(0) > event.getY(1)){
+                        middle = (event.getY(0) - event.getY(1)) / 2 + event.getY(1);
+                    }else{
+                        middle = (event.getY(1) - event.getY(0)) / 2 + event.getY(0);
+                    }
+                    touchEngine.setTwoPointsMiddleY(middle);
+                    touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
+                    touchEngine.setDoubleTapX(event.getX(0), event.getX(1));
+                    touchEngine.setDoubleTapY(event.getY(0), event.getY(1));
                 }
-                touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
-                touchEngine.setDoubleTapX(event.getX(0),event.getX(1));
-                touchEngine.setDoubleTapY(event.getY(0),event.getY(1));
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
@@ -125,6 +142,7 @@ public class BaseLineChart extends View  {
             default:
                 break;
         }
+        gestureDetector.onTouchEvent(event);
         //此处需改为true，否则双指的条件无法执行
         return true;
     }
@@ -145,6 +163,7 @@ public class BaseLineChart extends View  {
         public void run() {
             if (nowAction == MotionEvent.ACTION_UP || nowAction == MotionEvent.ACTION_CANCEL){
                 if (changeTouchModeIndex >= 4){             //临时测试原为4
+                    nowAction = MotionEvent.ACTION_UP;
                     touchEngine.setTouchOffsetX(0);
                     touchEngine.setTouchMode(TouchParam.NO_TOUCH);
                 }
@@ -161,6 +180,67 @@ public class BaseLineChart extends View  {
     private void initBaseLineChart(Context context){
         touchEngine.setDrawEngine(drawEngine);
         timer.schedule(timerTask,1,1000);
+        gestureDetector = new GestureDetector(context,gestureListener);
+        gestureDetector.setOnDoubleTapListener(doubleTapListener);
     }
+
+    //单指事件
+    private GestureDetector.OnGestureListener gestureListener = new GestureDetector.OnGestureListener() {
+        @Override
+        public boolean onDown(MotionEvent motionEvent) {
+
+            return true;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+
+            return false;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent motionEvent) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+            float direction = motionEvent.getX() - motionEvent1.getX();
+//            Log.v("direction",String.valueOf(direction));
+            return true;
+        }
+    };
+
+    //双击事件
+    private GestureDetector.OnDoubleTapListener doubleTapListener = new GestureDetector.OnDoubleTapListener() {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent motionEvent) {
+            //双击则返回最末
+            nowAction = MotionEvent.ACTION_UP;
+            touchEngine.setTouchOffsetX(0);
+            touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+            return false;
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+            return false;
+        }
+    };
 
 }

@@ -61,4 +61,10 @@ public interface ITouchParam {
      * @param addResolutionX
      */
     void setAddResolutionX(float addResolutionX);
+
+    /**
+     * 设置双指触摸时两指中间的纵坐标
+     * @param twoPointsMiddleY
+     */
+    void setTwoPointsMiddleY(float twoPointsMiddleY);
 }

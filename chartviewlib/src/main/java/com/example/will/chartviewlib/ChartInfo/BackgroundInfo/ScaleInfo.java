@@ -1,9 +1,7 @@
 package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 
-import android.graphics.Color;
-import android.graphics.Paint;
-
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
+import com.example.will.chartviewlib.Common.FloatTool;
 
 /**
  * Created by will on 2016/11/22.
@@ -90,22 +88,35 @@ public class ScaleInfo extends BaseLineInfo{
     /**
      * 最大值，最小值
      */
-    private int maxValue = 100;
-    private int minVale = 0;
+    private float maxValue = 100;
+    private float minVale = 0;
 
-    public int getMaxValue() {
+    public float getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(int maxValue) {
+    public void setMaxValue(float maxValue) {
+        int maxAfterPointLen = FloatTool.getPointAfter(maxValue);
+        //若超过6位小数则保留6位
+        if (maxAfterPointLen > 6){
+            maxAfterPointLen = 6;
+        }
+        String strMax = FloatTool.getFormatPointAfterString(maxValue,maxAfterPointLen);
+        maxValue = Float.valueOf(strMax);
         this.maxValue = maxValue;
     }
 
-    public int getMinVale() {
+    public float getMinVale() {
         return minVale;
     }
 
-    public void setMinVale(int minVale) {
+    public void setMinVale(float minVale) {
+        int minAfterPointLen = FloatTool.getPointAfter(minVale);
+        if (minAfterPointLen > 6){
+            minAfterPointLen = 6;
+        }
+        String strMin = FloatTool.getFormatPointAfterString(minVale,minAfterPointLen);
+        minVale = Float.valueOf(strMin);
         this.minVale = minVale;
     }
 
@@ -120,5 +131,30 @@ public class ScaleInfo extends BaseLineInfo{
 
     public void setSpace(float space) {
         this.space = space;
+    }
+
+    /**
+     * 用户设定的最大值
+     */
+    private float userMax = 0;
+    /**
+     * 用户设定的最小值
+     */
+    private float userMin = 0;
+
+    public float getUserMax() {
+        return userMax;
+    }
+
+    public void setUserMax(float userMax) {
+        this.userMax = userMax;
+    }
+
+    public float getUserMin() {
+        return userMin;
+    }
+
+    public void setUserMin(float userMin) {
+        this.userMin = userMin;
     }
 }

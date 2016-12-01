@@ -1,8 +1,10 @@
 package com.example.will.chartviewlib.TouchFactory;
 
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.example.will.chartviewlib.Common.FloatTool;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
 import com.example.will.chartviewlib.LineChartView;
 
@@ -24,6 +26,15 @@ public class TouchEngine implements ITouchParam {
     public void setTouchInfo(TouchInfo touchInfo) {
         this.touchInfo = touchInfo;
     }
+
+    public TouchParam getTouchParam() {
+        return touchParam;
+    }
+
+    public void setTouchParam(TouchParam touchParam) {
+        this.touchParam = touchParam;
+    }
+
 
     /**
      * 去view中接收他的画图引擎
@@ -81,6 +92,21 @@ public class TouchEngine implements ITouchParam {
     @Override
     public void setAddResolutionX(float addResolutionX) {
         touchParam.setAddResolutionX(addResolutionX);
+    }
+
+    @Override
+    public void setTwoPointsMiddleY(float twoPointsMiddleY) {
+        touchParam.setTwoPointsMiddleY(twoPointsMiddleY);
+    }
+
+    private boolean bChangeBackground = false;
+
+    public boolean isChangeBackground() {
+        return bChangeBackground;
+    }
+
+    public void setChangeBackground(boolean bChangeBackground) {
+        this.bChangeBackground = bChangeBackground;
     }
 
     /**
@@ -155,13 +181,60 @@ public class TouchEngine implements ITouchParam {
         return true;
     }
 
+    private float stringLen = 0;
     /**
      * 应答双指按压纵向数据处理
      * @param event
      */
     private boolean answerDoubleTouchY(MotionEvent event){
         float nowYlen = Math.abs(event.getY(0) - event.getY(1));
-
+        float tmpLen = touchParam.getDoubleTouchDistanceY() - nowYlen;
+        stringLen += tmpLen;
+        float height = drawEngine.getBackgroundHeight();
+        float tmp = stringLen / height;
+        float div = Float.valueOf(FloatTool.getFormatPointAfterString(tmp,FloatTool.getPointAfter(tmp)));
+        if (Math.abs(div * 10) >= 1){
+            float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
+            float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
+            int oldMaxLen = FloatTool.getPointAfter(max);
+            int oldMinLen = FloatTool.getPointAfter(min);
+            float dis = max - min;
+            float newMax = max + dis * div;
+            float newMin = min - dis * div;
+            if (div < 0){
+                if (String.valueOf(max).substring(String.valueOf(max).length() - 1).equals("9")){
+                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen + 1));
+                }else{
+                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen > 0 ? oldMaxLen : 1));
+                }
+                if (String.valueOf(min).substring(String.valueOf(min).length() - 1).equals("9")){
+                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen + 1));
+                }else{
+                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen > 0 ? oldMinLen : 1));
+                }
+            }else{
+                if (String.valueOf(max).substring(String.valueOf(max).length() - 1).equals("1")){
+                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen - 1));
+                }else{
+                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen));
+                }
+                if (String.valueOf(min).substring(String.valueOf(min).length() - 1).equals("1")){
+                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen - 1));
+                }else{
+                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen));
+                }
+            }
+            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(newMax);
+            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(newMin);
+            Paint paint = new Paint();
+            paint.setTextSize(drawEngine.getChartViewInfo().getTextSize());
+            float maxLen = paint.measureText(String.valueOf(newMax));
+            float minLen = paint.measureText(String.valueOf(newMin));
+            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setSpace(maxLen > minLen ? maxLen : minLen);
+            touchParam.setDoubleTouchDistanceY(nowYlen);
+            setChangeBackground(true);
+            stringLen = 0;
+        }
         //目前基本是直接return true就好，不排除将来会有其他情况
         return false;
     }
@@ -171,7 +244,7 @@ public class TouchEngine implements ITouchParam {
      * @param event
      * @return
      */
-    private boolean answerSingleTouch(MotionEvent event){
+    public boolean answerSingleTouch(MotionEvent event){
         boolean bX = false;
         boolean bY = false;
         if (touchInfo.isAllowTouchX()){
@@ -195,8 +268,6 @@ public class TouchEngine implements ITouchParam {
     private boolean answerSingleTouchX(MotionEvent event){
         float downX = touchParam.getDownX();
         float nowX = event.getX();
-//        float oldOffsetX = touchParam.getTouchOffsetX();
-//        touchParam.setTouchOffsetX(downX - nowX + oldOffsetX);
         touchParam.setTmpOffsetX(touchParam.getTouchOffsetX() + downX - nowX);
         touchParam.setTouchOffsetX(downX - nowX);
         //必须要，否则会导致反向难
