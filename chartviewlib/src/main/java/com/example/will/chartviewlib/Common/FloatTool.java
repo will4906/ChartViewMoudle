@@ -1,6 +1,13 @@
 package com.example.will.chartviewlib.Common;
 
+import android.graphics.Bitmap;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+
+import static java.math.BigDecimal.ROUND_CEILING;
+import static java.math.BigDecimal.ROUND_FLOOR;
 
 /**
  * 此类用来处理和浮点型有关的数据
@@ -61,4 +68,66 @@ public class FloatTool {
         strData = decimalFormat.format(data);
         return strData;
     }
+
+    /**
+     * 精确乘法
+     * @param one
+     * @param second
+     * @return
+     */
+    public static float accurateMultiply(float one, float second){
+        BigDecimal oneBig = new BigDecimal(String.valueOf(one));
+        BigDecimal secondBig = new BigDecimal(String.valueOf(second));
+        return Float.valueOf(oneBig.multiply(secondBig).toString());
+    }
+    /**
+     * 精确除法，前提是被除数和除数是精确的，不管对不对，先这么搞了，不稳定先废除
+     * @param dividend
+     * @param divisor
+     * @return
+     */
+//    public static float accurateDivide(float dividend, float divisor){
+//        BigDecimal dividendBig = new BigDecimal(String.valueOf(dividend));
+//        BigDecimal divisorBig = new BigDecimal(String.valueOf(divisor));
+//        if (divisor == 0){
+//            return 0;
+//        }
+//        return Float.valueOf(dividendBig.divide(divisorBig,ROUND_FLOOR).toString());
+//    }
+
+    /**
+     * 精确加法，前提是两个加数都是精确地
+     * @param param1
+     * @param param2
+     * @return
+     */
+    public static float accurateAdd(float param1, float param2){
+        BigDecimal oneBig = new BigDecimal(String.valueOf(param1));
+        BigDecimal secondBig = new BigDecimal(String.valueOf(param2));
+        return Float.valueOf(oneBig.add(secondBig).toString());
+    }
+
+    /**
+     * 精确减法，前提是被减数和减数都是精确的
+     * @param Minuend
+     * @param Meiosis
+     * @return
+     */
+    public static float accurateMinus(float Minuend, float Meiosis){
+        BigDecimal minuendBig = new BigDecimal(String.valueOf(Minuend));
+        BigDecimal meiosisBig = new BigDecimal(String.valueOf(Meiosis));
+        return Float.valueOf(minuendBig.subtract(meiosisBig).toString());
+    }
+    /**
+     * 四舍五入，保留设定的小数位
+     * @param pointAfter
+     * @param data
+     * @return
+     */
+    public static float Rounding(int pointAfter, float data){
+        String strData = String.valueOf(data);
+        BigDecimal   bigData   =   new   BigDecimal(strData);
+        return Float.valueOf(bigData.setScale(pointAfter, RoundingMode.HALF_UP).toString());
+    }
+
 }

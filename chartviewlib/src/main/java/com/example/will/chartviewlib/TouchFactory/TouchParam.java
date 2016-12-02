@@ -32,6 +32,19 @@ public class TouchParam {
     }
 
     /**
+     * 双指点击时两手指的距离
+     */
+    private float doubleTouchDistance = 0;
+
+    public float getDoubleTouchDistance() {
+        return doubleTouchDistance;
+    }
+
+    public void setDoubleTouchDistance(float doubleTouchDistance) {
+        this.doubleTouchDistance = doubleTouchDistance;
+    }
+
+    /**
      * 双指点击时两手指横向间距
      */
     private float doubleTouchDistanceX = 0;

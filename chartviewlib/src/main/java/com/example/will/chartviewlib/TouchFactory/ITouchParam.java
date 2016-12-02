@@ -67,4 +67,10 @@ public interface ITouchParam {
      * @param twoPointsMiddleY
      */
     void setTwoPointsMiddleY(float twoPointsMiddleY);
+
+    /**
+     * 设置双指点击时两指的距离
+     * @param doubleTouchDistance
+     */
+    void setDoubleTouchDistance(float doubleTouchDistance);
 }

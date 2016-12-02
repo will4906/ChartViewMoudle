@@ -33,5 +33,16 @@ public class ChartViewInfo {
         paint.setTextSize(textSize);
     }
 
+    /**
+     * Y轴方向缩放比例限制
+     */
+    private int limitY = 1;
 
+    public int getLimitY() {
+        return limitY;
+    }
+
+    public void setLimitY(int limitY) {
+        this.limitY = limitY;
+    }
 }

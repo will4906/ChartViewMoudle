@@ -1,5 +1,7 @@
 package com.example.will.chartviewlib.TouchFactory;
 
+import android.graphics.Canvas;
+import android.graphics.ImageFormat;
 import android.graphics.Paint;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -99,6 +101,11 @@ public class TouchEngine implements ITouchParam {
         touchParam.setTwoPointsMiddleY(twoPointsMiddleY);
     }
 
+    @Override
+    public void setDoubleTouchDistance(float doubleTouchDistance) {
+        touchParam.setDoubleTouchDistance(doubleTouchDistance);
+    }
+
     private boolean bChangeBackground = false;
 
     public boolean isChangeBackground() {
@@ -158,10 +165,15 @@ public class TouchEngine implements ITouchParam {
             }
             if (touchInfo.isAllowTouchY()){
                 bY = answerDoubleTouchY(event);
+                if (bY){
+                    setChangeBackground(true);
+                }
             }
             if (bX || bY){
                 bAskForReDraw = true;
             }
+            //必须要，不然会导致放大夸张，缩小极难
+            setDoubleTouchDistance((float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2))));
         }
         return bAskForReDraw;
     }
@@ -172,71 +184,113 @@ public class TouchEngine implements ITouchParam {
      * @param event
      */
     private boolean answerDoubleTouchX(MotionEvent event){
+//        float nowXlen = (float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2)));
         float nowXlen = Math.abs(event.getX(0) - event.getX(1));
         addXResolution += nowXlen - touchParam.getDoubleTouchDistanceX();
-        setAddResolutionX(addXResolution / MAGNIFICATION);
+        setAddResolutionX(addXResolution / MAGNIFICATION);              //此处是否需要比例缩放，缩放比例多少有待考量
         addXResolution = 0;
-        //必须要，不然会导致放大夸张，缩小极难
         touchParam.setDoubleTouchDistanceX(nowXlen);
         return true;
     }
 
-    private float stringLen = 0;
     /**
-     * 应答双指按压纵向数据处理
+     * Y轴方向缩放比例
+     */
+    private final static int Y_MAGNIFICATION = 10;
+    /**
+     * 应答双指按压纵向数据处理，这真的是一个艰苦卓绝的缩放函数，或许以后还会在改进，但是最近的话就这样吧
      * @param event
      */
     private boolean answerDoubleTouchY(MotionEvent event){
-        float nowYlen = Math.abs(event.getY(0) - event.getY(1));
-        float tmpLen = touchParam.getDoubleTouchDistanceY() - nowYlen;
-        stringLen += tmpLen;
-        float height = drawEngine.getBackgroundHeight();
-        float tmp = stringLen / height;
-        float div = Float.valueOf(FloatTool.getFormatPointAfterString(tmp,FloatTool.getPointAfter(tmp)));
-        if (Math.abs(div * 10) >= 1){
+        float userMax = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMax();
+        float userMin = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMin();
+        float userLen = FloatTool.accurateMinus(userMax, userMin);
+        float userDiv = userLen / Y_MAGNIFICATION;
+        int limit = drawEngine.getChartViewInfo().getLimitY();
+        float addLimit = limit * userLen;
+//        float nowYnolen = (float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2)));
+        float nowYnolen = Math.abs(event.getY(0) - event.getY(1));
+        float nowYlen = nowYnolen - touchParam.getDoubleTouchDistanceY();
+        float chartHeight = drawEngine.getChartHeight();            //此处应考虑到上下两轴的间距应不会总是改变所以可用，但是不排除以后会有风险
+        float limitDiv = chartHeight / Y_MAGNIFICATION;
+        boolean reDrawOkMin = false;
+        boolean reDrawOkMax = false;
+
+        if (Math.abs(nowYlen) > limitDiv){
+            //缩放了几个单位
+            int addYMultiple = (int)FloatTool.Rounding(0,nowYlen / limitDiv);
+            float addY = FloatTool.accurateMultiply(addYMultiple, userDiv);
+            //此处得到的middle为坐标轴向下的Y轴坐标，应先进行转换
+            float middle = touchParam.getTwoPointsMiddleY();
             float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
             float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
-            int oldMaxLen = FloatTool.getPointAfter(max);
-            int oldMinLen = FloatTool.getPointAfter(min);
-            float dis = max - min;
-            float newMax = max + dis * div;
-            float newMin = min - dis * div;
-            if (div < 0){
-                if (String.valueOf(max).substring(String.valueOf(max).length() - 1).equals("9")){
-                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen + 1));
+            middle = FloatTool.accurateMinus(drawEngine.getBackgroundHeight(), middle);
+            middle -= drawEngine.getScaleInfos()[LineChartView.BOTTOM_SCALE].getSpace() + drawEngine.getScaleInfos()[LineChartView.BOTTOM_SCALE].getScaleWidth();
+            if (middle < 0){
+                middle = 0;
+            }
+            if (middle - chartHeight > 0){
+                middle = chartHeight;
+            }
+            float div = middle / chartHeight;
+            //求出中点对应的Y值
+            float middleData = (max - min) * div + min;
+            /*根据以下公式
+            middleData = (max - min) * (middle / chartHeight) + min
+            不变	        可能变	   不变	        不变	   变
+            middleData - min = (max - min) * (middle / chartHeight)
+            (middleData - min) / (middle / chartHeight) + min = max*/
+            if (min < userMin - addLimit || min > userMax + addLimit){
+                min = FloatTool.accurateAdd(min, addY);
+                if (min < userMin - addLimit|| min > userMax + addLimit){
+                    reDrawOkMin = false;
                 }else{
-                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen > 0 ? oldMaxLen : 1));
-                }
-                if (String.valueOf(min).substring(String.valueOf(min).length() - 1).equals("9")){
-                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen + 1));
-                }else{
-                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen > 0 ? oldMinLen : 1));
+                    reDrawOkMin = true;
+                    max = (middleData - min) / (middle / chartHeight) + min;
+                    max =  Float.valueOf(FloatTool.getFormatPointAfterString(max,FloatTool.getPointAfter(min)));
+                    if (max >= userMax - addLimit && max <= userMax + addLimit){
+                        if (max <= min){
+                            reDrawOkMax = false;
+                        }else{
+                            reDrawOkMax = true;
+                            if (min > max - userDiv){
+                                min = max - userDiv;
+                            }
+                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                        }
+                    }
                 }
             }else{
-                if (String.valueOf(max).substring(String.valueOf(max).length() - 1).equals("1")){
-                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen - 1));
-                }else{
-                    newMax = Float.valueOf(FloatTool.getFormatPointAfterString(newMax,oldMaxLen));
+                reDrawOkMin = true;
+                min = FloatTool.accurateAdd(min, addY);
+                if (min < userMin - addLimit){
+                    min = userMin - addLimit;
                 }
-                if (String.valueOf(min).substring(String.valueOf(min).length() - 1).equals("1")){
-                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen - 1));
-                }else{
-                    newMin = Float.valueOf(FloatTool.getFormatPointAfterString(newMin,oldMinLen));
+                if (min > userMax + addLimit){
+                    min = userMax + addLimit;
+                }
+                max = (middleData - min) / (middle / chartHeight) + min;
+                max =  Float.valueOf(FloatTool.getFormatPointAfterString(max,FloatTool.getPointAfter(min)));
+                if (max >= userMax - addLimit && max <= userMax + addLimit){
+                    if (max <= min){
+                        reDrawOkMax = false;
+                    }else{
+                        reDrawOkMax = true;
+                        if (min > max - userDiv){
+                            min = max - userDiv;
+                        }
+                        drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+                        drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                    }
                 }
             }
-            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(newMax);
-            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(newMin);
-            Paint paint = new Paint();
-            paint.setTextSize(drawEngine.getChartViewInfo().getTextSize());
-            float maxLen = paint.measureText(String.valueOf(newMax));
-            float minLen = paint.measureText(String.valueOf(newMin));
-            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setSpace(maxLen > minLen ? maxLen : minLen);
-            touchParam.setDoubleTouchDistanceY(nowYlen);
-            setChangeBackground(true);
-            stringLen = 0;
+        }else {
+            return false;
         }
+        touchParam.setDoubleTouchDistanceY(nowYnolen);
         //目前基本是直接return true就好，不排除将来会有其他情况
-        return false;
+        return reDrawOkMax && reDrawOkMin;
     }
 
     /**
@@ -251,7 +305,10 @@ public class TouchEngine implements ITouchParam {
             bX = answerSingleTouchX(event);
         }
         if (touchInfo.isAllowTouchY()){
-
+            bY = answerSingleTouchY(event);
+            if (bY){
+                setChangeBackground(true);
+            }
         }
         if (bX || bY){
             return true;
@@ -273,5 +330,107 @@ public class TouchEngine implements ITouchParam {
         //必须要，否则会导致反向难
         touchParam.setDownX(nowX);
         return true;
+    }
+
+    private float addYResolution = 0;
+    /**
+     * 应答纵向处理数据
+     * @param event
+     * @return
+     */
+    private boolean answerSingleTouchY(MotionEvent event){
+        boolean reDrawMin = false;
+        boolean reDrawMax = false;
+        float downY = touchParam.getDownY();
+        float nowY = event.getY();
+        float YLen = downY - nowY;
+        addYResolution += YLen;
+        float userMax = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMax();
+        float userMin = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMin();
+        float userLen = FloatTool.accurateMinus(userMax, userMin);
+        float userDiv = userLen / Y_MAGNIFICATION;
+        int limit = drawEngine.getChartViewInfo().getLimitY();
+        float addLimit = limit * userLen;
+        float chartHeight = drawEngine.getChartHeight();            //此处应考虑到上下两轴的间距应不会总是改变所以可用，但是不排除以后会有风险
+        float limitDiv = chartHeight / Y_MAGNIFICATION;
+        if (Math.abs(addYResolution) > limitDiv){
+            Log.v("addYResolution",String.valueOf(addYResolution));
+            //移动了几个单位
+            int addYMultiple = (int)FloatTool.Rounding(0,addYResolution / limitDiv);
+            addYResolution = 0;
+            float addY = FloatTool.accurateMultiply(addYMultiple, userDiv);
+            float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
+            float oldMax = max;
+            float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
+            float oldMin = min;
+            if (addY < 0){
+                if (max >= userMax + addLimit){
+                    reDrawMax = false;
+                }else{
+                    reDrawMax = true;
+                    reDrawMin = true;
+                    max -= addY;
+                    min -= addY;
+                    if (max > userMax + addLimit){
+                        min = max - (userMax + addLimit);
+                        max = userMax + addLimit;
+                    }
+                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                }
+            }else{
+                if (min <= userMin - addLimit){
+                    reDrawMin = false;
+                }else{
+                    reDrawMax = true;
+                    reDrawMin = true;
+                    max -= addY;
+                    min -= addY;
+                    if (min < userMin - addLimit){
+                        max = min - (userMin - addLimit);
+                        min = userMin - addLimit;
+                    }
+                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                }
+            }
+//            if (min >= userMin - addLimit){
+//                min += addY;
+//                Log.v("addY",String.valueOf(addY));
+//                if (addY < 0){
+//                    if (max >= userMax + addLimit){
+//                        reDrawMax = false;
+//                    }else{
+//                        max += addY;
+//                        reDrawMin = true;
+//                        if (max >= userMax + addLimit) {
+//                            min -= max - (userMax + addLimit);
+//                            max = userMax + addLimit;
+//                            reDrawMax = true;
+//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+//                        }else{
+//                            reDrawMax = true;
+//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+//                        }
+//                    }
+//                }else{
+//                    if (min < userMin - addLimit){
+//                        max = min - (userMin - addLimit);
+//                        min = userMin - addLimit;
+//                    }else{
+//                        max += addY;
+//                    }
+//                    reDrawMin = true;
+//                    reDrawMax = true;
+//                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
+//                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+//                }
+//            }
+        }
+        //必须要，否则会导致反向难
+        touchParam.setDownY(nowY);
+        return reDrawMax && reDrawMin;
     }
 }

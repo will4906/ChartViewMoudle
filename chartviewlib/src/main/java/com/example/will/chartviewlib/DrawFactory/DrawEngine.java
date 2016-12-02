@@ -22,6 +22,7 @@ import static com.example.will.chartviewlib.LineChartView.LEFT_SCALE;
 import java.util.List;
 
 /**
+ * 其实这个类做的不是很好，本来只想用来处理关于绘图的大部分事件，可是现在很多数据处理也丢到里面去了
  * @author will4906.
  * @Time 2016/11/22.
  */
@@ -120,8 +121,8 @@ public class DrawEngine {
         Bitmap bitmap;
         canvasTool.startDrawOnABitmap(width,height);
         drawBackground(canvasTool,width,height);
-        drawBgLine(canvasTool, width, height);
         drawScale(canvasTool,width,height);
+        drawBgLine(canvasTool, width, height);
         customCanvasTool.startDrawOnABitmap(width,height);
         if (onDrawBackgroundListener.onBackgroundDraw(customCanvasTool) == false){
             canvasTool = customCanvasTool;
@@ -291,7 +292,6 @@ public class DrawEngine {
      * @param height
      */
     private void drawDefaultBgLine(CanvasTool canvasTool, int width, int height){
-
         Paint paint = defaultBgLineInfo.getPaint();
         if (defaultBgLineInfo.isVertical()){
             drawVerticalBgLine(canvasTool,width,height,paint);
@@ -370,18 +370,44 @@ public class DrawEngine {
     }
 
     /**
+     * 表的理论宽度，若在触摸事件TouchEngine中使用，请谨慎使用
+     */
+    private float chartWidth = 0;
+    /**
+     * 表的理论高度，若在触摸事件TouchEngine中使用，请谨慎使用
+     */
+    private float chartHeight = 0;
+
+    public float getChartWidth() {
+        return chartWidth;
+    }
+
+    public void setChartWidth(float chartWidth) {
+        this.chartWidth = chartWidth;
+    }
+
+    public float getChartHeight() {
+        return chartHeight;
+    }
+
+    public void setChartHeight(float chartHeight) {
+        this.chartHeight = chartHeight;
+    }
+
+    /**
      * 画波形图
      */
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
         //表的理论宽度
-        float chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
+        chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
         //理论高度
-        float chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
+        chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
         int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
             drawOneMainLine(canvasTool, mainLineInfo,chartWidth,chartHeight, index);
             index++;
         }
+        //最后处理
         afterMainLine();
     }
 
@@ -460,8 +486,9 @@ public class DrawEngine {
             //touchParam.setTouchOffsetX(0);交由afterMainLine()处理
             middlePioint = -1;
         } else if (touchParam.getTouchMode() == TouchParam.DOUBLE_TOUCH){
-            //获取两指中间对应横坐标
+            //获取两指中间对应横坐标，对应的坐标系是整个大canvas，应减掉轴宽和空白才能使用
             float middle = touchParam.getTwoPointsMiddleX();
+            middle -= scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth();
             if (middlePioint == -1){                        //如果已经定过位就不需要再重新定位了，免得总是偏移
                 //获取距离两指中间对应横坐标最近的点的索引
                 middlePioint = (int)((mainLineInfo.getScreenPos() + middle - radius) / (mainLineInfo.getHorizontalResolution() + radius * 2));

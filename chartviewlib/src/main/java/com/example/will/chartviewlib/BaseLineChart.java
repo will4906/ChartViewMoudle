@@ -134,6 +134,8 @@ public class BaseLineChart extends View  {
                     touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
                     touchEngine.setDoubleTapX(event.getX(0), event.getX(1));
                     touchEngine.setDoubleTapY(event.getY(0), event.getY(1));
+                    touchEngine.setDoubleTouchDistance((float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2))));
+//                    Log.v("FIRST",String.valueOf(touchEngine.getTouchParam().getDoubleTouchDistance()));
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -162,10 +164,8 @@ public class BaseLineChart extends View  {
         @Override
         public void run() {
             if (nowAction == MotionEvent.ACTION_UP || nowAction == MotionEvent.ACTION_CANCEL){
-                if (changeTouchModeIndex >= 4){             //临时测试原为4
-                    nowAction = MotionEvent.ACTION_UP;
-                    touchEngine.setTouchOffsetX(0);
-                    touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+                if (changeTouchModeIndex >= 4){             //临时测试原为4，4秒无操作则返回最末
+                    resetLineChart();
                 }
                 changeTouchModeIndex++;
             }else{
@@ -231,9 +231,7 @@ public class BaseLineChart extends View  {
         @Override
         public boolean onDoubleTap(MotionEvent motionEvent) {
             //双击则返回最末
-            nowAction = MotionEvent.ACTION_UP;
-            touchEngine.setTouchOffsetX(0);
-            touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+            resetLineChart();
             return false;
         }
 
@@ -243,4 +241,12 @@ public class BaseLineChart extends View  {
         }
     };
 
+    /**
+     * 将波形图重新置于最末的函数
+     */
+    public void resetLineChart(){
+        nowAction = MotionEvent.ACTION_UP;
+        touchEngine.setTouchOffsetX(0);
+        touchEngine.setTouchMode(TouchParam.NO_TOUCH);
+    }
 }

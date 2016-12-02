@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         lineChartView = (LineChartView)findViewById(R.id.line_chart_view);
-        lineChartView.setScaleTitle(LineChartView.LEFT_SCALE,"你好吗");
-        lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"你不好");
-        lineChartView.setScaleTitle(LineChartView.TOP_SCALE,"我试试");
-        lineChartView.setScaleTitle(LineChartView.BOTTOM_SCALE,"你猜猜");
+        lineChartView.setScaleTitle(LineChartView.LEFT_SCALE,"左Y轴");
+        lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"右Y轴");
+        lineChartView.setScaleTitle(LineChartView.TOP_SCALE,"上X轴");
+        lineChartView.setScaleTitle(LineChartView.BOTTOM_SCALE,"下X轴");
 //        lineChartView.setScaleWidth(20);
 //        lineChartView.setBackgroundColor(Color.BLUE);
         lineChartView.setDefaultLineColor(Color.RED);
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.enableDefaultVerticalBackgroundLine(true);
         lineChartView.enableDefaultHorizontalBackgroundLine(true);
 //        lineChartView.setScaleWidth(5);
-        lineChartView.setYRange(-1,1E-4f);
+        lineChartView.setYRange(-1,1);
         lineChartView.setScaleColor(Color.GRAY);
         lineChartView.enableLeftScale(true);
         lineChartView.enableTopScale(true);
