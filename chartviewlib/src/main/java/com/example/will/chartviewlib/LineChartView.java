@@ -140,6 +140,7 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         drawEngine.setDefaultBgLineInfo(defaultBgLineInfo);
         drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
         drawEngine.setCharBgInfo(chartBgInfo);
+        drawEngine.setBgLineInfoList(bgLineInfoList);
         drawEngine.setChartViewInfo(chartViewInfo);
         drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
         drawEngine.setMainLineInfoList(mainLineInfoList);
@@ -245,7 +246,6 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         chartViewInfo.setTextSize(textSize);
         for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
             s.getScaleInfo().setTextSize(textSize);
-            s.getScaleInfo().setSpace(textSize * 2);
         }
     }
 

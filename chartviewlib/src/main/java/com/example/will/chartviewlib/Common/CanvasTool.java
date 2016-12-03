@@ -2,8 +2,10 @@ package com.example.will.chartviewlib.Common;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathEffect;
 
 /**
  * @author will4906.
@@ -52,6 +54,47 @@ public class CanvasTool {
     public void drawLine(float startX, float startY, float stopX, float stopY, Paint paint){
         int userHeight = canvas.getHeight();
         canvas.drawLine(startX,userHeight - startY,stopX,userHeight - stopY,paint);
+    }
+
+    /**
+     * 画虚线
+     * @param startX
+     * @param startY
+     * @param stopX
+     * @param stopY
+     * @param len
+     * @param paint
+     */
+    public void drawDottedLine(float startX, float startY, float stopX, float stopY, float len, Paint paint){
+        paint.setStyle(Paint.Style.STROKE);
+        Path path = new Path();
+        path.moveTo(startX, startY);
+        path.lineTo(stopX,stopY);
+        PathEffect effects = new DashPathEffect(new float[]{len,len,len,len},1);
+        paint.setPathEffect(effects);
+        canvas.drawPath(path, paint);
+    }
+
+    /**
+     * 自定虚线样式并画虚线
+     * @param startX
+     * @param startY
+     * @param stopX
+     * @param stopY
+     * @param styleArr
+     * @param paint
+     */
+    public void drawDottedLine(float startX, float startY, float stopX, float stopY, float styleArr[], Paint paint){
+        if (styleArr.length < 4){
+            return;
+        }
+        paint.setStyle(Paint.Style.STROKE);
+        Path path = new Path();
+        path.moveTo(startX, startY);
+        path.lineTo(stopX,stopY);
+        PathEffect effects = new DashPathEffect(styleArr,1);
+        paint.setPathEffect(effects);
+        canvas.drawPath(path, paint);
     }
 
     /**

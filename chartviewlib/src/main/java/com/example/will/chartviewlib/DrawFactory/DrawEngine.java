@@ -2,6 +2,7 @@ package com.example.will.chartviewlib.DrawFactory;
 
 import android.graphics.Bitmap;
 import android.graphics.Paint;
+import android.util.Log;
 
 import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
@@ -14,6 +15,8 @@ import com.example.will.chartviewlib.Common.FloatTool;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.LineChartView;
 
+import static com.example.will.chartviewlib.LineChartView.BGLINE_HORIZONTAL;
+import static com.example.will.chartviewlib.LineChartView.BGLINE_VERTICAL;
 import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
 import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
@@ -120,9 +123,14 @@ public class DrawEngine {
         CanvasTool customCanvasTool = new CanvasTool();
         Bitmap bitmap;
         canvasTool.startDrawOnABitmap(width,height);
+
         drawBackground(canvasTool,width,height);
-        drawScale(canvasTool,width,height);
         drawBgLine(canvasTool, width, height);
+        drawScale(canvasTool,width,height);
+        //表的理论宽度
+        chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
+        //理论高度
+        chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
         customCanvasTool.startDrawOnABitmap(width,height);
         if (onDrawBackgroundListener.onBackgroundDraw(customCanvasTool) == false){
             canvasTool = customCanvasTool;
@@ -133,6 +141,23 @@ public class DrawEngine {
         return bitmap;
     }
 
+    private void computeForBackground(){
+        for (BgLineInfo bgLineInfo : bgLineInfoList){
+            int direction = bgLineInfo.getDirection();
+            switch (direction){
+                case BGLINE_HORIZONTAL:
+                    break;
+                case BGLINE_VERTICAL:
+                    break;
+                default:
+                    break;
+            }
+        }
+        ScaleInfo scaleInfo = scaleInfos[LEFT_SCALE];
+        Paint leftPaint = scaleInfo.getPaint();
+//        float space = leftPaint.measureText(strTitle);
+//        scaleInfo.setSpace(space);
+    }
     /**
      * 绘制坐标轴
      * @param canvasTool
@@ -277,14 +302,68 @@ public class DrawEngine {
      * @param height
      */
     public void drawBgLine(CanvasTool canvasTool, int width, int height){
-
         if (charBgInfo.hasBgLine()){
             if (charBgInfo.isUseDefaultBgLines()){
                 drawDefaultBgLine(canvasTool,width,height);
             }
+            drawUserBgLines(canvasTool,width,height);
         }
     }
 
+    /**
+     * 绘制用户自己设定的背景线
+     * @param canvasTool
+     * @param width
+     * @param height
+     */
+    public void drawUserBgLines(CanvasTool canvasTool, int width, int height){
+        for (BgLineInfo bgLineInfo : bgLineInfoList){
+            Paint paint = bgLineInfo.getPaint();
+            int direction = bgLineInfo.getDirection();
+            switch (direction){
+                case BGLINE_HORIZONTAL:{
+                    float pos = bgLineInfo.getLinePos();
+                    pos = changeUserDataToChartViewData(pos,chartHeight,LEFT_SCALE);
+                    pos += scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth();
+                    if (pos > scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() && pos < scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() + chartHeight){
+                        if (bgLineInfo.isbIsDotted()){
+                            canvasTool.drawDottedLine(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2,pos,scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + chartWidth, pos,20,paint);
+                        }else{
+                            canvasTool.drawLine(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2,pos,scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + chartWidth, pos,paint);
+                        }
+                    }
+                    String strTitle = bgLineInfo.getStrTitle();
+                    if (!strTitle.equals("")){
+                        switch (bgLineInfo.getTitlePos()){
+                            case LEFT_SCALE:
+                                break;
+                            case RIGHT_SCALE:
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                    break;
+                case BGLINE_VERTICAL:{
+                    float pos = bgLineInfo.getLinePos();
+                    pos = changeUserDataToChartViewData(pos,chartWidth,BOTTOM_SCALE);
+                    pos += scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth();
+                    Log.v("pos",String.valueOf(pos));
+                    if (pos > scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() && pos < scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() + chartWidth){
+                        if (bgLineInfo.isbIsDotted()){
+                            canvasTool.drawDottedLine(pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2, pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2 + chartHeight,20,paint);
+                        }else{
+                            canvasTool.drawLine(pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2, pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2 + chartHeight,paint);
+                        }
+                    }
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
     /**
      * 默认模式画背景线
      * @param canvasTool
@@ -398,10 +477,7 @@ public class DrawEngine {
      * 画波形图
      */
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
-        //表的理论宽度
-        chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
-        //理论高度
-        chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
+
         int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
             drawOneMainLine(canvasTool, mainLineInfo,chartWidth,chartHeight, index);
@@ -418,6 +494,7 @@ public class DrawEngine {
         touchParam.setTouchOffsetX(0);
         touchParam.setAddResolutionX(0);
     }
+
     /**
      * 画单个波形图
      * @param canvasTool
@@ -545,12 +622,12 @@ public class DrawEngine {
             float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
             //点在屏幕上显示的横坐标
             float cx =  pointX - screenMove;
-            float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartHeight);
+            float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartHeight,LEFT_SCALE);
             if (mainLineInfo.isHasPoint()){
                 canvasTool.drawCircle(cx,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),mainLineInfo.getMainPointInfo().getPaint());
             }
             if (mainLineInfo.isHasLine() && i != 0){
-                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1), chartHeight),cx,pointHeight,mainLineInfo.getPaint());
+                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
             }
         }
     }
@@ -558,14 +635,14 @@ public class DrawEngine {
     /**
      * 将用户传进来的数据转换为像素数据
      * @param userData
-     * @param height
+     * @param length
      * @return
      */
-    private float changeUserDataToChartViewData(float userData, float height){
+    private float changeUserDataToChartViewData(float userData, float length, int which){
         float chartViewData = 0;
-        float max = scaleInfos[LEFT_SCALE].getMaxValue();
-        float min = scaleInfos[LEFT_SCALE].getMinVale();
-        float div = (max - min) / height;
+        float max = scaleInfos[which].getMaxValue();
+        float min = scaleInfos[which].getMinVale();
+        float div = (max - min) / length;
         chartViewData = (userData - min) / div;
         return chartViewData;
     }

@@ -354,7 +354,6 @@ public class TouchEngine implements ITouchParam {
         float chartHeight = drawEngine.getChartHeight();            //此处应考虑到上下两轴的间距应不会总是改变所以可用，但是不排除以后会有风险
         float limitDiv = chartHeight / Y_MAGNIFICATION;
         if (Math.abs(addYResolution) > limitDiv){
-            Log.v("addYResolution",String.valueOf(addYResolution));
             //移动了几个单位
             int addYMultiple = (int)FloatTool.Rounding(0,addYResolution / limitDiv);
             addYResolution = 0;

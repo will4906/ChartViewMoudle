@@ -1,6 +1,7 @@
 package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
+import com.example.will.chartviewlib.LineChartView;
 
 import static com.example.will.chartviewlib.LineChartView.BGLINE_HORIZONTAL;
 
@@ -12,16 +13,16 @@ import static com.example.will.chartviewlib.LineChartView.BGLINE_HORIZONTAL;
 public class BgLineInfo extends BaseLineInfo{
 
     /**
-     * 背景线对应纵坐标
+     * 背景线对应坐标
      */
-    float linePosY;
+    private float linePos;
 
-    public float getLinePosY() {
-        return linePosY;
+    public float getLinePos() {
+        return linePos;
     }
 
-    public void setLinePosY(float linePosY) {
-        this.linePosY = linePosY;
+    public void setLinePos(float linePos) {
+        this.linePos = linePos;
     }
 
     /**
@@ -29,11 +30,37 @@ public class BgLineInfo extends BaseLineInfo{
      */
     private int direction = BGLINE_HORIZONTAL;
 
-    public int setDirection() {
+    public int getDirection() {
         return direction;
     }
 
     public void setDirection(int direction) {
         this.direction = direction;
+    }
+
+    /**
+     * 背景线显示的标题
+     */
+    private String strTitle = "";
+
+    public String getStrTitle() {
+        return strTitle;
+    }
+
+    public void setStrTitle(String strTitle) {
+        this.strTitle = strTitle;
+    }
+
+    /**
+     * 背景线标题的位置，水平方向默认在左Y轴
+     */
+    private int titlePos = LineChartView.LEFT_SCALE;
+
+    public int getTitlePos() {
+        return titlePos;
+    }
+
+    public void setTitlePos(int titlePos) {
+        this.titlePos = titlePos;
     }
 }
