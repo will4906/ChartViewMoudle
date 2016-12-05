@@ -66,10 +66,11 @@ public class CanvasTool {
      * @param paint
      */
     public void drawDottedLine(float startX, float startY, float stopX, float stopY, float len, Paint paint){
+        int userHeight = canvas.getHeight();
         paint.setStyle(Paint.Style.STROKE);
         Path path = new Path();
-        path.moveTo(startX, startY);
-        path.lineTo(stopX,stopY);
+        path.moveTo(startX, userHeight - startY);
+        path.lineTo(stopX,userHeight - stopY);
         PathEffect effects = new DashPathEffect(new float[]{len,len,len,len},1);
         paint.setPathEffect(effects);
         canvas.drawPath(path, paint);

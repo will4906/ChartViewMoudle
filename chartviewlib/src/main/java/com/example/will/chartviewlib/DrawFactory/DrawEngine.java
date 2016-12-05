@@ -123,14 +123,11 @@ public class DrawEngine {
         CanvasTool customCanvasTool = new CanvasTool();
         Bitmap bitmap;
         canvasTool.startDrawOnABitmap(width,height);
-
+        computeForBackground(width,height);
         drawBackground(canvasTool,width,height);
-        drawBgLine(canvasTool, width, height);
         drawScale(canvasTool,width,height);
-        //表的理论宽度
-        chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
-        //理论高度
-        chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
+        drawBgLine(canvasTool, width, height);
+
         customCanvasTool.startDrawOnABitmap(width,height);
         if (onDrawBackgroundListener.onBackgroundDraw(customCanvasTool) == false){
             canvasTool = customCanvasTool;
@@ -141,22 +138,57 @@ public class DrawEngine {
         return bitmap;
     }
 
-    private void computeForBackground(){
+    private void computeForBackground(int width, int height){
         for (BgLineInfo bgLineInfo : bgLineInfoList){
             int direction = bgLineInfo.getDirection();
             switch (direction){
-                case BGLINE_HORIZONTAL:
+                case BGLINE_HORIZONTAL:{
+                    int pos = bgLineInfo.getTitlePos();
+                    switch (pos){
+                        case LEFT_SCALE:{
+                            ScaleInfo scaleInfo = scaleInfos[pos];
+                            Paint leftPaint = scaleInfo.getPaint();
+                            float space = scaleInfo.getSpace();
+                            String strTitle = bgLineInfo.getStrTitle();
+                            float strLen = leftPaint.measureText(strTitle);
+                            if (strLen > space){
+                                if (scaleInfo.isHasData()){
+                                    scaleInfo.setSpace(strLen + scaleInfo.getScaleWidth() / 2);
+                                }
+                            }
+                        }
+                        case RIGHT_SCALE:{
+                            ScaleInfo scaleInfo = scaleInfos[pos];
+                            Paint leftPaint = scaleInfo.getPaint();
+                            float space = scaleInfo.getSpace();
+                            String strTitle = bgLineInfo.getStrTitle();
+                            float strLen = leftPaint.measureText(strTitle);
+                            if (strLen > space){
+                                if (scaleInfo.isHasData()){
+                                    if (scaleInfo.getScaleTitle().equals("")){
+                                        scaleInfo.setSpace(strLen + scaleInfo.getScaleWidth() / 2);
+                                    }else{
+                                        scaleInfo.setSpace(strLen + scaleInfo.getTextSize() + scaleInfo.getScaleWidth() / 2);
+                                    }
+                                }
+                            }
+                        }
+                            break;
+                    }
+                }
                     break;
                 case BGLINE_VERTICAL:
+                    //纵向暂时不允许添加东西
                     break;
                 default:
                     break;
             }
         }
-        ScaleInfo scaleInfo = scaleInfos[LEFT_SCALE];
-        Paint leftPaint = scaleInfo.getPaint();
-//        float space = leftPaint.measureText(strTitle);
-//        scaleInfo.setSpace(space);
+        scaleInfos[TOP_SCALE].setSpace(scaleInfos[TOP_SCALE].getTextSize() * 2);
+        //表的理论宽度
+        chartWidth = width - scaleInfos[LEFT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[LEFT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2;
+        //理论高度
+        chartHeight = height - scaleInfos[TOP_SCALE].getSpace() - scaleInfos[BOTTOM_SCALE].getSpace() - scaleInfos[TOP_SCALE].getScaleWidth() / 2 - scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2;
     }
     /**
      * 绘制坐标轴
@@ -197,30 +229,11 @@ public class DrawEngine {
         ScaleInfo scaleInfo = scaleInfos[LineChartView.LEFT_SCALE];
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
-        String strMax = String.valueOf(scaleInfo.getMaxValue());
-        //将.0的浮点数转换为int
-        if (FloatTool.getPointAfter(scaleInfo.getMaxValue()) == 0){
-            strMax = strMax.substring(0,strMax.length() - 2);
-        }
-        float maxSpace = paint.measureText(strMax);
-        String strMin = String.valueOf(scaleInfo.getMinVale());
-        //将.0的浮点数转换为int
-        if (FloatTool.getPointAfter(scaleInfo.getMinVale()) == 0){
-            strMin = strMin.substring(0,strMin.length() - 2);;
-        }
-        float minSpace = paint.measureText(strMin);
-        //选取两个宽度的最大值作为左边Y轴宽度
-        space = maxSpace > minSpace ? maxSpace : minSpace;
-        scaleInfo.setSpace(space);
 
         canvasTool.drawLine(space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
                 space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2, paint);
         paint.setTextAlign(Paint.Align.LEFT);
         canvasTool.drawText(scaleInfo.getScaleTitle(),0,height - textSize,paint);
-        if (scaleInfo.isHasData()){
-            canvasTool.drawText(strMax,0,height - scaleInfos[TOP_SCALE].getSpace() - textSize,paint);
-            canvasTool.drawText(strMin,0,scaleInfos[BOTTOM_SCALE].getSpace(),paint);
-        }
     }
 
     /**
@@ -238,13 +251,6 @@ public class DrawEngine {
         canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), space, width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), space, paint);
         if (scaleInfos[LineChartView.RIGHT_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawTextOnPath(scaleInfo.getScaleTitle(),width,height / 2,width,10, 0,textSize,paint);
-        }
-        if (scaleInfo.isHasData()){
-            String strMax = String.valueOf(scaleInfo.getMaxValue());
-            String strMin = String.valueOf(scaleInfo.getMinVale());
-            canvasTool.drawText(strMax,width - scaleInfos[RIGHT_SCALE].getSpace(),space - textSize,paint);
-            paint.setTextAlign(Paint.Align.LEFT);
-            canvasTool.drawText(strMin,scaleInfos[LEFT_SCALE].getSpace(),space - textSize,paint);
         }
     }
 
@@ -331,16 +337,26 @@ public class DrawEngine {
                         }else{
                             canvasTool.drawLine(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2,pos,scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + chartWidth, pos,paint);
                         }
-                    }
-                    String strTitle = bgLineInfo.getStrTitle();
-                    if (!strTitle.equals("")){
-                        switch (bgLineInfo.getTitlePos()){
-                            case LEFT_SCALE:
+                        String strTitle = bgLineInfo.getStrTitle();
+                        if (!strTitle.equals("")){
+                            switch (bgLineInfo.getTitlePos()){
+                                case LEFT_SCALE:{
+                                    if (scaleInfos[LEFT_SCALE].isHasData()){
+                                        Paint leftPaint = scaleInfos[LEFT_SCALE].getPaint();
+                                        canvasTool.drawText(strTitle,0,pos - scaleInfos[LEFT_SCALE].getTextSize() / 2,leftPaint);
+                                    }
+                                }
                                 break;
-                            case RIGHT_SCALE:
-                                break;
-                            default:
-                                break;
+                                case RIGHT_SCALE:{
+                                    if (scaleInfos[RIGHT_SCALE].isHasData()){
+                                        Paint leftPaint = scaleInfos[RIGHT_SCALE].getPaint();
+                                        canvasTool.drawText(strTitle,backgroundWidth - scaleInfos[RIGHT_SCALE].getTextSize(),pos - scaleInfos[RIGHT_SCALE].getTextSize() / 2,leftPaint);
+                                    }
+                                }
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
                 }
@@ -349,7 +365,6 @@ public class DrawEngine {
                     float pos = bgLineInfo.getLinePos();
                     pos = changeUserDataToChartViewData(pos,chartWidth,BOTTOM_SCALE);
                     pos += scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth();
-                    Log.v("pos",String.valueOf(pos));
                     if (pos > scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() && pos < scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() + chartWidth){
                         if (bgLineInfo.isbIsDotted()){
                             canvasTool.drawDottedLine(pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2, pos, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2 + chartHeight,20,paint);
