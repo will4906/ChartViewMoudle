@@ -154,7 +154,7 @@ public class DrawEngine {
                     switch (pos){
                         case LEFT_SCALE:{
                             ScaleInfo scaleInfo = scaleInfos[pos];
-                            Paint leftPaint = scaleInfo.getPaint();
+                            Paint leftPaint = scaleInfo.getTextPaint();
                             float space = scaleInfo.getSpace();
                             String strTitle = bgLineInfo.getStrTitle();
                             float strLen = leftPaint.measureText(strTitle);
@@ -166,7 +166,7 @@ public class DrawEngine {
                         }
                         case RIGHT_SCALE:{
                             ScaleInfo scaleInfo = scaleInfos[pos];
-                            Paint leftPaint = scaleInfo.getPaint();
+                            Paint leftPaint = scaleInfo.getTextPaint();
                             float space = scaleInfo.getSpace();
                             String strTitle = bgLineInfo.getStrTitle();
                             float strLen = leftPaint.measureText(strTitle);
@@ -174,6 +174,9 @@ public class DrawEngine {
                                 if (scaleInfo.isHasData()){
                                     if (scaleInfo.getScaleTitle().equals("")){
                                         scaleInfo.setSpace(strLen + scaleInfo.getScaleWidth() / 2);
+                                        if (scaleInfos[BOTTOM_SCALE].getScaleTitle().equals("") || scaleInfos[TOP_SCALE].getScaleTitle().equals("")){
+                                            scaleInfo.setSpace(scaleInfo.getSpace() + scaleInfos[BOTTOM_SCALE].getTextSize());
+                                        }
                                     }else{
                                         scaleInfo.setSpace(strLen + scaleInfo.getTextSize() + scaleInfo.getScaleWidth() / 2);
                                     }
@@ -280,9 +283,9 @@ public class DrawEngine {
             canvasTool.drawLine(width - space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
                     width - space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2,paint);
         }
-        paint.setTextAlign(Paint.Align.RIGHT);
+        scaleInfo.getTextPaint().setTextAlign(Paint.Align.RIGHT);
         if (scaleInfos[LineChartView.TOP_SCALE].getSpace() >= textSize * 2){
-            canvasTool.drawText(scaleInfo.getScaleTitle(),width,height - textSize,paint);
+            canvasTool.drawText(scaleInfo.getScaleTitle(),width,height - textSize,scaleInfo.getTextPaint());
         }
     }
 
@@ -357,14 +360,18 @@ public class DrawEngine {
                             switch (bgLineInfo.getTitlePos()){
                                 case LEFT_SCALE:{
                                     if (scaleInfos[LEFT_SCALE].isHasData()){
-                                        Paint leftPaint = scaleInfos[LEFT_SCALE].getPaint();
+                                        Paint leftPaint = bgLineInfo.getTextPaint();
+                                        leftPaint.setTextSize(scaleInfos[LEFT_SCALE].getTextSize());
+                                        leftPaint.setTextAlign(Paint.Align.LEFT);
                                         canvasTool.drawText(strTitle,0,pos - scaleInfos[LEFT_SCALE].getTextSize() / 2,leftPaint);
                                     }
                                 }
                                 break;
                                 case RIGHT_SCALE:{
                                     if (scaleInfos[RIGHT_SCALE].isHasData()){
-                                        Paint leftPaint = scaleInfos[RIGHT_SCALE].getPaint();
+                                        Paint leftPaint = bgLineInfo.getTextPaint();
+                                        leftPaint.setTextSize(scaleInfos[LEFT_SCALE].getTextSize());
+                                        leftPaint.setTextAlign(Paint.Align.RIGHT);
                                         canvasTool.drawText(strTitle,backgroundWidth - scaleInfos[RIGHT_SCALE].getTextSize(),pos - scaleInfos[RIGHT_SCALE].getTextSize() / 2,leftPaint);
                                     }
                                 }
@@ -593,7 +600,7 @@ public class DrawEngine {
             if (mainLineInfo.isHasPoint()){
                 String strX = dataList.get(i).getXData();
                 if (!strX.equals("")){
-                    Paint bottomPaint = scaleInfos[BOTTOM_SCALE].getPaint();
+                    Paint bottomPaint = scaleInfos[BOTTOM_SCALE].getTextPaint();
                     bottomPaint.setTextAlign(Paint.Align.CENTER);
                     if (bottomPaint.measureText(strX) < radius * 2 + mainLineInfo.getHorizontalResolution()){
                         if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() && dataList.get(i).isShowXData() &&

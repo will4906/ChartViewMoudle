@@ -39,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             data++;
-            lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
+            if (data % 5 == 0){
+                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
+            }
+            lineChartView.addPoint(1, (float) Math.sin((data * Math.PI) / 50));
 //            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
 //            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
             if (data >= 100){
@@ -58,9 +61,9 @@ public class MainActivity extends AppCompatActivity {
         textViewl = (TextView)findViewById(R.id.textView);
         lineChartView = (LineChartView)findViewById(R.id.line_chart_view);
         lineChartView.setScaleTitle(LineChartView.LEFT_SCALE,"左Y轴");
-        lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"右Y轴");
-        lineChartView.setScaleTitle(LineChartView.TOP_SCALE,"上X轴");
-        lineChartView.setScaleTitle(LineChartView.BOTTOM_SCALE,"下X轴");
+        lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"");
+        lineChartView.setScaleTitle(LineChartView.TOP_SCALE,"");
+        lineChartView.setScaleTitle(LineChartView.BOTTOM_SCALE,"");
 //        lineChartView.setScaleWidth(20);
 //        lineChartView.setBackgroundColor(Color.BLUE);
         lineChartView.setDefaultLineColor(Color.RED);
@@ -97,11 +100,12 @@ public class MainActivity extends AppCompatActivity {
         bgLineInfo2.setStrTitle("-0.75f");
         bgLineInfo2.setLinePos(-0.75f);
         bgLineInfo2.setLineWidth(5);
+        bgLineInfo2.setTextColor(Color.YELLOW);
         lineChartView.addBackgroundLine(bgLineInfo2);
         lineChartView.addMainLine();
         lineChartView.setMainLineWidth(1,4);
-        lineChartView.setMainLineColor(1,Color.BLUE);
-        lineChartView.setMainPointColor(1,Color.BLUE);
+        lineChartView.setMainLineColor(1,Color.GREEN);
+        lineChartView.setMainPointColor(1,Color.GREEN);
 //        lineChartView.addMainLine();
         lineChartView.setMainPointRadius(0, 10);
         lineChartView.setMainPointRadius(1, 2);
@@ -110,20 +114,22 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.setMainLineWidth(0,4);
         lineChartView.addMainLine();
         lineChartView.setMainLineVisibility(2,false);
-        lineChartView.setMainLineVisibility(1,false);
+        lineChartView.setMainLineVisibility(1,true);
         lineChartView.setScaleVisibility(LineChartView.LEFT_SCALE,false);
         lineChartView.setScaleVisibility(LineChartView.RIGHT_SCALE,false);
         lineChartView.setScaleVisibility(LineChartView.TOP_SCALE,false);
         lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
 //        lineChartView.setScaleTextSize(LineChartView.BOTTOM_SCALE,12);
-        lineChartView.setInitAViewPointsSum(0,6);
+//        lineChartView.setInitAViewPointsSum(0,6);
         lineChartView.setShowDataDiv(0,true);
+        lineChartView.setHasPoints(1,false);
+        lineChartView.setHasLine(0,false);
         lineChartView.setDivBackgroundColor(Color.BLUE);
 //        lineChartView.setNormalOffsetX(50);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
-        timer.schedule(timerTask,1000,42);        //每秒24帧的放映速度
+        timer.schedule(timerTask,1000,1000);        //每秒24帧的放映速度
 //        timer.schedule(timerTask,1000,84);
 //        timer.schedule(timerTask,1000,1000);
         button = (Button)findViewById(R.id.button_hello);

@@ -1,5 +1,7 @@
 package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 
+import android.graphics.Paint;
+
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
 import com.example.will.chartviewlib.LineChartView;
 
@@ -12,6 +14,9 @@ import static com.example.will.chartviewlib.LineChartView.BGLINE_HORIZONTAL;
 
 public class BgLineInfo extends BaseLineInfo{
 
+    public BgLineInfo(){
+        textPaint.setAntiAlias(true);
+    }
     /**
      * 背景线对应坐标
      */
@@ -63,4 +68,34 @@ public class BgLineInfo extends BaseLineInfo{
     public void setTitlePos(int titlePos) {
         this.titlePos = titlePos;
     }
+
+    /**
+     * 字的画笔
+     */
+    private Paint textPaint = new Paint();
+
+    public Paint getTextPaint() {
+        return textPaint;
+    }
+
+    public void setTextPaint(Paint textPaint) {
+        this.textPaint = textPaint;
+    }
+
+    public void setTextColor(int color){
+        textPaint.setColor(color);
+    }
+
+    public int getTextColor(){
+        return textPaint.getColor();
+    }
+
+    public void setTextSize(float textSize){
+        textPaint.setTextSize(textSize);
+    }
+
+    public float getTextSize(){
+        return textPaint.getTextSize();
+    }
+
 }

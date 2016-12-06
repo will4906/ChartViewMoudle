@@ -1,5 +1,7 @@
 package com.example.will.chartviewlib.ChartInfo.BackgroundInfo;
 
+import android.graphics.Paint;
+
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
 import com.example.will.chartviewlib.Common.FloatTool;
 
@@ -8,6 +10,30 @@ import com.example.will.chartviewlib.Common.FloatTool;
  */
 
 public class ScaleInfo extends BaseLineInfo{
+
+    public ScaleInfo(){
+        textPaint = new Paint(paint);
+    }
+    /**
+     * 字的画笔
+     */
+    private Paint textPaint;
+
+    public Paint getTextPaint() {
+        return textPaint;
+    }
+
+    public void setTextPaint(Paint textPaint) {
+        this.textPaint = textPaint;
+    }
+
+    public void setTextColor(int color){
+        this.textPaint.setColor(color);
+    }
+
+    public int getTextColor(){
+        return this.textPaint.getColor();
+    }
     /**
      * 坐标轴颜色处理
      */
@@ -78,11 +104,12 @@ public class ScaleInfo extends BaseLineInfo{
      * 缺省值：12
      */
     public float getTextSize() {
-        return paint.getTextSize();
+        return textPaint.getTextSize();
     }
 
     public void setTextSize(float textSize) {
         paint.setTextSize(textSize);
+        textPaint.setTextSize(textSize);
     }
 
     /**
@@ -123,7 +150,7 @@ public class ScaleInfo extends BaseLineInfo{
     /**
      * 坐标轴与图表的边界空白大小
      */
-    private float space = getTextSize() * 2;
+    private float space = paint.getTextSize() * 2;
 
     public float getSpace() {
         return space;
