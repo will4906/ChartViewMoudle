@@ -202,6 +202,7 @@ public class TouchEngine implements ITouchParam {
      * @param event
      */
     private boolean answerDoubleTouchY(MotionEvent event){
+        //TODO 关于Y轴方向的缩放有待升级
         float userMax = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMax();
         float userMin = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMin();
         float userLen = FloatTool.accurateMinus(userMax, userMin);

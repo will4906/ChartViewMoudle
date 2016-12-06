@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void run() {
             data++;
-            lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
+            lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
             lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
             lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
             if (data >= 100){
@@ -96,7 +96,9 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.setScaleVisibility(LineChartView.RIGHT_SCALE,false);
         lineChartView.setScaleVisibility(LineChartView.TOP_SCALE,false);
         lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
-        lineChartView.setScaleTextSize(LineChartView.BOTTOM_SCALE,12);
+//        lineChartView.setScaleTextSize(LineChartView.BOTTOM_SCALE,12);
+        lineChartView.setInitAViewPointsSum(0,6);
+//        lineChartView.setNormalOffsetX(50);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);

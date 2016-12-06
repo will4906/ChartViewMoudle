@@ -24,4 +24,5 @@ public interface IMainPointInfo {
      * @param isStroke
      */
     void setIsStroke(int index, boolean isStroke);
+
 }

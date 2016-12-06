@@ -122,9 +122,32 @@ public class MainLineInfo extends BaseLineInfo{
     }
 
     /**
+     * 恢复到原始状态时的横向分辨率
+     */
+    private float initHorizontalResolution = 0;
+
+    public float getInitHorizontalResolution() {
+        return initHorizontalResolution;
+    }
+
+    public void setInitHorizontalResolution(float initHorizontalResolution) {
+        this.initHorizontalResolution = initHorizontalResolution;
+    }
+
+    private int initAViewPointsSum = Integer.MIN_VALUE;
+
+    public int getInitAViewPointsSum() {
+        return initAViewPointsSum;
+    }
+
+    public void setInitAViewPointsSum(int initAViewPointsSum) {
+        this.initAViewPointsSum = initAViewPointsSum;
+    }
+
+    /**
      * 横向分辨率
      */
-    public float horizontalResolution = 0;
+    public float horizontalResolution = initHorizontalResolution;
 
     public float getHorizontalResolution() {
         return horizontalResolution;
@@ -134,4 +157,29 @@ public class MainLineInfo extends BaseLineInfo{
         this.horizontalResolution = horizontalResolution;
     }
 
+    /**
+     * 无手指触摸时最后一个点离右Y轴的偏移
+     */
+    private float normalOffsetX = 0;
+
+    public float getNormalOffsetX() {
+        return normalOffsetX;
+    }
+
+    public void setNormalOffsetX(float normalOffsetX) {
+        this.normalOffsetX = normalOffsetX;
+    }
+
+    /**
+     * 哪个点需要显示数据框
+     */
+    private int showDivIndex = -1;
+
+    public int getShowDivIndex() {
+        return showDivIndex;
+    }
+
+    public void setShowDivIndex(int showDivIndex) {
+        this.showDivIndex = showDivIndex;
+    }
 }

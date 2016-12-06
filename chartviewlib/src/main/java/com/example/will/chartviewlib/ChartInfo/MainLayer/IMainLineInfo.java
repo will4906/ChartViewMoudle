@@ -72,4 +72,30 @@ public interface IMainLineInfo {
      * @param visibility
      */
     void setMainLineVisibility(int index, boolean visibility);
+
+    /**
+     * 设置单条主线的初始分辨率
+     * @param index
+     * @param initHorizontalResolution
+     */
+    void setInitHorizontalResolution(int index, float initHorizontalResolution);
+
+    /**
+     * 设置单条主线初始化时应该显示多少个点
+     * @param initAViewPointsSum
+     */
+    void setInitAViewPointsSum(int index, int initAViewPointsSum);
+
+    /**
+     * 统一设置主线无手指触摸时的离右Y轴的偏移
+     * @param normalOffsetX
+     */
+    void setNormalOffsetX(float normalOffsetX);
+
+    /**
+     * 设置单条主线无手指触摸时的离右Y轴的偏移
+     * @param index
+     * @param normalOffsetX
+     */
+    void setNormalOffsetX(int index, float normalOffsetX);
 }

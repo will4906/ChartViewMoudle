@@ -470,6 +470,31 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         touchEngine.getTouchInfo().setAllowTouchYZoom(allowTouchYZoom);
     }
 
+    @Override
+    public void setInitHorizontalResolution(int index, float initHorizontalResolution) {
+        if (mainLineInfoList.get(index).getInitHorizontalResolution() == 0){
+            mainLineInfoList.get(index).setInitHorizontalResolution(initHorizontalResolution);
+            mainLineInfoList.get(index).setHorizontalResolution(initHorizontalResolution);
+        }
+    }
+
+    @Override
+    public void setInitAViewPointsSum(int index, int initAViewPointsSum) {
+        mainLineInfoList.get(index).setInitAViewPointsSum(initAViewPointsSum);
+    }
+
+    @Override
+    public void setNormalOffsetX(float normalOffsetX) {
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.setNormalOffsetX(normalOffsetX);
+        }
+    }
+
+    @Override
+    public void setNormalOffsetX(int index, float normalOffsetX) {
+        mainLineInfoList.get(index).setNormalOffsetX(normalOffsetX);
+    }
+
     public static final int ASK_FOR_DRAW_WAVE = 0x01;
 
     /**
@@ -558,6 +583,17 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         mainLineInfoList.get(index).addData(XData,YData);
     }
 
+    /**
+     * 为某条波形添加点
+     * @param index
+     * @param YData
+     * @param XData
+     * @param show
+     */
+    public void addPoint(int index, float YData, String XData, boolean show){
+        mainLineInfoList.get(index).addData(XData,YData);
+        mainLineInfoList.get(index).getDataList().get(mainLineInfoList.get(index).getDataList().size() - 1).setShowXData(show);
+    }
     /**
      * 为某条数据添加点
      * @param index

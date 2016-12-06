@@ -140,6 +140,11 @@ public class DrawEngine {
         return bitmap;
     }
 
+    /**
+     * 计算背景的各种数据
+     * @param width
+     * @param height
+     */
     private void computeForBackground(int width, int height){
         for (BgLineInfo bgLineInfo : bgLineInfoList){
             int direction = bgLineInfo.getDirection();
@@ -504,6 +509,20 @@ public class DrawEngine {
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
         int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
+            int aViewPointsSum = mainLineInfo.getInitAViewPointsSum();
+            if (aViewPointsSum > 0){
+                //TODO 需要计算一个界面显示点数和分辨率的关系
+                /*根据以下公式计算
+                pointSum = (int)(width / (radius * 2 + mainLineInfo.getHorizontalResolution()));
+                pointSum += 1
+                (int)(width / (radius * 2 + mainLineInfo.getHorizontalResolution())) + 1 = pointSum
+                pointSum - 1 = width / (radius * 2 + mainLineInfo.getHorizontalResolution())
+                width / (pointSum - 1) = radius * 2 + mainLineInfo.getHorizontalResolution()
+
+                width / (pointSum - 1) - radius * 2 = mainLineInfo.getHorizontalResolution()*/
+                mainLineInfo.setHorizontalResolution((chartWidth - mainLineInfo.getNormalOffsetX()) / (aViewPointsSum) - mainLineInfo.getMainPointInfo().getRadius() * 2);
+                mainLineInfo.setInitAViewPointsSum(-aViewPointsSum);
+            }
             if (mainLineInfo.isVisibility()){
                 drawOneMainLine(canvasTool, mainLineInfo,chartWidth,chartHeight, index);
             }
@@ -544,12 +563,12 @@ public class DrawEngine {
             int start = computeStart(mainLineInfo,screenMove,radius,dataList.size());
 
             //绘图
-            drawFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
+            drawLineFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
 //            drawLineFunction(canvasTool,mainLineInfo,chartPointsSum,dataList,chartWidth,chartHeight);
             canvasTool.flushBitmap(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2, chartHeight + scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
 
             if (scaleInfos[BOTTOM_SCALE].isHasData()){
-                canvasTool.startDrawOnABitmap(backgroundWidth - (int)(scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2), (int)scaleInfos[BOTTOM_SCALE].getSpace() + (int)(scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2));
+                canvasTool.startDrawOnABitmap(backgroundWidth, (int)scaleInfos[BOTTOM_SCALE].getSpace() + (int)(scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2));
                 drawBottomText(canvasTool, start, radius, dataList, screenMove, mainLineInfo);
 
                 canvasTool.flushBitmap(0, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
@@ -579,25 +598,14 @@ public class DrawEngine {
                     Paint bottomPaint = scaleInfos[BOTTOM_SCALE].getPaint();
                     bottomPaint.setTextAlign(Paint.Align.CENTER);
                     if (bottomPaint.measureText(strX) < radius * 2 + mainLineInfo.getHorizontalResolution()){
-                        if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() && dataList.get(i).isShowXData()){
+                        if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() && dataList.get(i).isShowXData() &&
+                                scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
                             canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
                         }
                     }
                 }
             }
         }
-
-    }
-    /**
-     * 画单个波形函数
-     * @param canvasTool
-     * @param mainLineInfo
-     * @param chartPointsSum
-     * @param dataList
-     * @param chartWidth
-     * @param chartHeight
-     */
-    private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int chartPointsSum, List<DataPoint> dataList, float chartWidth, float chartHeight){
 
     }
 
@@ -612,7 +620,7 @@ public class DrawEngine {
     private void XcomputeResolutionAndOffset(MainLineInfo mainLineInfo, int size, float radius, float chartWidth){
         //显示屏幕移动距离
         if (touchParam.getTouchMode() == TouchParam.NO_TOUCH){
-            float tmpSreenPos = size * (mainLineInfo.getHorizontalResolution() + radius * 2) - chartWidth;
+            float tmpSreenPos = size * (mainLineInfo.getHorizontalResolution() + radius * 2) - chartWidth - mainLineInfo.getHorizontalResolution() + mainLineInfo.getNormalOffsetX();
             if (tmpSreenPos < 0){
                 tmpSreenPos = 0;
             }
@@ -680,7 +688,7 @@ public class DrawEngine {
      * @param chartHeight
      * @param mainLineInfo
      */
-    private void drawFunction(CanvasTool canvasTool, int start, float radius, List<DataPoint> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
+    private void drawLineFunction(CanvasTool canvasTool, int start, float radius, List<DataPoint> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
         for (int i = start; i < dataList.size(); i ++){
             //点的理论横坐标
             float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
