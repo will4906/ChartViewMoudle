@@ -6,6 +6,7 @@ import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PathEffect;
+import android.os.Build;
 
 /**
  * @author will4906.
@@ -110,6 +111,18 @@ public class CanvasTool {
     }
 
     /**
+     * 画矩形
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     * @param paint
+     */
+    public void drawRect(float left, float top, float right, float bottom, Paint paint){
+        int userHeight = canvas.getHeight();
+        canvas.drawRect(left,userHeight - top,right,userHeight - bottom,paint);
+    }
+    /**
      * 画圆
      * @param cx
      * @param cy
@@ -131,7 +144,9 @@ public class CanvasTool {
      */
     public void drawOval(float left, float top, float right, float bottom, Paint paint){
         int userHeight = canvas.getHeight();
-        canvas.drawOval(left,userHeight - top,right,userHeight - bottom,paint);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            canvas.drawOval(left,userHeight - top,right,userHeight - bottom,paint);
+        }
     }
 
     /**

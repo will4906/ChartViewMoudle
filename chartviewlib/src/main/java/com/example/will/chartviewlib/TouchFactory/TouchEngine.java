@@ -360,9 +360,7 @@ public class TouchEngine implements ITouchParam {
             addYResolution = 0;
             float addY = FloatTool.accurateMultiply(addYMultiple, userDiv);
             float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
-            float oldMax = max;
             float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
-            float oldMin = min;
             if (addY < 0){
                 if (max >= userMax + addLimit){
                     reDrawMax = false;
@@ -394,40 +392,6 @@ public class TouchEngine implements ITouchParam {
                     drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
                 }
             }
-//            if (min >= userMin - addLimit){
-//                min += addY;
-//                Log.v("addY",String.valueOf(addY));
-//                if (addY < 0){
-//                    if (max >= userMax + addLimit){
-//                        reDrawMax = false;
-//                    }else{
-//                        max += addY;
-//                        reDrawMin = true;
-//                        if (max >= userMax + addLimit) {
-//                            min -= max - (userMax + addLimit);
-//                            max = userMax + addLimit;
-//                            reDrawMax = true;
-//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
-//                        }else{
-//                            reDrawMax = true;
-//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-//                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
-//                        }
-//                    }
-//                }else{
-//                    if (min < userMin - addLimit){
-//                        max = min - (userMin - addLimit);
-//                        min = userMin - addLimit;
-//                    }else{
-//                        max += addY;
-//                    }
-//                    reDrawMin = true;
-//                    reDrawMax = true;
-//                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-//                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
-//                }
-//            }
         }
         //必须要，否则会导致反向难
         touchParam.setDownY(nowY);

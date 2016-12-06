@@ -98,4 +98,17 @@ public interface IMainLineInfo {
      * @param normalOffsetX
      */
     void setNormalOffsetX(int index, float normalOffsetX);
+
+    /**
+     * 统一设置是否显示数据框
+     * @param bShowDataDiv
+     */
+    void setShowDataDiv(boolean bShowDataDiv);
+
+    /**
+     * 设置单条主线是否显示数据框
+     * @param index
+     * @param bShowDataDiv
+     */
+    void setShowDataDiv(int index, boolean bShowDataDiv);
 }

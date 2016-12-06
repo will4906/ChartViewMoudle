@@ -1,12 +1,16 @@
 package com.example.will.chartviewmoudle;
 
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.LineChartView;
 
 import java.util.Timer;
@@ -18,25 +22,40 @@ public class MainActivity extends AppCompatActivity {
     float data = 0;
     boolean addFlag = false;
     private LineChartView lineChartView;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    textViewl.setText(String.valueOf(lineChartView.getMainLineInfoList().get(0).getDataList().size()));
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+    private TextView textViewl;
     private Timer timer = new Timer();
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             data++;
             lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
-            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
-            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
+//            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
+//            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
             if (data >= 100){
                 data = 0;
             }
             lineChartView.drawWave();
+            Message message = new Message();
+            message.what = 0;
+            handler.sendMessage(message);
         }
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        textViewl = (TextView)findViewById(R.id.textView);
         lineChartView = (LineChartView)findViewById(R.id.line_chart_view);
         lineChartView.setScaleTitle(LineChartView.LEFT_SCALE,"左Y轴");
         lineChartView.setScaleTitle(LineChartView.RIGHT_SCALE,"右Y轴");
@@ -98,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
 //        lineChartView.setScaleTextSize(LineChartView.BOTTOM_SCALE,12);
         lineChartView.setInitAViewPointsSum(0,6);
+        lineChartView.setShowDataDiv(0,true);
+        lineChartView.setDivBackgroundColor(Color.BLUE);
 //        lineChartView.setNormalOffsetX(50);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);

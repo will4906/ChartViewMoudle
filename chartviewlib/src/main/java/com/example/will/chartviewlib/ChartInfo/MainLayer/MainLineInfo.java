@@ -19,6 +19,43 @@ public class MainLineInfo extends BaseLineInfo{
         setLineWidth(10);
         setLineColor(Color.GREEN);
     }
+
+    private DataDivInfo dataDivInfo = new DataDivInfo();
+
+    public DataDivInfo getDataDivInfo() {
+        return dataDivInfo;
+    }
+
+    public void setDataDivInfo(DataDivInfo dataDivInfo) {
+        this.dataDivInfo = dataDivInfo;
+    }
+
+    /**
+     * 是否显示数据框
+     */
+    private boolean bShowDataDiv = false;
+
+    public boolean isShowDataDiv() {
+        return bShowDataDiv;
+    }
+
+    public void setShowDataDiv(boolean bShowDataDiv) {
+        this.bShowDataDiv = bShowDataDiv;
+    }
+
+    /**
+     * 哪个点需要显示数据框
+     */
+    private int showDivIndex = -1;
+
+    public int getShowDivIndex() {
+        return showDivIndex;
+    }
+
+    public void setShowDivIndex(int showDivIndex) {
+        this.showDivIndex = showDivIndex;
+    }
+
     /**
      * 是否显示点，若为否，该点位置只用线连接
      */
@@ -168,18 +205,5 @@ public class MainLineInfo extends BaseLineInfo{
 
     public void setNormalOffsetX(float normalOffsetX) {
         this.normalOffsetX = normalOffsetX;
-    }
-
-    /**
-     * 哪个点需要显示数据框
-     */
-    private int showDivIndex = -1;
-
-    public int getShowDivIndex() {
-        return showDivIndex;
-    }
-
-    public void setShowDivIndex(int showDivIndex) {
-        this.showDivIndex = showDivIndex;
     }
 }

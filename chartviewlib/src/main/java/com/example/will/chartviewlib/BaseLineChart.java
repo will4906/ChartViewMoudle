@@ -115,6 +115,7 @@ public class BaseLineChart extends View  {
                 touchEngine.setTouchMode(TouchParam.SINGLE_TOUCH);
                 touchEngine.setDownX(event.getX());
                 touchEngine.setDownY(event.getY());
+                drawEngine.setDownPoint(-1);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (event.getPointerCount() >= 2) {
@@ -139,6 +140,7 @@ public class BaseLineChart extends View  {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
+
                 break;
             default:
                 break;
@@ -148,13 +150,13 @@ public class BaseLineChart extends View  {
         return true;
     }
 
-    private int changeTouchModeIndex = 0;
+    private byte changeTouchModeIndex = 0;
 
-    public int getChangeTouchModeIndex() {
+    public byte getChangeTouchModeIndex() {
         return changeTouchModeIndex;
     }
 
-    public void setChangeTouchModeIndex(int changeTouchModeIndex) {
+    public void setChangeTouchModeIndex(byte changeTouchModeIndex) {
         this.changeTouchModeIndex = changeTouchModeIndex;
     }
 

@@ -511,7 +511,6 @@ public class DrawEngine {
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
             int aViewPointsSum = mainLineInfo.getInitAViewPointsSum();
             if (aViewPointsSum > 0){
-                //TODO 需要计算一个界面显示点数和分辨率的关系
                 /*根据以下公式计算
                 pointSum = (int)(width / (radius * 2 + mainLineInfo.getHorizontalResolution()));
                 pointSum += 1
@@ -564,7 +563,6 @@ public class DrawEngine {
 
             //绘图
             drawLineFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
-//            drawLineFunction(canvasTool,mainLineInfo,chartPointsSum,dataList,chartWidth,chartHeight);
             canvasTool.flushBitmap(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2, chartHeight + scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
 
             if (scaleInfos[BOTTOM_SCALE].isHasData()){
@@ -610,7 +608,16 @@ public class DrawEngine {
     }
 
     private int middlePioint = -1;
-    private float offsetX = 0;
+    private int downPoint = -1;
+
+    public int getDownPoint() {
+        return downPoint;
+    }
+
+    public void setDownPoint(int downPoint) {
+        this.downPoint = downPoint;
+    }
+
     /**
      * 计算屏幕分辨率和偏移
      * @param size
@@ -627,6 +634,14 @@ public class DrawEngine {
             mainLineInfo.setScreenPos(tmpSreenPos);
             middlePioint = -1;
         }else if (touchParam.getTouchMode() == TouchParam.SINGLE_TOUCH){
+            float downX = touchParam.getDownX();
+            float downY = touchParam.getDownY();
+            downX -= scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth();
+            if (downPoint == -1) {                        //如果已经定过位就不需要再重新定位了，免得总是偏移
+                //获取距离两指中间对应横坐标最近的点的索引
+                downPoint = (int) ((mainLineInfo.getScreenPos() + downX - radius) / (mainLineInfo.getHorizontalResolution() + radius * 2));
+            }
+
             float tmpScreenPos = mainLineInfo.getScreenPos() + touchParam.getTouchOffsetX();
             if (tmpScreenPos < 0){
                 tmpScreenPos = 0;
@@ -696,7 +711,26 @@ public class DrawEngine {
             float cx =  pointX - screenMove;
             float pointHeight = changeUserDataToChartViewData(dataList.get(i).getYData(), chartHeight,LEFT_SCALE);
             if (mainLineInfo.isHasPoint()){
+                int color = Integer.MIN_VALUE;
+                if (dataList.get(i).isHasChangeColor()) {
+                    color = mainLineInfo.getMainPointInfo().getPaint().getColor();
+                    mainLineInfo.getMainPointInfo().getPaint().setColor(dataList.get(i).getColor());
+                }
+                float radius2 = Float.MIN_VALUE;
+                if (dataList.get(i).isHasChangeRadius()){
+                    radius2 = mainLineInfo.getMainPointInfo().getRadius();
+                    mainLineInfo.getMainPointInfo().setRadius(dataList.get(i).getRadius());
+                }
+                if (mainLineInfo.isShowDataDiv()){
+                    drawDataDiv(canvasTool, i, mainLineInfo, dataList, cx, pointHeight);
+                }
                 canvasTool.drawCircle(cx,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),mainLineInfo.getMainPointInfo().getPaint());
+                if (color != Integer.MIN_VALUE){
+                    mainLineInfo.getMainPointInfo().getPaint().setColor(color);
+                }
+                if (radius2 != Float.MIN_VALUE){
+                    mainLineInfo.getMainPointInfo().setRadius(radius2);
+                }
             }
             if (mainLineInfo.isHasLine() && i != 0){
                 canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1).getYData(), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
@@ -704,6 +738,69 @@ public class DrawEngine {
         }
     }
 
+    /**
+     * 绘制数据框
+     * @param canvasTool
+     * @param i
+     * @param mainLineInfo
+     * @param dataList
+     * @param cx
+     * @param pointHeight
+     */
+    public void drawDataDiv(CanvasTool canvasTool, int i, MainLineInfo mainLineInfo, List<DataPoint> dataList, float cx, float pointHeight){
+        if (i == downPoint){
+            float textSize = chartViewInfo.getTextSize();
+            Paint divPaint = new Paint();
+            divPaint.setTextSize(textSize);
+            divPaint.setColor(mainLineInfo.getDataDivInfo().getTextColor());
+            divPaint.setTextAlign(Paint.Align.CENTER);
+            if (dataList.get(i).getXData().equals("")){
+                mainLineInfo.getDataDivInfo().setHeight(textSize * 2);
+            }else{
+                mainLineInfo.getDataDivInfo().setHeight(textSize * 4);
+            }
+            float oneLen = divPaint.measureText(String.valueOf(dataList.get(i).getYData()) + scaleInfos[LEFT_SCALE].getScaleTitle());
+            float secondLen = divPaint.measureText(dataList.get(i).getXData());
+            mainLineInfo.getDataDivInfo().setWidth(oneLen > secondLen ? oneLen + 5 : secondLen + 5);
+
+            float divX = cx;
+            float trHeight = textSize;
+
+            float tRightX = cx + trHeight / 3;
+            float tLeftX = cx - trHeight / 3;
+            float rightX = cx + mainLineInfo.getDataDivInfo().getWidth() / 2;
+            float leftX = cx - mainLineInfo.getDataDivInfo().getWidth() / 2;
+            if (cx > chartWidth - mainLineInfo.getDataDivInfo().getWidth() / 2){
+                tRightX = divX;
+                tLeftX -= trHeight / 3;
+                rightX = divX;
+                leftX = rightX - mainLineInfo.getDataDivInfo().getWidth();
+            }else if (cx < mainLineInfo.getDataDivInfo().getWidth() / 2){
+                tLeftX = divX;
+                tRightX += trHeight / 3;
+                leftX = divX;
+                rightX = leftX + mainLineInfo.getDataDivInfo().getWidth();
+            }
+
+            float tBottomHeight = pointHeight + mainLineInfo.getMainPointInfo().getRadius();
+            float tTopHeight = pointHeight + mainLineInfo.getMainPointInfo().getRadius() + trHeight;
+            float topHeight = tTopHeight + mainLineInfo.getDataDivInfo().getHeight();
+            float textOneHeight = topHeight - textSize;
+            if (topHeight > chartHeight){
+                tBottomHeight = pointHeight - mainLineInfo.getMainPointInfo().getRadius();
+                tTopHeight = pointHeight - mainLineInfo.getMainPointInfo().getRadius() - trHeight;
+                topHeight = tTopHeight - mainLineInfo.getDataDivInfo().getHeight();
+                textOneHeight = tTopHeight - textSize;
+            }
+
+            canvasTool.drawTriangle(cx,tBottomHeight,tLeftX,tTopHeight,tRightX,tTopHeight,true,mainLineInfo.getDataDivInfo().getPaint());
+            canvasTool.drawRect(leftX,topHeight,rightX,tTopHeight,mainLineInfo.getDataDivInfo().getPaint());
+            canvasTool.drawText(String.valueOf(dataList.get(i).getYData()) + scaleInfos[LEFT_SCALE].getScaleTitle(),(rightX - leftX) / 2 + leftX,textOneHeight,divPaint);
+            if (!dataList.get(i).getXData().equals("")){
+                canvasTool.drawText(dataList.get(i).getXData(),(rightX - leftX) / 2 + leftX,textOneHeight - textSize * 2,divPaint);
+            }
+        }
+    }
     /**
      * 将用户传进来的数据转换为像素数据
      * @param userData

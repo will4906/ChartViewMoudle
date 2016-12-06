@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.example.will.chartviewlib.ChartInfo.MainLayer.DataPoint;
+import com.example.will.chartviewlib.ChartInfo.MainLayer.IDataDivInfo;
 import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
@@ -32,7 +33,7 @@ import java.util.List;
  * Created by will on 2016/11/21.
  */
 
-public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo, ITouchInfo {
+public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo, ITouchInfo, IDataDivInfo {
 
     /**
      * 对坐标轴的宏定义
@@ -493,6 +494,42 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     @Override
     public void setNormalOffsetX(int index, float normalOffsetX) {
         mainLineInfoList.get(index).setNormalOffsetX(normalOffsetX);
+    }
+
+    @Override
+    public void setShowDataDiv(boolean bShowDataDiv) {
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.setShowDataDiv(bShowDataDiv);
+        }
+    }
+
+    @Override
+    public void setShowDataDiv(int index, boolean bShowDataDiv) {
+        mainLineInfoList.get(index).setShowDataDiv(bShowDataDiv);
+    }
+
+    @Override
+    public void setDivTextColor(int textColor) {
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.getDataDivInfo().setTextColor(textColor);
+        }
+    }
+
+    @Override
+    public void setDivTextColor(int index, int textColor) {
+        mainLineInfoList.get(index).getDataDivInfo().setTextColor(textColor);
+    }
+
+    @Override
+    public void setDivBackgroundColor(int backgroundColor) {
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.getDataDivInfo().setBackgroundColor(backgroundColor);
+        }
+    }
+
+    @Override
+    public void setDivBackgroundColor(int index, int backgroundColor) {
+        mainLineInfoList.get(index).getDataDivInfo().setBackgroundColor(backgroundColor);
     }
 
     public static final int ASK_FOR_DRAW_WAVE = 0x01;

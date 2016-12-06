@@ -22,4 +22,13 @@
         android:text="hello"
         android:layout_below="@+id/line_chart_view"
         android:layout_alignBottom="@id/activity_main"/>
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_hello"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="73dp"
+        android:id="@+id/textView" />
 </RelativeLayout>

@@ -197,4 +197,5 @@ public class TouchParam {
     public void setTmpOffsetX(float tmpOffsetX) {
         this.tmpOffsetX = tmpOffsetX;
     }
+
 }
