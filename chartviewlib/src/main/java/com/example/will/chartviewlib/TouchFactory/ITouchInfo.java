@@ -32,6 +32,20 @@ public interface ITouchInfo {
     void setAllowZoom(boolean allowZoom);
 
     /**
+     * 设置允许横向缩放
+     * @param allowTouchXZoom
+     */
+    void setAllowTouchXZoom(boolean allowTouchXZoom);
+
+    /**
+     * 设置允许纵向缩放
+     * @param allowTouchYZoom
+     */
+    void setAllowTouchYZoom(boolean allowTouchYZoom);
+
+
+
+    /**
      * 设置允许平移
      * @param allowTranslation
      */

@@ -65,4 +65,11 @@ public interface IMainLineInfo {
     void setHorizontalResolution(float horizontalResolution);
 
     void setHorizontalResolution(int index, float horizontalResolution);
+
+    /**
+     * 设置是否可视
+     * @param index
+     * @param visibility
+     */
+    void setMainLineVisibility(int index, boolean visibility);
 }

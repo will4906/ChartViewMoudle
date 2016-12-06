@@ -57,18 +57,34 @@ public class MainLineInfo extends BaseLineInfo{
         this.mainPointInfo = mainPointInfo;
     }
 
-    private List<Float> dataList = new ArrayList<>();
+    private List<DataPoint> dataList = new ArrayList<>();
 
-    public List<Float> getDataList() {
+    public List<DataPoint> getDataList() {
         return dataList;
     }
 
-    public void setDataList(List<Float> dataList) {
+    public void setDataList(List<DataPoint> dataList) {
         this.dataList = dataList;
     }
 
-    public void addData(float data){
-        this.dataList.add(data);
+    /**
+     * 添加数据
+     * @param XData
+     * @param YData
+     */
+    public void addData(String XData, float YData){
+        DataPoint dataPoint = new DataPoint();
+        dataPoint.setXData(XData);
+        dataPoint.setYData(YData);
+        this.dataList.add(dataPoint);
+    }
+
+    /**
+     * 添加数据
+     * @param dataPoint
+     */
+    public void addPoint(DataPoint dataPoint){
+        this.dataList.add(dataPoint);
     }
 
     public void removeData(int index){
@@ -90,32 +106,6 @@ public class MainLineInfo extends BaseLineInfo{
 
     public void setStartIndex(int startIndex) {
         this.startIndex = startIndex;
-    }
-
-    /**
-     * 是否充满界面
-     */
-    private boolean isFullView = false;
-
-    public boolean isFullView() {
-        return isFullView;
-    }
-
-    public void setFullView(boolean fullView) {
-        isFullView = fullView;
-    }
-
-    /**
-     * 线相对于x轴偏移
-     */
-    private float offsetX = 0;
-
-    public float getOffsetX() {
-        return offsetX;
-    }
-
-    public void setOffsetX(float offsetX) {
-        this.offsetX = offsetX;
     }
 
     /**
@@ -143,4 +133,5 @@ public class MainLineInfo extends BaseLineInfo{
     public void setHorizontalResolution(float horizontalResolution) {
         this.horizontalResolution = horizontalResolution;
     }
+
 }

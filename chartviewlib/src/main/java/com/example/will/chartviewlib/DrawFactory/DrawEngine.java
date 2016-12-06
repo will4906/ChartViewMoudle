@@ -1,9 +1,11 @@
 package com.example.will.chartviewlib.DrawFactory;
 
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 
+import com.example.will.chartviewlib.ChartInfo.MainLayer.DataPoint;
 import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
@@ -230,8 +232,10 @@ public class DrawEngine {
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
 
-        canvasTool.drawLine(space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
-                space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2, paint);
+        if (scaleInfo.isVisibility()){
+            canvasTool.drawLine(space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
+                    space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2, paint);
+        }
         paint.setTextAlign(Paint.Align.LEFT);
         canvasTool.drawText(scaleInfo.getScaleTitle(),0,height - textSize,paint);
     }
@@ -248,7 +252,9 @@ public class DrawEngine {
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
         paint.setTextAlign(Paint.Align.RIGHT);
-        canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), space, width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), space, paint);
+        if (scaleInfo.isVisibility()){
+            canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), space, width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), space, paint);
+        }
         if (scaleInfos[LineChartView.RIGHT_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawTextOnPath(scaleInfo.getScaleTitle(),width,height / 2,width,10, 0,textSize,paint);
         }
@@ -265,8 +271,10 @@ public class DrawEngine {
         ScaleInfo scaleInfo = scaleInfos[LineChartView.RIGHT_SCALE];
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
-        canvasTool.drawLine(width - space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
-                width - space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2,paint);
+        if (scaleInfo.isVisibility()){
+            canvasTool.drawLine(width - space, scaleInfos[LineChartView.BOTTOM_SCALE].getSpace() - paint.getStrokeWidth() / 2,
+                    width - space, height - scaleInfos[LineChartView.TOP_SCALE].getSpace() + paint.getStrokeWidth() / 2,paint);
+        }
         paint.setTextAlign(Paint.Align.RIGHT);
         if (scaleInfos[LineChartView.TOP_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawText(scaleInfo.getScaleTitle(),width,height - textSize,paint);
@@ -284,7 +292,9 @@ public class DrawEngine {
         ScaleInfo scaleInfo = scaleInfos[LineChartView.TOP_SCALE];
         Paint paint = scaleInfo.getPaint();
         float space = scaleInfo.getSpace();
-        canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), height - space,width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), height - space,paint);
+        if (scaleInfos[TOP_SCALE].isVisibility()){
+            canvasTool.drawLine(scaleInfos[LineChartView.LEFT_SCALE].getSpace(), height - space,width - scaleInfos[LineChartView.RIGHT_SCALE].getSpace(), height - space,paint);
+        }
         paint.setTextAlign(Paint.Align.LEFT);
         if (scaleInfos[LineChartView.RIGHT_SCALE].getSpace() >= textSize * 2){
             canvasTool.drawTextOnPath(scaleInfo.getScaleTitle(),width,height - textSize,width,height / 2,5,textSize,paint);
@@ -492,10 +502,11 @@ public class DrawEngine {
      * 画波形图
      */
     public void drawMainLine(CanvasTool canvasTool, int width, int height) {
-
         int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
-            drawOneMainLine(canvasTool, mainLineInfo,chartWidth,chartHeight, index);
+            if (mainLineInfo.isVisibility()){
+                drawOneMainLine(canvasTool, mainLineInfo,chartWidth,chartHeight, index);
+            }
             index++;
         }
         //最后处理
@@ -521,15 +532,62 @@ public class DrawEngine {
     private void drawOneMainLine(CanvasTool canvasTool, MainLineInfo mainLineInfo,float chartWidth, float chartHeight, int index){
         synchronized (this){
             canvasTool.startDrawOnABitmap((int) chartWidth, (int) chartHeight);
-            List<Float> dataList = mainLineInfo.getDataList();
+            List<DataPoint> dataList = mainLineInfo.getDataList();
 
             int chartPointsSum = computePoints(mainLineInfo, index, chartWidth);
 
-            drawLineFunction(canvasTool,mainLineInfo,chartPointsSum,dataList,chartWidth,chartHeight);
+            float radius = mainLineInfo.getMainPointInfo().getRadius();
+            //计算
+            XcomputeResolutionAndOffset(mainLineInfo,dataList.size(),radius,chartWidth);
+
+            float screenMove = mainLineInfo.getScreenPos();
+            int start = computeStart(mainLineInfo,screenMove,radius,dataList.size());
+
+            //绘图
+            drawFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
+//            drawLineFunction(canvasTool,mainLineInfo,chartPointsSum,dataList,chartWidth,chartHeight);
             canvasTool.flushBitmap(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2, chartHeight + scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
+
+            if (scaleInfos[BOTTOM_SCALE].isHasData()){
+                canvasTool.startDrawOnABitmap(backgroundWidth - (int)(scaleInfos[RIGHT_SCALE].getSpace() - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2), (int)scaleInfos[BOTTOM_SCALE].getSpace() + (int)(scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2));
+                drawBottomText(canvasTool, start, radius, dataList, screenMove, mainLineInfo);
+
+                canvasTool.flushBitmap(0, scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
+            }
         }
     }
 
+    /**
+     * 绘制底部数据
+     * @param canvasTool
+     * @param start
+     * @param radius
+     * @param dataList
+     * @param screenMove
+     * @param mainLineInfo
+     */
+    public void drawBottomText(CanvasTool canvasTool, int start, float radius, List<DataPoint> dataList, float screenMove, MainLineInfo mainLineInfo ){
+        for (int i = start; i < dataList.size(); i ++){
+            //点的理论横坐标
+            float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
+            //点在屏幕上显示的横坐标
+            float cx =  pointX - screenMove;
+            float pointHeight = changeUserDataToChartViewData(dataList.get(i).getYData(), chartHeight,LEFT_SCALE);
+            if (mainLineInfo.isHasPoint()){
+                String strX = dataList.get(i).getXData();
+                if (!strX.equals("")){
+                    Paint bottomPaint = scaleInfos[BOTTOM_SCALE].getPaint();
+                    bottomPaint.setTextAlign(Paint.Align.CENTER);
+                    if (bottomPaint.measureText(strX) < radius * 2 + mainLineInfo.getHorizontalResolution()){
+                        if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() && dataList.get(i).isShowXData()){
+                            canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
     /**
      * 画单个波形函数
      * @param canvasTool
@@ -539,17 +597,8 @@ public class DrawEngine {
      * @param chartWidth
      * @param chartHeight
      */
-    private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int chartPointsSum, List<Float> dataList, float chartWidth, float chartHeight){
+    private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int chartPointsSum, List<DataPoint> dataList, float chartWidth, float chartHeight){
 
-        float radius = mainLineInfo.getMainPointInfo().getRadius();
-        //计算
-        XcomputeResolutionAndOffset(mainLineInfo,dataList.size(),radius,chartWidth);
-
-        float screenMove = mainLineInfo.getScreenPos();
-        int start = computeStart(mainLineInfo,screenMove,radius,dataList.size());
-
-        //绘图
-        drawFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
     }
 
     private int middlePioint = -1;
@@ -631,18 +680,18 @@ public class DrawEngine {
      * @param chartHeight
      * @param mainLineInfo
      */
-    private void drawFunction(CanvasTool canvasTool, int start, float radius, List<Float> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
+    private void drawFunction(CanvasTool canvasTool, int start, float radius, List<DataPoint> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
         for (int i = start; i < dataList.size(); i ++){
             //点的理论横坐标
             float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
             //点在屏幕上显示的横坐标
             float cx =  pointX - screenMove;
-            float pointHeight = changeUserDataToChartViewData(dataList.get(i), chartHeight,LEFT_SCALE);
+            float pointHeight = changeUserDataToChartViewData(dataList.get(i).getYData(), chartHeight,LEFT_SCALE);
             if (mainLineInfo.isHasPoint()){
                 canvasTool.drawCircle(cx,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),mainLineInfo.getMainPointInfo().getPaint());
             }
             if (mainLineInfo.isHasLine() && i != 0){
-                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
+                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1).getYData(), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
             }
         }
     }

@@ -22,23 +22,13 @@ public class MainActivity extends AppCompatActivity {
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
-//            if (data >= 30){
-//                addFlag = true;
-//            }
-//            if (data <= -30){
-//                addFlag = false;
-//            }
-//            if (addFlag == false){
-                data++;
-                lineChartView.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
-//            lineChartView.addPoint(1,(float)Math.cos((data * Math.PI) / 50));
+            data++;
+            lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
+            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
+            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
             if (data >= 100){
                 data = 0;
             }
-//            }else{
-//                data--;
-//                lineChartView.addPoint((float) Math.sin(Math.PI / data));
-//            }
             lineChartView.drawWave();
         }
     };
@@ -89,15 +79,24 @@ public class MainActivity extends AppCompatActivity {
         bgLineInfo2.setLinePos(-0.75f);
         bgLineInfo2.setLineWidth(5);
         lineChartView.addBackgroundLine(bgLineInfo2);
+        lineChartView.addMainLine();
+        lineChartView.setMainLineWidth(1,4);
+        lineChartView.setMainLineColor(1,Color.BLUE);
+        lineChartView.setMainPointColor(1,Color.BLUE);
 //        lineChartView.addMainLine();
-//        lineChartView.setMainLineWidth(1,4);
-//        lineChartView.setMainLineColor(1,Color.BLUE);
-//        lineChartView.setMainPointColor(1,Color.BLUE);
-//        lineChartView.addMainLine();
-        lineChartView.setMainPointRadius(0, 2);
-//        lineChartView.setMainPointRadius(1, 2);
+        lineChartView.setMainPointRadius(0, 10);
+        lineChartView.setMainPointRadius(1, 2);
+
 //        lineChartView.setMainPointRadius(0, 10);
         lineChartView.setMainLineWidth(0,4);
+        lineChartView.addMainLine();
+        lineChartView.setMainLineVisibility(2,false);
+        lineChartView.setMainLineVisibility(1,false);
+        lineChartView.setScaleVisibility(LineChartView.LEFT_SCALE,false);
+        lineChartView.setScaleVisibility(LineChartView.RIGHT_SCALE,false);
+        lineChartView.setScaleVisibility(LineChartView.TOP_SCALE,false);
+        lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
+        lineChartView.setScaleTextSize(LineChartView.BOTTOM_SCALE,12);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
@@ -108,21 +107,12 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (int i = 0 ; i < 100; i ++){
-                    if (data >= 99){
-                        addFlag = true;
-                    }
-                    if (data == -20){
-                        addFlag = false;
-                    }
-                    if (addFlag == false){
-                        lineChartView.addPoint(0,data++);
-//                        lineChartView.addPoint(1,data * (float)3);
-                    }else{
-                        data -= 10;
-                        lineChartView.addPoint(0,data--);
-//                        lineChartView.addPoint(1,data * (float)3);
-                    }
+                data++;
+                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
+                lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
+                lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
+                if (data >= 100){
+                    data = 0;
                 }
                 lineChartView.drawWave();
             }

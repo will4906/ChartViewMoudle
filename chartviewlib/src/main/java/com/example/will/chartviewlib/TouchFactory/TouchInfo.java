@@ -47,6 +47,32 @@ public class TouchInfo {
     }
 
     /**
+     * 允许横向缩放
+     */
+    private boolean allowTouchXZoom = true;
+
+    public boolean isAllowTouchXZoom() {
+        return allowTouchXZoom;
+    }
+
+    public void setAllowTouchXZoom(boolean allowTouchXZoom) {
+        this.allowTouchXZoom = allowTouchXZoom;
+    }
+
+    /**
+     * 允许纵向缩放
+     */
+    private boolean allowTouchYZoom = true;
+
+    public boolean isAllowTouchYZoom() {
+        return allowTouchYZoom;
+    }
+
+    public void setAllowTouchYZoom(boolean allowTouchYZoom) {
+        this.allowTouchYZoom = allowTouchYZoom;
+    }
+
+    /**
      * 是否处理缩放事件
      */
     private boolean allowZoom = true;

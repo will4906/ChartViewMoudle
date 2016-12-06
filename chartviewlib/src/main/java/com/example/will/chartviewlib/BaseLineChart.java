@@ -135,7 +135,6 @@ public class BaseLineChart extends View  {
                     touchEngine.setDoubleTapX(event.getX(0), event.getX(1));
                     touchEngine.setDoubleTapY(event.getY(0), event.getY(1));
                     touchEngine.setDoubleTouchDistance((float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2))));
-//                    Log.v("FIRST",String.valueOf(touchEngine.getTouchParam().getDoubleTouchDistance()));
                 }
                 break;
             case MotionEvent.ACTION_UP:

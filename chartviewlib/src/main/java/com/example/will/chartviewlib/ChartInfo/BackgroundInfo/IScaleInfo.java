@@ -70,9 +70,27 @@ public interface IScaleInfo {
     void setScaleTitle(int whichScale, String strTitle);
 
     /**
+     * 设置单个坐标轴是否可见
+     * @param visibility
+     */
+    void setScaleVisibility(int whichScale, boolean visibility);
+
+    /**
+     * 统一设置坐标轴是否可见
+     * @param visibility
+     */
+    void setScaleVisibility(boolean visibility);
+    /**
      * 设置y轴范围，不在针对哪个坐标轴进行依赖，默认以左Y轴和下x轴作为依赖，以后的依赖在重新考虑是否设置
      * @param min
      * @param max
      */
     void setYRange(float min, float max);
+
+    /**
+     * 设置单个坐标轴字体大小
+     * @param which
+     * @param textSize
+     */
+    void setScaleTextSize(int which, float textSize);
 }

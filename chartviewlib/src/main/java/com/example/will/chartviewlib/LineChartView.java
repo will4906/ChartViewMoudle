@@ -6,6 +6,7 @@ import android.os.Message;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
+import com.example.will.chartviewlib.ChartInfo.MainLayer.DataPoint;
 import com.example.will.chartviewlib.Common.CanvasTool;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
@@ -236,9 +237,28 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
+    public void setScaleVisibility(int whichScale, boolean visibility) {
+        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
+        enumArr[whichScale].getScaleInfo().setVisibility(visibility);
+    }
+
+    @Override
+    public void setScaleVisibility(boolean visibility) {
+        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
+            s.getScaleInfo().setVisibility(visibility);
+        }
+    }
+
+    @Override
     public void setScaleTitle(int whichScale, String strTitle) {
         ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
         enumArr[whichScale].getScaleInfo().setScaleTitle(strTitle);
+    }
+
+    @Override
+    public void setScaleTextSize(int which, float textSize) {
+        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
+        enumArr[which].getScaleInfo().setTextSize(textSize);
     }
 
     @Override
@@ -384,6 +404,11 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
+    public void setMainLineVisibility(int index, boolean visibility) {
+        mainLineInfoList.get(index).setVisibility(visibility);
+    }
+
+    @Override
     public void setMainPointColor(int index, int color) {
         mainLineInfoList.get(index).getMainPointInfo().setColor(color);
     }
@@ -435,6 +460,16 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         touchEngine.getTouchInfo().setAllowTranslation(allowTranslation);
     }
 
+    @Override
+    public void setAllowTouchXZoom(boolean allowTouchXZoom) {
+        touchEngine.getTouchInfo().setAllowTouchXZoom(allowTouchXZoom);
+    }
+
+    @Override
+    public void setAllowTouchYZoom(boolean allowTouchYZoom) {
+        touchEngine.getTouchInfo().setAllowTouchYZoom(allowTouchYZoom);
+    }
+
     public static final int ASK_FOR_DRAW_WAVE = 0x01;
 
     /**
@@ -455,10 +490,11 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     /**
      * 单独更新某条波形图
      * @param index
-     * @param data
+     * @param XData
+     * @param YData
      */
-    public void drawWave(int index, float data){
-        mainLineInfoList.get(index).addData(data);
+    public void drawWave(int index, String XData, float YData){
+        mainLineInfoList.get(index).addData(XData,YData);
         Message message = new Message();
         message.what = ASK_FOR_DRAW_WAVE;
         handler.sendMessage(message);
@@ -475,21 +511,60 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
 
     /**
      * 为每条波形增加点
-     * @param data
+     * @param dataPoint
      */
-    public void addPoint(float data){
+    public void addPoint(DataPoint dataPoint){
         for (MainLineInfo mainLineInfo : mainLineInfoList){
-            mainLineInfo.addData(data);
+            mainLineInfo.addPoint(dataPoint);
         }
     }
 
     /**
+     * 为每条波形增加点
+     * @param XData
+     * @param YData
+     */
+    public void addPoint(String XData, float YData){
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.addData(XData,YData);
+        }
+    }
+
+    /**
+     * 为每条波形增加点
+     * @param YData
+     */
+    public void addPoint(float YData){
+        for (MainLineInfo mainLineInfo : mainLineInfoList){
+            mainLineInfo.addData("",YData);
+        }
+    }
+
+    /**
+     * 为某条数据添加点
+     * @param index
+     * @param YData
+     */
+    public void addPoint(int index, float YData){
+        mainLineInfoList.get(index).addData("",YData);
+    }
+    /**
      * 为某条波形增加点
      * @param index
-     * @param data
+     * @param YData
+     * @param XData
      */
-    public void addPoint(int index, float data){
-        mainLineInfoList.get(index).addData(data);
+    public void addPoint(int index, float YData, String XData){
+        mainLineInfoList.get(index).addData(XData,YData);
+    }
+
+    /**
+     * 为某条数据添加点
+     * @param index
+     * @param dataPoint
+     */
+    public void addPoint(int index, DataPoint dataPoint){
+        mainLineInfoList.get(index).addPoint(dataPoint);
     }
 
 }
