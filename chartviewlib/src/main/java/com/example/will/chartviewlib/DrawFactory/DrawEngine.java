@@ -127,8 +127,8 @@ public class DrawEngine {
         canvasTool.startDrawOnABitmap(width,height);
         computeForBackground(width,height);
         drawBackground(canvasTool,width,height);
-        drawBgLine(canvasTool, width, height);
         drawScale(canvasTool,width,height);
+        drawBgLine(canvasTool, width, height);
 
         customCanvasTool.startDrawOnABitmap(width,height);
         if (onDrawBackgroundListener.onBackgroundDraw(customCanvasTool) == false){
@@ -174,7 +174,7 @@ public class DrawEngine {
                                 if (scaleInfo.isHasData()){
                                     if (scaleInfo.getScaleTitle().equals("")){
                                         scaleInfo.setSpace(strLen + scaleInfo.getScaleWidth() / 2);
-                                        if (scaleInfos[BOTTOM_SCALE].getScaleTitle().equals("") || scaleInfos[TOP_SCALE].getScaleTitle().equals("")){
+                                        if (!scaleInfos[BOTTOM_SCALE].getScaleTitle().equals("") || !scaleInfos[TOP_SCALE].getScaleTitle().equals("")){
                                             scaleInfo.setSpace(scaleInfo.getSpace() + scaleInfos[BOTTOM_SCALE].getTextSize());
                                         }
                                     }else{
@@ -370,9 +370,13 @@ public class DrawEngine {
                                 case RIGHT_SCALE:{
                                     if (scaleInfos[RIGHT_SCALE].isHasData()){
                                         Paint leftPaint = bgLineInfo.getTextPaint();
-                                        leftPaint.setTextSize(scaleInfos[LEFT_SCALE].getTextSize());
+                                        leftPaint.setTextSize(scaleInfos[RIGHT_SCALE].getTextSize());
                                         leftPaint.setTextAlign(Paint.Align.RIGHT);
-                                        canvasTool.drawText(strTitle,backgroundWidth - scaleInfos[RIGHT_SCALE].getTextSize(),pos - scaleInfos[RIGHT_SCALE].getTextSize() / 2,leftPaint);
+                                        if (scaleInfos[TOP_SCALE].getScaleTitle().equals("") && scaleInfos[BOTTOM_SCALE].getScaleTitle().equals("")){
+                                            canvasTool.drawText(strTitle,backgroundWidth,pos - scaleInfos[RIGHT_SCALE].getTextSize() / 2,leftPaint);
+                                        }else{
+                                            canvasTool.drawText(strTitle,backgroundWidth - scaleInfos[RIGHT_SCALE].getTextSize(),pos - scaleInfos[RIGHT_SCALE].getTextSize() / 2,leftPaint);
+                                        }
                                     }
                                 }
                                     break;

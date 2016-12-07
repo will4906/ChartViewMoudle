@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.addMainLine();
         BgLineInfo bgLineInfo = new BgLineInfo();
         bgLineInfo.setDirection(LineChartView.BGLINE_HORIZONTAL);
-        bgLineInfo.setStrTitle("hello");
+        bgLineInfo.setStrTitle("hellodgsgafgafgdsg");
         bgLineInfo.setTitlePos(LineChartView.LEFT_SCALE);
         bgLineInfo.setIsDotted(true);
         bgLineInfo.setLinePos(0);
