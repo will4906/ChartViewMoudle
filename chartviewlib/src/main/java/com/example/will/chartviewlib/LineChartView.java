@@ -271,6 +271,18 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
+    public void setScaleAutoText(boolean autoText) {
+        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
+            s.getScaleInfo().setAutoText(autoText);
+        }
+    }
+
+    @Override
+    public void setScaleAutoText(int index, boolean autoText) {
+        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
+        enumArr[index].getScaleInfo().setAutoText(autoText);
+    }
+    @Override
     public void setBackgroundColor(int color) {
         //view本身就有一个设置背景颜色的函数
         super.setBackgroundColor(color);
@@ -284,7 +296,10 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         scaleInfo.setMinVale(min);
         scaleInfo.setUserMin(min);
         if (hasDrawTheBackground()){
-            invalidate();
+            setbHasDrawTheBackground(false);
+            Message message = new Message();
+            message.what = ASK_FOR_DRAW_WAVE;
+            handler.sendMessage(message);
         }
     }
 
@@ -532,6 +547,18 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
         mainLineInfoList.get(index).getDataDivInfo().setBackgroundColor(backgroundColor);
     }
 
+    /**
+     * 改变背景
+     */
+    public void changeBackground(){
+        if (hasDrawTheBackground()){
+            setbHasDrawTheBackground(false);
+            Message message = new Message();
+            message.what = ASK_FOR_DRAW_WAVE;
+            handler.sendMessage(message);
+        }
+    }
+
     public static final int ASK_FOR_DRAW_WAVE = 0x01;
 
     /**
@@ -639,5 +666,64 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     public void addPoint(int index, DataPoint dataPoint){
         mainLineInfoList.get(index).addPoint(dataPoint);
     }
+
+//TODO 接口的健壮性有待提高，比如很多都没有判断index是否超出size
+    @Override
+    public float getMainLineWidth(int index) {
+        if (mainLineInfoList.size() - 1 < index){
+            return -1;
+        }
+        return mainLineInfoList.get(index).getLineWidth();
+    }
+
+    @Override
+    public int getMainLineColor(int index) {
+        if (mainLineInfoList.size() - 1 < index){
+            return -1;
+        }
+        return mainLineInfoList.get(index).getLineColor();
+    }
+
+    @Override
+    public boolean isMainLineDotted(int index) {
+
+        return mainLineInfoList.get(index).isbIsDotted();
+    }
+
+    @Override
+    public boolean isMainLineHasPoints(int index) {
+        return mainLineInfoList.get(index).isHasPoint();
+    }
+
+    @Override
+    public boolean isMainLineHasLine(int index) {
+        return mainLineInfoList.get(index).isHasLine();
+    }
+
+    @Override
+    public MainPointInfo getMainLinePointSyle(int index) {
+        return mainLineInfoList.get(index).getMainPointInfo();
+    }
+
+    @Override
+    public List<MainLineInfo> getMainLineList() {
+        return mainLineInfoList;
+    }
+
+    @Override
+    public MainLineInfo getMainLine(int index) {
+        return mainLineInfoList.get(index);
+    }
+
+    @Override
+    public float getHorizontalResolution(int index) {
+        return mainLineInfoList.get(index).getHorizontalResolution();
+    }
+
+    @Override
+    public boolean getMainLineVisibility(int index) {
+        return mainLineInfoList.get(index).isVisibility();
+    }
+
 
 }

@@ -130,12 +130,14 @@ public class MainActivity extends AppCompatActivity {
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
         timer.schedule(timerTask,1000,1000);        //每秒24帧的放映速度
+
 //        timer.schedule(timerTask,1000,84);
 //        timer.schedule(timerTask,1000,1000);
         button = (Button)findViewById(R.id.button_hello);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                lineChartView.changeBackground();
                 data++;
                 lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
                 lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));

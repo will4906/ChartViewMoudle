@@ -196,7 +196,7 @@ public class TouchEngine implements ITouchParam {
     /**
      * Y轴方向缩放比例
      */
-    private final static int Y_MAGNIFICATION = 10;
+    private final static int Y_MAGNIFICATION = 20;
     /**
      * 应答双指按压纵向数据处理，这真的是一个艰苦卓绝的缩放函数，或许以后还会在改进，但是最近的话就这样吧
      * @param event
@@ -370,7 +370,7 @@ public class TouchEngine implements ITouchParam {
                     max -= addY;
                     min -= addY;
                     if (max > userMax + addLimit){
-                        min = max - (userMax + addLimit);
+                        min = min - (max - (userMax + addLimit));
                         max = userMax + addLimit;
                     }
                     drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
@@ -385,7 +385,7 @@ public class TouchEngine implements ITouchParam {
                     max -= addY;
                     min -= addY;
                     if (min < userMin - addLimit){
-                        max = min - (userMin - addLimit);
+                        max = max - (min - (userMin - addLimit));
                         min = userMin - addLimit;
                     }
                     drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);

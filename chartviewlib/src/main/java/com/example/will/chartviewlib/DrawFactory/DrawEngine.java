@@ -127,8 +127,8 @@ public class DrawEngine {
         canvasTool.startDrawOnABitmap(width,height);
         computeForBackground(width,height);
         drawBackground(canvasTool,width,height);
-        drawScale(canvasTool,width,height);
         drawBgLine(canvasTool, width, height);
+        drawScale(canvasTool,width,height);
 
         customCanvasTool.startDrawOnABitmap(width,height);
         if (onDrawBackgroundListener.onBackgroundDraw(customCanvasTool) == false){
@@ -349,7 +349,7 @@ public class DrawEngine {
                     float pos = bgLineInfo.getLinePos();
                     pos = changeUserDataToChartViewData(pos,chartHeight,LEFT_SCALE);
                     pos += scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth();
-                    if (pos > scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() && pos < scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() + chartHeight){
+                    if (pos >= scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() && pos <= scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() + chartHeight){
                         if (bgLineInfo.isbIsDotted()){
                             canvasTool.drawDottedLine(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2,pos,scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2 + chartWidth, pos,20,paint);
                         }else{
@@ -572,7 +572,7 @@ public class DrawEngine {
             drawLineFunction(canvasTool, start, radius,dataList,screenMove,chartHeight,mainLineInfo);
             canvasTool.flushBitmap(scaleInfos[LEFT_SCALE].getSpace() + scaleInfos[LEFT_SCALE].getScaleWidth() / 2, chartHeight + scaleInfos[BOTTOM_SCALE].getSpace() + scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2);
 
-            if (scaleInfos[BOTTOM_SCALE].isHasData()){
+            if (scaleInfos[BOTTOM_SCALE].isHasData() && mainLineInfo.isVisibility()){
                 canvasTool.startDrawOnABitmap(backgroundWidth, (int)scaleInfos[BOTTOM_SCALE].getSpace() + (int)(scaleInfos[BOTTOM_SCALE].getScaleWidth() / 2));
                 drawBottomText(canvasTool, start, radius, dataList, screenMove, mainLineInfo);
 
@@ -594,16 +594,66 @@ public class DrawEngine {
         for (int i = start; i < dataList.size(); i ++){
             //点的理论横坐标
             float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
+            float lastX = radius + (i - 1) * (mainLineInfo.getHorizontalResolution() + radius * 2);
+            float nextX = radius + (i + 1) * (mainLineInfo.getHorizontalResolution() + radius * 2);
             //点在屏幕上显示的横坐标
             float cx =  pointX - screenMove;
-            float pointHeight = changeUserDataToChartViewData(dataList.get(i).getYData(), chartHeight,LEFT_SCALE);
             if (mainLineInfo.isHasPoint()){
                 String strX = dataList.get(i).getXData();
-                if (!strX.equals("")){
+                if (!strX.equals("") && dataList.get(i).isShowXData()){
                     Paint bottomPaint = scaleInfos[BOTTOM_SCALE].getTextPaint();
                     bottomPaint.setTextAlign(Paint.Align.CENTER);
-                    if (bottomPaint.measureText(strX) < radius * 2 + mainLineInfo.getHorizontalResolution()){
-                        if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() && dataList.get(i).isShowXData() &&
+                    if (scaleInfos[BOTTOM_SCALE].isAutoText()){
+                        if (i > 0 && i < dataList.size() - 1){
+                            float lastLen = bottomPaint.measureText(dataList.get(i - 1).getXData());
+                            if (!dataList.get(i - 1).isShowXData()){
+                                lastLen = 0;
+                            }
+                            float nowLen = bottomPaint.measureText(strX);
+                            float nextLen = bottomPaint.measureText(dataList.get(i + 1).getXData());
+                            if (!dataList.get(i + 1).isShowXData()){
+                                nextLen = 0;
+                            }
+                            if (lastX + lastLen / 2 < pointX - nowLen / 2 && pointX + nowLen / 2 < nextX - nextLen / 2 ){
+                                if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() &&
+                                        scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
+                                    canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
+                                }
+                            }
+                        }else if (i == 0){
+                            if (dataList.size() > 1){
+                                float nowLen = bottomPaint.measureText(strX);
+                                float nextLen = bottomPaint.measureText(dataList.get(i + 1).getXData());
+                                if (!dataList.get(i + 1).isShowXData()){
+                                    nextLen = 0;
+                                }
+                                if (pointX + nowLen / 2 < nextX - nextLen / 2 ){
+                                    if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() &&
+                                            scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
+                                        canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
+                                    }
+                                }
+                            }else{
+                                if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() &&
+                                        scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
+                                    canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
+                                }
+                            }
+                        }else if (i == dataList.size() - 1){
+                            float lastLen = bottomPaint.measureText(dataList.get(i - 1).getXData());
+                            if (!dataList.get(i - 1).isShowXData()){
+                                lastLen = 0;
+                            }
+                            float nowLen = bottomPaint.measureText(strX);
+                            if (lastX + lastLen / 2 < pointX - nowLen / 2){
+                                if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() &&
+                                        scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
+                                    canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
+                                }
+                            }
+                        }
+                    }else{
+                        if (scaleInfos[LEFT_SCALE].getSpace() + cx > scaleInfos[LEFT_SCALE].getSpace() &&
                                 scaleInfos[LEFT_SCALE].getSpace() + cx < backgroundWidth - scaleInfos[RIGHT_SCALE].getScaleWidth() / 2 - scaleInfos[RIGHT_SCALE].getSpace()){
                             canvasTool.drawText(strX,scaleInfos[LEFT_SCALE].getSpace() + cx, 0, bottomPaint);
                         }
@@ -711,12 +761,18 @@ public class DrawEngine {
      * @param mainLineInfo
      */
     private void drawLineFunction(CanvasTool canvasTool, int start, float radius, List<DataPoint> dataList, float screenMove, float chartHeight, MainLineInfo mainLineInfo){
+        int whichShowDiv = -1;
+        float showDivCx = 0;
+        float showDivPointHeight = 0;
         for (int i = start; i < dataList.size(); i ++){
             //点的理论横坐标
             float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
             //点在屏幕上显示的横坐标
             float cx =  pointX - screenMove;
             float pointHeight = changeUserDataToChartViewData(dataList.get(i).getYData(), chartHeight,LEFT_SCALE);
+            if (mainLineInfo.isHasLine() && i != 0){
+                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1).getYData(), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
+            }
             if (mainLineInfo.isHasPoint()){
                 int color = Integer.MIN_VALUE;
                 if (dataList.get(i).isHasChangeColor()) {
@@ -728,9 +784,6 @@ public class DrawEngine {
                     radius2 = mainLineInfo.getMainPointInfo().getRadius();
                     mainLineInfo.getMainPointInfo().setRadius(dataList.get(i).getRadius());
                 }
-                if (mainLineInfo.isShowDataDiv()){
-                    drawDataDiv(canvasTool, i, mainLineInfo, dataList, cx, pointHeight);
-                }
                 canvasTool.drawCircle(cx,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),mainLineInfo.getMainPointInfo().getPaint());
                 if (color != Integer.MIN_VALUE){
                     mainLineInfo.getMainPointInfo().getPaint().setColor(color);
@@ -738,10 +791,17 @@ public class DrawEngine {
                 if (radius2 != Float.MIN_VALUE){
                     mainLineInfo.getMainPointInfo().setRadius(radius2);
                 }
+                if (mainLineInfo.isShowDataDiv()){
+                    if (i == downPoint){
+                        whichShowDiv = i;
+                        showDivCx = cx;
+                        showDivPointHeight = pointHeight;
+                    }
+                }
             }
-            if (mainLineInfo.isHasLine() && i != 0){
-                canvasTool.drawLine(cx - (mainLineInfo.getHorizontalResolution() + radius * 2), changeUserDataToChartViewData(dataList.get(i - 1).getYData(), chartHeight,LEFT_SCALE),cx,pointHeight,mainLineInfo.getPaint());
-            }
+        }
+        if (whichShowDiv != -1){
+            drawDataDiv(canvasTool, whichShowDiv, mainLineInfo, dataList, showDivCx, showDivPointHeight);
         }
     }
 

@@ -184,4 +184,17 @@ public class ScaleInfo extends BaseLineInfo{
     public void setUserMin(float userMin) {
         this.userMin = userMin;
     }
+
+    /**
+     * 自动调整字的相关属性
+     */
+    private boolean autoText = true;
+
+    public boolean isAutoText() {
+        return autoText;
+    }
+
+    public void setAutoText(boolean autoText) {
+        this.autoText = autoText;
+    }
 }

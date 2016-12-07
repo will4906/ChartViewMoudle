@@ -93,4 +93,17 @@ public interface IScaleInfo {
      * @param textSize
      */
     void setScaleTextSize(int which, float textSize);
+
+    /**
+     * 统一设置是否允许坐标轴自动调整
+     * @param autoText
+     */
+    void setScaleAutoText(boolean autoText);
+
+    /**
+     * 设置单个坐标轴是否允许自动调整
+     * @param index
+     * @param autoText
+     */
+    void setScaleAutoText(int index, boolean autoText);
 }
