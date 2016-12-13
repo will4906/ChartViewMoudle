@@ -20,8 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="hello"
-        android:layout_below="@+id/line_chart_view"
-        android:layout_alignBottom="@id/activity_main"/>
+        android:layout_below="@+id/line_chart_view" />
 
     <TextView
         android:text="TextView"

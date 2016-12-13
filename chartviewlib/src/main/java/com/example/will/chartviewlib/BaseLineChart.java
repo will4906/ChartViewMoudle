@@ -85,7 +85,15 @@ public class BaseLineChart extends View  {
         CanvasTool canvasTool = new CanvasTool(canvas);
         //绘制背景位图并显示在view上
         if (hasDrawTheBackground() == false){
-            backgroundBitmap = drawEngine.drawChartViewBackground(canvas.getWidth(),canvas.getHeight());
+            int width = canvas.getWidth();
+            int height = canvas.getHeight();
+            if (width <= 0){
+                width = 1;
+            }
+            if (height <= 0){
+                height = 1;
+            }
+            backgroundBitmap = drawEngine.drawChartViewBackground(width,height);
             setbHasDrawTheBackground(true);
             touchEngine.setChangeBackground(false);
         }

@@ -121,6 +121,12 @@ public class DrawEngine {
     public Bitmap drawChartViewBackground(int width, int height){
         backgroundHeight = height;
         backgroundWidth = width;
+        if (height <= 0){
+            height = 1;
+        }
+        if (width <= 0){
+            width = 1;
+        }
         CanvasTool canvasTool = new CanvasTool();
         CanvasTool customCanvasTool = new CanvasTool();
         Bitmap bitmap;
