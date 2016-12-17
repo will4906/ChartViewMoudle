@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.example.will.chartviewlib.ChartInfo.BaseInfo.BaseLineInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -94,7 +95,7 @@ public class MainLineInfo extends BaseLineInfo{
         this.mainPointInfo = mainPointInfo;
     }
 
-    private List<DataPoint> dataList = new ArrayList<>();
+    private List<DataPoint> dataList = new LinkedList<>();
 
     public List<DataPoint> getDataList() {
         return dataList;

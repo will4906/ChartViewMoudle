@@ -14,31 +14,31 @@ public interface IChartBgInfo {
 
     /**
      * 统一使能坐标轴
-     * @param bWhichScale
+     * @param bWhichAxis
      */
-    void enableScales(boolean[] bWhichScale);
+    void enableAxiss(boolean[] bWhichAxis);
 
     /**
      * 使能左边坐标轴
      * @param bHas
      */
-    void enableLeftScale(boolean bHas);
+    void enableLeftAxis(boolean bHas);
 
     /**
      * 使能底部坐标轴
      * @param bHas
      */
-    void enableBottomScale(boolean bHas);
+    void enableBottomAxis(boolean bHas);
 
     /**
      * 使能右边坐标轴
      * @param bHas
      */
-    void enableRightScale(boolean bHas);
+    void enableRightAxis(boolean bHas);
 
     /**
      * 使能顶部坐标轴
      * @param bHas
      */
-    void enableTopScale(boolean bHas);
+    void enableTopAxis(boolean bHas);
 }

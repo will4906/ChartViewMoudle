@@ -59,7 +59,7 @@ public class BgLineInfo extends BaseLineInfo{
     /**
      * 背景线标题的位置，水平方向默认在左Y轴
      */
-    private int titlePos = LineChartView.LEFT_SCALE;
+    private int titlePos = LineChartView.LEFT_AXIS;
 
     public int getTitlePos() {
         return titlePos;

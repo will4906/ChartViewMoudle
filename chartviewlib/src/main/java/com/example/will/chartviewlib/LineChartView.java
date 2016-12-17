@@ -15,8 +15,8 @@ import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IChartBgInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IDefaultBgLineInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IScaleInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ScaleInfo;
+import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.IAxisInfo;
+import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.AxisInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
 import com.example.will.chartviewlib.ChartInfo.IChartViewInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.IMainLineInfo;
@@ -33,15 +33,15 @@ import java.util.List;
  * Created by will on 2016/11/21.
  */
 
-public class LineChartView extends BaseLineChart implements IScaleInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo, ITouchInfo, IDataDivInfo {
+public class LineChartView extends BaseLineChart implements IAxisInfo,IChartViewInfo,IChartBgInfo, IBgLineInfo, IDefaultBgLineInfo, IMainLineInfo,IMainPointInfo, ITouchInfo, IDataDivInfo {
 
     /**
      * 对坐标轴的宏定义
      */
-    public static final int LEFT_SCALE = 0;
-    public static final int BOTTOM_SCALE = 1;
-    public static final int RIGHT_SCALE = 2;
-    public static final int TOP_SCALE = 3;
+    public static final int LEFT_AXIS = 0;
+    public static final int BOTTOM_AXIS = 1;
+    public static final int RIGHT_AXIS = 2;
+    public static final int TOP_AXIS = 3;
 
     public static final int BGLINE_VERTICAL = 90;
     public static final int BGLINE_HORIZONTAL = 0;
@@ -61,7 +61,7 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
 
     public void setOnDrawBackgroundListener(OnDrawBackgroundListener onDrawBackgroundListener) {
         this.onDrawBackgroundListener = onDrawBackgroundListener;
-        drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
+        backgroundEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
     }
 
     public LineChartView(Context context) {
@@ -138,13 +138,13 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     private void initLineChartView(Context context){
         TextView textView = new TextView(context);
         setTextSize(textView.getTextSize() / 4 * 3);
-        setScaleWidth(textView.getTextSize() / 7);
-        drawEngine.setDefaultBgLineInfo(defaultBgLineInfo);
-        drawEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
-        drawEngine.setCharBgInfo(chartBgInfo);
-        drawEngine.setBgLineInfoList(bgLineInfoList);
+        setAxisWidth(textView.getTextSize() / 7);
+        backgroundEngine.setDefaultBgLineInfo(defaultBgLineInfo);
+        backgroundEngine.setOnDrawBackgroundListener(onDrawBackgroundListener);
+        backgroundEngine.setChartBgInfo(chartBgInfo);
+        backgroundEngine.setBgLineInfoList(bgLineInfoList);
         drawEngine.setChartViewInfo(chartViewInfo);
-        drawEngine.setScaleInfos(new ScaleInfo[]{ScaleInfoEnum.LEFT.getScaleInfo(),ScaleInfoEnum.BOTTOM.getScaleInfo(),ScaleInfoEnum.RIGHT.getScaleInfo(),ScaleInfoEnum.TOP.getScaleInfo()});
+        backgroundEngine.setAxisInfos(new AxisInfo[]{AxisInfoEnum.LEFT.getAxisInfo(),AxisInfoEnum.BOTTOM.getAxisInfo(),AxisInfoEnum.RIGHT.getAxisInfo(),AxisInfoEnum.TOP.getAxisInfo()});
         drawEngine.setMainLineInfoList(mainLineInfoList);
     }
 
@@ -178,109 +178,109 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     /**
      * 对坐标轴数据的枚举
      */
-    protected enum ScaleInfoEnum{
-        LEFT(new ScaleInfo()),BOTTOM(new ScaleInfo()),RIGHT(new ScaleInfo()),TOP(new ScaleInfo());
-        private ScaleInfo scaleInfo;
-        public ScaleInfo getScaleInfo(){
-            return scaleInfo;
+    protected enum AxisInfoEnum{
+        LEFT(new AxisInfo()),BOTTOM(new AxisInfo()),RIGHT(new AxisInfo()),TOP(new AxisInfo());
+        private AxisInfo axisInfo;
+        public AxisInfo getAxisInfo(){
+            return axisInfo;
         }
-        public void setScaleInfo(ScaleInfo scaleInfo){
-            this.scaleInfo = scaleInfo;
+        public void setAxisInfo(AxisInfo axisInfo){
+            this.axisInfo = axisInfo;
         }
-        private ScaleInfoEnum(ScaleInfo scaleInfo){
-            this.scaleInfo = scaleInfo;
-        }
-    }
-
-    @Override
-    public void setScaleColor(int color){
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setScaleColor(color);
+        private AxisInfoEnum(AxisInfo axisInfo){
+            this.axisInfo = axisInfo;
         }
     }
 
     @Override
-    public void setScaleColor(int whichScale,int color){
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleColor(color);
-    }
-
-    @Override
-    public void setScaleWidth(float width){
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setScaleWidth(width);
+    public void setAxisColor(int color){
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setAxisColor(color);
         }
     }
 
     @Override
-    public void setScaleWidth(int whichScale, float width){
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleWidth(width);
+    public void setAxisColor(int whichAxis,int color){
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].getAxisInfo().setAxisColor(color);
     }
 
     @Override
-    public void setScaleInfo(int whichScale, ScaleInfo scaleInfo) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].setScaleInfo(scaleInfo);
-    }
-
-    @Override
-    public void setScaleHasData(boolean hasData) {
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setHasData(hasData);
+    public void setAxisWidth(float width){
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setAxisWidth(width);
         }
     }
 
     @Override
-    public void setScaleHasData(int whichScale, boolean hasData) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setHasData(hasData);
+    public void setAxisWidth(int whichAxis, float width){
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].getAxisInfo().setAxisWidth(width);
     }
 
     @Override
-    public void setScaleVisibility(int whichScale, boolean visibility) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setVisibility(visibility);
+    public void setAxisInfo(int whichAxis, AxisInfo axisInfo) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].setAxisInfo(axisInfo);
     }
 
     @Override
-    public void setScaleVisibility(boolean visibility) {
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setVisibility(visibility);
+    public void setAxisHasData(boolean hasData) {
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setHasData(hasData);
         }
     }
 
     @Override
-    public void setScaleTitle(int whichScale, String strTitle) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[whichScale].getScaleInfo().setScaleTitle(strTitle);
+    public void setAxisHasData(int whichAxis, boolean hasData) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].getAxisInfo().setHasData(hasData);
     }
 
     @Override
-    public void setScaleTextSize(int which, float textSize) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[which].getScaleInfo().setTextSize(textSize);
+    public void setAxisVisibility(int whichAxis, boolean visibility) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].getAxisInfo().setVisibility(visibility);
+    }
+
+    @Override
+    public void setAxisVisibility(boolean visibility) {
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setVisibility(visibility);
+        }
+    }
+
+    @Override
+    public void setAxisTitle(int whichAxis, String strTitle) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[whichAxis].getAxisInfo().setAxisTitle(strTitle);
+    }
+
+    @Override
+    public void setAxisTextSize(int which, float textSize) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[which].getAxisInfo().setTextSize(textSize);
     }
 
     @Override
     public void setTextSize(float textSize) {
         chartViewInfo.setTextSize(textSize);
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setTextSize(textSize);
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setTextSize(textSize);
         }
     }
 
     @Override
-    public void setScaleAutoText(boolean autoText) {
-        for (ScaleInfoEnum s:ScaleInfoEnum.values()) {
-            s.getScaleInfo().setAutoText(autoText);
+    public void setAxisAutoText(boolean autoText) {
+        for (AxisInfoEnum s:AxisInfoEnum.values()) {
+            s.getAxisInfo().setAutoText(autoText);
         }
     }
 
     @Override
-    public void setScaleAutoText(int index, boolean autoText) {
-        ScaleInfoEnum[] enumArr = ScaleInfoEnum.values();
-        enumArr[index].getScaleInfo().setAutoText(autoText);
+    public void setAxisAutoText(int index, boolean autoText) {
+        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
+        enumArr[index].getAxisInfo().setAutoText(autoText);
     }
     @Override
     public void setBackgroundColor(int color) {
@@ -290,11 +290,11 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
 
     @Override
     public void setYRange(float min, float max) {
-        ScaleInfo scaleInfo = ScaleInfoEnum.LEFT.getScaleInfo();
-        scaleInfo.setMaxValue(max);
-        scaleInfo.setUserMax(max);
-        scaleInfo.setMinVale(min);
-        scaleInfo.setUserMin(min);
+        AxisInfo axisInfo = AxisInfoEnum.LEFT.getAxisInfo();
+        axisInfo.setMaxValue(max);
+        axisInfo.setUserMax(max);
+        axisInfo.setMinVale(min);
+        axisInfo.setUserMin(min);
         if (hasDrawTheBackground()){
             setbHasDrawTheBackground(false);
             Message message = new Message();
@@ -304,28 +304,28 @@ public class LineChartView extends BaseLineChart implements IScaleInfo,IChartVie
     }
 
     @Override
-    public void enableScales(boolean[] bWhichScale) {
-        chartBgInfo.enableScales(bWhichScale);
+    public void enableAxiss(boolean[] bWhichAxis) {
+        chartBgInfo.enableAxiss(bWhichAxis);
     }
 
     @Override
-    public void enableLeftScale(boolean bHas) {
-        chartBgInfo.enableLeftScale(bHas);
+    public void enableLeftAxis(boolean bHas) {
+        chartBgInfo.enableLeftAxis(bHas);
     }
 
     @Override
-    public void enableBottomScale(boolean bHas) {
-        chartBgInfo.enableBottomScale(bHas);
+    public void enableBottomAxis(boolean bHas) {
+        chartBgInfo.enableBottomAxis(bHas);
     }
 
     @Override
-    public void enableRightScale(boolean bHas) {
-        chartBgInfo.enableRightScale(bHas);
+    public void enableRightAxis(boolean bHas) {
+        chartBgInfo.enableRightAxis(bHas);
     }
 
     @Override
-    public void enableTopScale(boolean bHas) {
-        chartBgInfo.enableTopScale(bHas);
+    public void enableTopAxis(boolean bHas) {
+        chartBgInfo.enableTopAxis(bHas);
     }
 
     @Override

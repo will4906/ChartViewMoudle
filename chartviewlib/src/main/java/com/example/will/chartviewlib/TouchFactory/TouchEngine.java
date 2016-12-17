@@ -1,9 +1,5 @@
 package com.example.will.chartviewlib.TouchFactory;
 
-import android.graphics.Canvas;
-import android.graphics.ImageFormat;
-import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.will.chartviewlib.Common.FloatTool;
@@ -203,8 +199,8 @@ public class TouchEngine implements ITouchParam {
      */
     private boolean answerDoubleTouchY(MotionEvent event){
         //TODO 关于Y轴方向的缩放有待升级
-        float userMax = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMax();
-        float userMin = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMin();
+        float userMax = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMax();
+        float userMin = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMin();
         float userLen = FloatTool.accurateMinus(userMax, userMin);
         float userDiv = userLen / Y_MAGNIFICATION;
         int limit = drawEngine.getChartViewInfo().getLimitY();
@@ -223,10 +219,10 @@ public class TouchEngine implements ITouchParam {
             float addY = FloatTool.accurateMultiply(addYMultiple, userDiv);
             //此处得到的middle为坐标轴向下的Y轴坐标，应先进行转换
             float middle = touchParam.getTwoPointsMiddleY();
-            float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
-            float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
+            float max = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getMaxValue();
+            float min = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getMinVale();
             middle = FloatTool.accurateMinus(drawEngine.getBackgroundHeight(), middle);
-            middle -= drawEngine.getScaleInfos()[LineChartView.BOTTOM_SCALE].getSpace() + drawEngine.getScaleInfos()[LineChartView.BOTTOM_SCALE].getScaleWidth();
+            middle -= drawEngine.getAxisInfos()[LineChartView.BOTTOM_AXIS].getSpace() + drawEngine.getAxisInfos()[LineChartView.BOTTOM_AXIS].getAxisWidth();
             if (middle < 0){
                 middle = 0;
             }
@@ -257,8 +253,8 @@ public class TouchEngine implements ITouchParam {
                             if (min > max - userDiv){
                                 min = max - userDiv;
                             }
-                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-                            drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                            drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMinVale(min);
+                            drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMaxValue(max);
                         }
                     }
                 }
@@ -281,8 +277,8 @@ public class TouchEngine implements ITouchParam {
                         if (min > max - userDiv){
                             min = max - userDiv;
                         }
-                        drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-                        drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                        drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMinVale(min);
+                        drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMaxValue(max);
                     }
                 }
             }
@@ -346,8 +342,8 @@ public class TouchEngine implements ITouchParam {
         float nowY = event.getY();
         float YLen = downY - nowY;
         addYResolution += YLen;
-        float userMax = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMax();
-        float userMin = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getUserMin();
+        float userMax = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMax();
+        float userMin = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMin();
         float userLen = FloatTool.accurateMinus(userMax, userMin);
         float userDiv = userLen / Y_MAGNIFICATION;
         int limit = drawEngine.getChartViewInfo().getLimitY();
@@ -359,8 +355,8 @@ public class TouchEngine implements ITouchParam {
             int addYMultiple = (int)FloatTool.Rounding(0,addYResolution / limitDiv);
             addYResolution = 0;
             float addY = FloatTool.accurateMultiply(addYMultiple, userDiv);
-            float max = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMaxValue();
-            float min = drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].getMinVale();
+            float max = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getMaxValue();
+            float min = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getMinVale();
             if (addY < 0){
                 if (max >= userMax + addLimit){
                     reDrawMax = false;
@@ -373,8 +369,8 @@ public class TouchEngine implements ITouchParam {
                         min = min - (max - (userMax + addLimit));
                         max = userMax + addLimit;
                     }
-                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                    drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMinVale(min);
+                    drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMaxValue(max);
                 }
             }else{
                 if (min <= userMin - addLimit){
@@ -388,8 +384,8 @@ public class TouchEngine implements ITouchParam {
                         max = max - (min - (userMin - addLimit));
                         min = userMin - addLimit;
                     }
-                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMinVale(min);
-                    drawEngine.getScaleInfos()[LineChartView.LEFT_SCALE].setMaxValue(max);
+                    drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMinVale(min);
+                    drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].setMaxValue(max);
                 }
             }
         }

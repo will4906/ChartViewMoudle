@@ -7,10 +7,11 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.example.will.chartviewlib.Common.CanvasTool;
+import com.example.will.chartviewlib.DrawFactory.BackgroundEngine;
+import com.example.will.chartviewlib.DrawFactory.InformationMediator;
 import com.example.will.chartviewlib.TouchFactory.TouchEngine;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
 import com.example.will.chartviewlib.DrawFactory.DrawEngine;
@@ -46,10 +47,14 @@ public class BaseLineChart extends View  {
      * 背景类全局位图，因为背景若无改变只需绘制一次便可重复使用，所以定义为类全局
      */
     protected Bitmap backgroundBitmap;
+
+    private InformationMediator informationMediator = new InformationMediator();
     /**
      * 绘图引擎
      */
-    protected DrawEngine drawEngine = new DrawEngine();
+    protected DrawEngine drawEngine = new DrawEngine(informationMediator);
+
+    protected BackgroundEngine backgroundEngine = new BackgroundEngine(informationMediator);
 
     /**
      * view工具类，放置一些与view处理相关的函数
@@ -93,7 +98,7 @@ public class BaseLineChart extends View  {
             if (height <= 0){
                 height = 1;
             }
-            backgroundBitmap = drawEngine.drawChartViewBackground(width,height);
+            backgroundBitmap = backgroundEngine.drawChartViewBackground(width,height);
             setbHasDrawTheBackground(true);
             touchEngine.setChangeBackground(false);
         }

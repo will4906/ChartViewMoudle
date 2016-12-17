@@ -4,10 +4,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 //静态导入，jdk5新特性
-import static com.example.will.chartviewlib.LineChartView.BOTTOM_SCALE;
-import static com.example.will.chartviewlib.LineChartView.LEFT_SCALE;
-import static com.example.will.chartviewlib.LineChartView.RIGHT_SCALE;
-import static com.example.will.chartviewlib.LineChartView.TOP_SCALE;
+import static com.example.will.chartviewlib.LineChartView.BOTTOM_AXIS;
+import static com.example.will.chartviewlib.LineChartView.LEFT_AXIS;
+import static com.example.will.chartviewlib.LineChartView.RIGHT_AXIS;
+import static com.example.will.chartviewlib.LineChartView.TOP_AXIS;
 
 /**
  * @author will4906.
@@ -20,55 +20,55 @@ public class ChartBgInfo {
      * 是否有坐标轴
      * 缺省值：有
      */
-    boolean bHasScale = true;
-    public boolean isbHasScale() {
-        return bHasScale;
+    boolean bHasAxis = true;
+    public boolean isbHasAxis() {
+        return bHasAxis;
     }
 
-    public void setbHasScale(boolean bHasScale) {
-        this.bHasScale = bHasScale;
+    public void setbHasAxis(boolean bHasAxis) {
+        this.bHasAxis = bHasAxis;
     }
 
     /**
      * 有哪个坐标轴，按左Y轴，下X轴，右Y轴，上X轴的顺序
      * 缺省值：左Y轴，下X轴
      */
-    boolean bWhichScale[] = new boolean[]{true,true,false,false};
-    public boolean[] getWhichScaleEnable() {
-        return bWhichScale;
+    boolean bWhichAxis[] = new boolean[]{true,true,false,false};
+    public boolean[] getWhichAxisEnable() {
+        return bWhichAxis;
     }
 
-    public void enableScales(boolean[] bWhichScale) {
-        for (boolean whichScale:bWhichScale) {
-            if (whichScale){
-                this.setbHasScale(true);
+    public void enableAxiss(boolean[] bWhichAxis) {
+        for (boolean whichAxis:bWhichAxis) {
+            if (whichAxis){
+                this.setbHasAxis(true);
             }
         }
-        this.bWhichScale = bWhichScale;
+        this.bWhichAxis = bWhichAxis;
     }
-    public void enableLeftScale(boolean bHas){
+    public void enableLeftAxis(boolean bHas){
         if (bHas){
-            this.setbHasScale(true);
+            this.setbHasAxis(true);
         }
-        bWhichScale[LEFT_SCALE] = bHas;
+        bWhichAxis[LEFT_AXIS] = bHas;
     }
-    public void enableBottomScale(boolean bHas){
+    public void enableBottomAxis(boolean bHas){
         if (bHas){
-            this.setbHasScale(true);
+            this.setbHasAxis(true);
         }
-        bWhichScale[BOTTOM_SCALE] = bHas;
+        bWhichAxis[BOTTOM_AXIS] = bHas;
     }
-    public void enableRightScale(boolean bHas){
+    public void enableRightAxis(boolean bHas){
         if (bHas){
-            this.setbHasScale(true);
+            this.setbHasAxis(true);
         }
-        bWhichScale[RIGHT_SCALE] = bHas;
+        bWhichAxis[RIGHT_AXIS] = bHas;
     }
-    public void enableTopScale(boolean bHas){
+    public void enableTopAxis(boolean bHas){
         if (bHas){
-            this.setbHasScale(true);
+            this.setbHasAxis(true);
         }
-        bWhichScale[TOP_SCALE] = bHas;
+        bWhichAxis[TOP_AXIS] = bHas;
     }
     /**
      * 背景线

@@ -9,9 +9,9 @@ import com.example.will.chartviewlib.Common.FloatTool;
  * Created by will on 2016/11/22.
  */
 
-public class ScaleInfo extends BaseLineInfo{
+public class AxisInfo extends BaseLineInfo{
 
-    public ScaleInfo(){
+    public AxisInfo(){
         textPaint = new Paint(paint);
     }
     /**
@@ -37,11 +37,11 @@ public class ScaleInfo extends BaseLineInfo{
     /**
      * 坐标轴颜色处理
      */
-    public int getScaleColor() {
+    public int getAxisColor() {
         return super.getLineColor();
     }
 
-    public void setScaleColor(int scaleColor) {
+    public void setAxisColor(int scaleColor) {
         super.setLineColor(scaleColor);
     }
 
@@ -49,11 +49,11 @@ public class ScaleInfo extends BaseLineInfo{
      * 坐标轴宽度
      */
 
-    public float getScaleWidth() {
+    public float getAxisWidth() {
         return super.getLineWidth();
     }
 
-    public void setScaleWidth(float scaleWidth) {
+    public void setAxisWidth(float scaleWidth) {
         super.setLineWidth(scaleWidth);
     }
 
@@ -91,11 +91,11 @@ public class ScaleInfo extends BaseLineInfo{
      */
    String strTitle = "";
 
-    public String getScaleTitle() {
+    public String getAxisTitle() {
         return strTitle;
     }
 
-    public void setScaleTitle(String strTitle) {
+    public void setAxisTitle(String strTitle) {
         this.strTitle = strTitle;
     }
 
