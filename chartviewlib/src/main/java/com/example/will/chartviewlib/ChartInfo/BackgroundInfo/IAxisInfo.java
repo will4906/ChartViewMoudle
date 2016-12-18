@@ -95,6 +95,19 @@ public interface IAxisInfo {
     void setAxisTextSize(int which, float textSize);
 
     /**
+     * 设置单个坐标轴的字体颜色
+     * @param which
+     * @param textColor
+     */
+    void setAxisTextColor(int which, int textColor);
+
+    /**
+     * 统一设置坐标轴字体颜色
+     * @param textColor
+     */
+    void setAxisTextColor(int textColor);
+
+    /**
      * 统一设置是否允许坐标轴自动调整
      * @param autoText
      */

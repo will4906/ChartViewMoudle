@@ -95,7 +95,7 @@ public class MainLineInfo extends BaseLineInfo{
         this.mainPointInfo = mainPointInfo;
     }
 
-    private List<DataPoint> dataList = new LinkedList<>();
+    private List<DataPoint> dataList = new ArrayList<>();
 
     public List<DataPoint> getDataList() {
         return dataList;

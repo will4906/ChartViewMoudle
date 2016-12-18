@@ -21,34 +21,64 @@ public class MainActivity extends AppCompatActivity {
     private Button button;
     float data = 0;
     boolean addFlag = false;
-    private LineChartView lineChartView;
+    private LineChartView lineChartView,line1,line2,line3;
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 0:
-                    textViewl.setText(String.valueOf(lineChartView.getMainLineInfoList().get(0).getDataList().size()));
+//                    textViewl.setText(String.valueOf(lineChartView.getMainLineInfoList().get(0).getDataList().size()));
                     break;
             }
             super.handleMessage(msg);
         }
     };
-    private TextView textViewl;
+//    private TextView textViewl;
     private Timer timer = new Timer();
     private TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             data++;
-            if (data % 5 == 0){
-                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
-            }
-            lineChartView.addPoint(1, (float) Math.sin((data * Math.PI) / 50));
+//            if (data % 5 == 0){
+//                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
+//            }
+            line1.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+            line2.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+            line3.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+            lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50));
 //            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
 //            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
             if (data >= 100){
                 data = 0;
             }
-            lineChartView.drawWave();
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+                    line1.drawWave();
+//                }
+//            }).start();
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+                    line2.drawWave();
+//                }
+//            }).start();
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+                    line3.drawWave();
+//                }
+//            }).start();
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+                    lineChartView.drawWave();
+//                }
+//            }).start();
+//            lineChartView.drawWave();
+//
+//            line2.drawWave();
+//            line3.drawWave();
             Message message = new Message();
             message.what = 0;
             handler.sendMessage(message);
@@ -58,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textViewl = (TextView)findViewById(R.id.textView);
+//        textViewl = (TextView)findViewById(R.id.textView);
         lineChartView = (LineChartView)findViewById(R.id.line_chart_view);
         lineChartView.setAxisTitle(LineChartView.LEFT_AXIS,"左Y轴");
         lineChartView.setAxisTitle(LineChartView.RIGHT_AXIS,"");
@@ -81,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         lineChartView.addMainLine();
         BgLineInfo bgLineInfo = new BgLineInfo();
         bgLineInfo.setDirection(LineChartView.BGLINE_HORIZONTAL);
-        bgLineInfo.setStrTitle("hellodgsgafgafgdsg");
+        bgLineInfo.setStrTitle("hell");
         bgLineInfo.setTitlePos(LineChartView.LEFT_AXIS);
         bgLineInfo.setIsDotted(true);
         bgLineInfo.setLinePos(0);
@@ -103,50 +133,78 @@ public class MainActivity extends AppCompatActivity {
         bgLineInfo2.setTextColor(Color.YELLOW);
         lineChartView.addBackgroundLine(bgLineInfo2);
         lineChartView.addMainLine();
-        lineChartView.setMainLineWidth(1,4);
-        lineChartView.setMainLineColor(1,Color.GREEN);
-        lineChartView.setMainPointColor(1,Color.GREEN);
+        lineChartView.setInitHorizontalResolution(0,-9);
+        lineChartView.setMainLineVisibility(0,true);
+        lineChartView.setMainLineColor(0,Color.GREEN);
+        lineChartView.setMainLineWidth(0,10);
+        lineChartView.setMainPointRadius(0,5);
+        lineChartView.setMainPointColor(0,Color.GREEN);
+        line1 = (LineChartView)findViewById(R.id.line1);
+        line1.setYRange(-1,1);
+        line1.addMainLine();
+        line1.setInitHorizontalResolution(0,-9);
+        line1.setMainLineWidth(0,10);
+        line1.setMainPointRadius(0,5);
+
+        line2 = (LineChartView)findViewById(R.id.line2);
+        line2.setYRange(-1,1);
+        line2.addMainLine();
+        line2.setInitHorizontalResolution(0,-9);
+        line2.setMainLineWidth(0,10);
+        line2.setMainPointRadius(0,5);
+
+        line3 = (LineChartView)findViewById(R.id.line3);
+        line3.setYRange(-1,1);
+        line3.addMainLine();
+        line3.setInitHorizontalResolution(0,-9);
+        line3.setMainLineWidth(0,10);
+        line3.setMainPointRadius(0,5);
+
+//        lineChartView.
+//        lineChartView.setMainLineWidth(1,4);
+//        lineChartView.setMainLineColor(1,Color.GREEN);
+//        lineChartView.setMainPointColor(1,Color.GREEN);
 //        lineChartView.addMainLine();
-        lineChartView.setMainPointRadius(0, 10);
-        lineChartView.setMainPointRadius(1, 2);
+//        lineChartView.setMainPointRadius(0, 5);
+//        lineChartView.setMainPointRadius(1, 2);
 
 //        lineChartView.setMainPointRadius(0, 10);
-        lineChartView.setMainLineWidth(0,4);
-        lineChartView.addMainLine();
-        lineChartView.setMainLineVisibility(2,false);
-        lineChartView.setMainLineVisibility(1,true);
-        lineChartView.setAxisVisibility(LineChartView.LEFT_AXIS,false);
-        lineChartView.setAxisVisibility(LineChartView.RIGHT_AXIS,false);
-        lineChartView.setAxisVisibility(LineChartView.TOP_AXIS,false);
-        lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
+//        lineChartView.setMainLineWidth(0,4);
+//        lineChartView.addMainLine();
+//        lineChartView.setMainLineVisibility(2,false);
+//        lineChartView.setMainLineVisibility(1,false);
+//        lineChartView.setAxisVisibility(LineChartView.LEFT_AXIS,false);
+//        lineChartView.setAxisVisibility(LineChartView.RIGHT_AXIS,false);
+//        lineChartView.setAxisVisibility(LineChartView.TOP_AXIS,false);
+//        lineChartView.setHorizontalResolution(0,lineChartView.getMeasuredWidth() / 8);
 //        lineChartView.setAxisTextSize(LineChartView.BOTTOM_AXIS,12);
 //        lineChartView.setInitAViewPointsSum(0,6);
-        lineChartView.setShowDataDiv(0,true);
-        lineChartView.setHasPoints(1,false);
-        lineChartView.setHasLine(0,false);
-        lineChartView.setDivBackgroundColor(Color.BLUE);
+//        lineChartView.setShowDataDiv(0,true);
+//        lineChartView.setHasPoints(1,false);
+//        lineChartView.setHasLine(0,false);
+//        lineChartView.setDivBackgroundColor(Color.BLUE);
 //        lineChartView.setNormalOffsetX(50);
 //        lineChartView.setHasLine(0,false);
 //        lineChartView.setMainLineWidth(0, (float) 0.2);
 //        lineChartView.setHorizontalReslution(80);
-        timer.schedule(timerTask,1000,1000);        //每秒24帧的放映速度
+        timer.schedule(timerTask,0,8);        //每秒24帧的放映速度
 
 //        timer.schedule(timerTask,1000,84);
 //        timer.schedule(timerTask,1000,1000);
-        button = (Button)findViewById(R.id.button_hello);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                lineChartView.changeBackground();
-                data++;
-                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
-                lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
-                lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
-                if (data >= 100){
-                    data = 0;
-                }
-                lineChartView.drawWave();
-            }
-        });
+//        button = (Button)findViewById(R.id.button_hello);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                lineChartView.changeBackground();
+//                data++;
+//                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data));
+//                lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
+//                lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
+//                if (data >= 100){
+//                    data = 0;
+//                }
+//                lineChartView.drawWave();
+//            }
+//        });
     }
 }

@@ -27,6 +27,7 @@ import com.example.will.chartviewlib.DrawFactory.OnDrawBackgroundListener;
 import com.example.will.chartviewlib.TouchFactory.ITouchInfo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -147,7 +148,7 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
         backgroundEngine.setChartBgInfo(chartBgInfo);
         backgroundEngine.setBgLineInfoList(bgLineInfoList);
         drawEngine.setChartViewInfo(chartViewInfo);
-        backgroundEngine.setAxisInfos(new AxisInfo[]{AxisInfoEnum.LEFT.getAxisInfo(),AxisInfoEnum.BOTTOM.getAxisInfo(),AxisInfoEnum.RIGHT.getAxisInfo(),AxisInfoEnum.TOP.getAxisInfo()});
+        backgroundEngine.setAxisInfos(AxisInfoArr);
         drawEngine.setMainLineInfoList(mainLineInfoList);
     }
 
@@ -181,95 +182,109 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     /**
      * 对坐标轴数据的枚举
      */
-    protected enum AxisInfoEnum{
-        LEFT(new AxisInfo()),BOTTOM(new AxisInfo()),RIGHT(new AxisInfo()),TOP(new AxisInfo());
-        private AxisInfo axisInfo;
-        public AxisInfo getAxisInfo(){
-            return axisInfo;
-        }
-        public void setAxisInfo(AxisInfo axisInfo){
-            this.axisInfo = axisInfo;
-        }
-        private AxisInfoEnum(AxisInfo axisInfo){
-            this.axisInfo = axisInfo;
-        }
-    }
+    private AxisInfo[] AxisInfoArr = new AxisInfo[]{new AxisInfo(), new AxisInfo(), new AxisInfo(), new AxisInfo()};
+//    protected enum AxisInfoEnum{
+//        LEFT(new AxisInfo()),BOTTOM(new AxisInfo()),RIGHT(new AxisInfo()),TOP(new AxisInfo());
+//        private AxisInfo axisInfo;
+//        public AxisInfo getAxisInfo(){
+//            return axisInfo;
+//        }
+//        public void setAxisInfo(AxisInfo axisInfo){
+//            this.axisInfo = axisInfo;
+//        }
+//        private AxisInfoEnum(AxisInfo axisInfo){
+//            this.axisInfo = axisInfo;
+//        }
+//    }
 
     @Override
     public void setAxisColor(int color){
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setAxisColor(color);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setAxisColor(color);
         }
     }
 
     @Override
     public void setAxisColor(int whichAxis,int color){
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].getAxisInfo().setAxisColor(color);
+        
+        AxisInfoArr[whichAxis].setAxisColor(color);
+    }
+
+    @Override
+    public void setAxisTextColor(int which, int textColor) {
+        
+        AxisInfoArr[which].setTextColor(textColor);
+    }
+
+    @Override
+    public void setAxisTextColor(int textColor) {
+        for (AxisInfo s : AxisInfoArr) {
+            s.setTextColor(textColor);
+        }
     }
 
     @Override
     public void setAxisWidth(float width){
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setAxisWidth(width);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setAxisWidth(width);
         }
     }
 
     @Override
     public void setAxisWidth(int whichAxis, float width){
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].getAxisInfo().setAxisWidth(width);
+        
+        AxisInfoArr[whichAxis].setAxisWidth(width);
     }
 
     @Override
     public void setAxisInfo(int whichAxis, AxisInfo axisInfo) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].setAxisInfo(axisInfo);
+
+        AxisInfoArr[whichAxis] = axisInfo;
     }
 
     @Override
     public void setAxisHasData(boolean hasData) {
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setHasData(hasData);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setHasData(hasData);
         }
     }
 
     @Override
     public void setAxisHasData(int whichAxis, boolean hasData) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].getAxisInfo().setHasData(hasData);
+        
+        AxisInfoArr[whichAxis].setHasData(hasData);
     }
 
     @Override
     public void setAxisVisibility(int whichAxis, boolean visibility) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].getAxisInfo().setVisibility(visibility);
+        
+        AxisInfoArr[whichAxis].setVisibility(visibility);
     }
 
     @Override
     public void setAxisVisibility(boolean visibility) {
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setVisibility(visibility);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setVisibility(visibility);
         }
     }
 
     @Override
     public void setAxisTitle(int whichAxis, String strTitle) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[whichAxis].getAxisInfo().setAxisTitle(strTitle);
+        
+        AxisInfoArr[whichAxis].setAxisTitle(strTitle);
     }
 
     @Override
     public void setAxisTextSize(int which, float textSize) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[which].getAxisInfo().setTextSize(textSize);
+        
+        AxisInfoArr[which].setTextSize(textSize);
     }
 
     @Override
     public void setTextSize(float textSize) {
         chartViewInfo.setTextSize(textSize);
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setTextSize(textSize);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setTextSize(textSize);
         }
     }
 
@@ -280,15 +295,14 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
 
     @Override
     public void setAxisAutoText(boolean autoText) {
-        for (AxisInfoEnum s:AxisInfoEnum.values()) {
-            s.getAxisInfo().setAutoText(autoText);
+        for (AxisInfo s : AxisInfoArr) {
+            s.setAutoText(autoText);
         }
     }
 
     @Override
     public void setAxisAutoText(int index, boolean autoText) {
-        AxisInfoEnum[] enumArr = AxisInfoEnum.values();
-        enumArr[index].getAxisInfo().setAutoText(autoText);
+        AxisInfoArr[index].setAutoText(autoText);
     }
     @Override
     public void setBackgroundColor(int color) {
@@ -298,7 +312,7 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
 
     @Override
     public void setYRange(float min, float max) {
-        AxisInfo axisInfo = AxisInfoEnum.LEFT.getAxisInfo();
+        AxisInfo axisInfo = AxisInfoArr[LEFT_AXIS];
         axisInfo.setMaxValue(max);
         axisInfo.setUserMax(max);
         axisInfo.setMinVale(min);

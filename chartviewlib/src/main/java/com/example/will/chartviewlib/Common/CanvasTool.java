@@ -314,5 +314,6 @@ public class CanvasTool {
         cacheCanvas = null;
         oldCanvas = null;
         cacheBitmap.recycle();
+        cacheBitmap = null;
     }
 }
