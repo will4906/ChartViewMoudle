@@ -138,7 +138,9 @@ public class DrawEngine extends Colleague{
                 drawForwardLine(canvasTool);
                 break;
             case SCAN_MODE:
-                drawScanLine(canvasTool);
+                synchronized (this){
+                    drawScanLine(canvasTool);
+                }
                 break;
             default:
                 break;

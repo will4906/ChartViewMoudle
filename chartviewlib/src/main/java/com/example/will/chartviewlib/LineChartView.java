@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.example.will.chartviewlib.DrawFactory.ScanEngine.SCAN_BUFFER_SZIE;
+
 /**
  * Created by will on 2016/11/21.
  */
@@ -183,19 +185,6 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
      * 对坐标轴数据的枚举
      */
     private AxisInfo[] AxisInfoArr = new AxisInfo[]{new AxisInfo(), new AxisInfo(), new AxisInfo(), new AxisInfo()};
-//    protected enum AxisInfoEnum{
-//        LEFT(new AxisInfo()),BOTTOM(new AxisInfo()),RIGHT(new AxisInfo()),TOP(new AxisInfo());
-//        private AxisInfo axisInfo;
-//        public AxisInfo getAxisInfo(){
-//            return axisInfo;
-//        }
-//        public void setAxisInfo(AxisInfo axisInfo){
-//            this.axisInfo = axisInfo;
-//        }
-//        private AxisInfoEnum(AxisInfo axisInfo){
-//            this.axisInfo = axisInfo;
-//        }
-//    }
 
     @Override
     public void setAxisColor(int color){
@@ -291,6 +280,9 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     @Override
     public void setDrawMode(int drawMode) {
         chartViewInfo.setDrawMode(drawMode);
+        if (drawMode == SCAN_MODE){
+            touchEngine.getTouchInfo().setAllowTouchEvent(false);
+        }
     }
 
     @Override
@@ -627,6 +619,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     public void addPoint(DataPoint dataPoint){
         for (MainLineInfo mainLineInfo : mainLineInfoList){
             mainLineInfo.addPoint(dataPoint);
+            if (chartViewInfo.getDrawMode() == SCAN_MODE){
+                if (mainLineInfo.getDataList().size() > SCAN_BUFFER_SZIE){
+                    mainLineInfo.getDataList().remove(0);
+                }
+            }
         }
     }
 
@@ -638,6 +635,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     public void addPoint(String XData, float YData){
         for (MainLineInfo mainLineInfo : mainLineInfoList){
             mainLineInfo.addData(XData,YData);
+            if (chartViewInfo.getDrawMode() == SCAN_MODE){
+                if (mainLineInfo.getDataList().size() > SCAN_BUFFER_SZIE){
+                    mainLineInfo.getDataList().remove(0);
+                }
+            }
         }
     }
 
@@ -648,6 +650,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     public void addPoint(float YData){
         for (MainLineInfo mainLineInfo : mainLineInfoList){
             mainLineInfo.addData("",YData);
+            if (chartViewInfo.getDrawMode() == SCAN_MODE){
+                if (mainLineInfo.getDataList().size() > SCAN_BUFFER_SZIE){
+                    mainLineInfo.getDataList().remove(0);
+                }
+            }
         }
     }
 
@@ -658,6 +665,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
      */
     public void addPoint(int index, float YData){
         mainLineInfoList.get(index).addData("",YData);
+        if (chartViewInfo.getDrawMode() == SCAN_MODE){
+            if (mainLineInfoList.get(index).getDataList().size() > SCAN_BUFFER_SZIE){
+                mainLineInfoList.get(index).getDataList().remove(0);
+            }
+        }
     }
     /**
      * 为某条波形增加点
@@ -667,6 +679,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
      */
     public void addPoint(int index, float YData, String XData){
         mainLineInfoList.get(index).addData(XData,YData);
+        if (chartViewInfo.getDrawMode() == SCAN_MODE){
+            if (mainLineInfoList.get(index).getDataList().size() > SCAN_BUFFER_SZIE){
+                mainLineInfoList.get(index).getDataList().remove(0);
+            }
+        }
     }
 
     /**
@@ -679,6 +696,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
     public void addPoint(int index, float YData, String XData, boolean show){
         mainLineInfoList.get(index).addData(XData,YData);
         mainLineInfoList.get(index).getDataList().get(mainLineInfoList.get(index).getDataList().size() - 1).setShowXData(show);
+        if (chartViewInfo.getDrawMode() == SCAN_MODE){
+            if (mainLineInfoList.get(index).getDataList().size() > SCAN_BUFFER_SZIE){
+                mainLineInfoList.get(index).getDataList().remove(0);
+            }
+        }
     }
     /**
      * 为某条数据添加点
@@ -687,6 +709,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
      */
     public void addPoint(int index, DataPoint dataPoint){
         mainLineInfoList.get(index).addPoint(dataPoint);
+        if (chartViewInfo.getDrawMode() == SCAN_MODE){
+            if (mainLineInfoList.get(index).getDataList().size() > SCAN_BUFFER_SZIE){
+                mainLineInfoList.get(index).getDataList().remove(0);
+            }
+        }
     }
 
 //TODO 接口的健壮性有待提高，比如很多都没有判断index是否超出size

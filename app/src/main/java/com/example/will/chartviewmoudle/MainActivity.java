@@ -42,31 +42,31 @@ public class MainActivity extends AppCompatActivity {
 //            if (data % 5 == 0){
 //                lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50), String.valueOf(data),true);
 //            }
-            line1.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
-            line2.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
-            line3.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+//            line1.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+//            line2.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
+//            line3.addPoint(0,(float) Math.sin((data * Math.PI) / 50));
             lineChartView.addPoint(0, (float) Math.sin((data * Math.PI) / 50));
 //            lineChartView.addPoint(1, (float) Math.cos((data * Math.PI) / 50));
 //            lineChartView.addPoint(2,(float)Math.tan((data * Math.PI) / 50));
-            if (data >= 100){
-                data = 0;
-            }
+//            if (data >= 100){
+//                data = 0;
+//            }
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    line1.drawWave();
+//                    line1.drawWave();
 //                }
 //            }).start();
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    line2.drawWave();
+//                    line2.drawWave();
 //                }
 //            }).start();
 //            new Thread(new Runnable() {
 //                @Override
 //                public void run() {
-                    line3.drawWave();
+//                    line3.drawWave();
 //                }
 //            }).start();
 //            new Thread(new Runnable() {
@@ -133,33 +133,37 @@ public class MainActivity extends AppCompatActivity {
         bgLineInfo2.setTextColor(Color.YELLOW);
         lineChartView.addBackgroundLine(bgLineInfo2);
         lineChartView.addMainLine();
-        lineChartView.setInitHorizontalResolution(0,-9);
+        lineChartView.setInitHorizontalResolution(0,0);
         lineChartView.setMainLineVisibility(0,true);
         lineChartView.setMainLineColor(0,Color.GREEN);
         lineChartView.setMainLineWidth(0,10);
         lineChartView.setMainPointRadius(0,5);
         lineChartView.setMainPointColor(0,Color.GREEN);
-        line1 = (LineChartView)findViewById(R.id.line1);
-        line1.setYRange(-1,1);
-        line1.addMainLine();
-        line1.setInitHorizontalResolution(0,-9);
-        line1.setMainLineWidth(0,10);
-        line1.setMainPointRadius(0,5);
+        lineChartView.setDrawMode(LineChartView.SCAN_MODE);
 
-        line2 = (LineChartView)findViewById(R.id.line2);
-        line2.setYRange(-1,1);
-        line2.addMainLine();
-        line2.setInitHorizontalResolution(0,-9);
-        line2.setMainLineWidth(0,10);
-        line2.setMainPointRadius(0,5);
-
-        line3 = (LineChartView)findViewById(R.id.line3);
-        line3.setYRange(-1,1);
-        line3.addMainLine();
-        line3.setInitHorizontalResolution(0,-9);
-        line3.setMainLineWidth(0,10);
-        line3.setMainPointRadius(0,5);
-
+//        line1 = (LineChartView)findViewById(R.id.line1);
+//        line1.setYRange(-1,1);
+//        line1.addMainLine();
+//        line1.setInitHorizontalResolution(0,-9);
+//        line1.setMainLineWidth(0,10);
+//        line1.setMainPointRadius(0,5);
+//        line1.setDrawMode(LineChartView.SCAN_MODE);
+//
+//        line2 = (LineChartView)findViewById(R.id.line2);
+//        line2.setYRange(-1,1);
+//        line2.addMainLine();
+//        line2.setInitHorizontalResolution(0,-9);
+//        line2.setMainLineWidth(0,10);
+//        line2.setMainPointRadius(0,5);
+//        line2.setDrawMode(LineChartView.SCAN_MODE);
+//
+//        line3 = (LineChartView)findViewById(R.id.line3);
+//        line3.setYRange(-1,1);
+//        line3.addMainLine();
+//        line3.setInitHorizontalResolution(0,-9);
+//        line3.setMainLineWidth(0,10);
+//        line3.setMainPointRadius(0,5);
+//        line3.setDrawMode(LineChartView.SCAN_MODE);
 //        lineChartView.
 //        lineChartView.setMainLineWidth(1,4);
 //        lineChartView.setMainLineColor(1,Color.GREEN);

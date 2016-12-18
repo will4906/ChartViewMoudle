@@ -111,54 +111,55 @@ public class BaseLineChart extends View  {
     private boolean isFling = false;
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (touchEngine.getTouchInfo().isAllowTouchEvent()) {
+            int action = event.getAction();
+            nowAction = action;
+            switch (action & MotionEvent.ACTION_MASK) {
+                case MotionEvent.ACTION_MOVE:
+                    //一旦符合重绘条件就重绘
+                    if (touchEngine.answerTouch(event)) {
+                        if (touchEngine.isChangeBackground()) {
+                            setbHasDrawTheBackground(false);
+                        }
+                        invalidate();
+                    }
+                    break;
+                case MotionEvent.ACTION_DOWN:
+                    touchEngine.setTouchMode(TouchParam.SINGLE_TOUCH);
+                    touchEngine.setDownX(event.getX());
+                    touchEngine.setDownY(event.getY());
+                    drawEngine.setDownPoint(-1);
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    if (event.getPointerCount() >= 2) {
+                        float middle;
+                        if (event.getX(0) > event.getX(1)) {
+                            middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(1);
+                        } else {
+                            middle = (event.getX(1) - event.getX(0)) / 2 + event.getX(0);
+                        }
+                        touchEngine.setTwoPointsMiddleX(middle);
+                        if (event.getY(0) > event.getY(1)) {
+                            middle = (event.getY(0) - event.getY(1)) / 2 + event.getY(1);
+                        } else {
+                            middle = (event.getY(1) - event.getY(0)) / 2 + event.getY(0);
+                        }
+                        touchEngine.setTwoPointsMiddleY(middle);
+                        touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
+                        touchEngine.setDoubleTapX(event.getX(0), event.getX(1));
+                        touchEngine.setDoubleTapY(event.getY(0), event.getY(1));
+                        touchEngine.setDoubleTouchDistance((float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1), 2) + Math.pow(event.getY(0) - event.getY(1), 2))));
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
 
-        int action = event.getAction();
-        nowAction = action;
-        switch (action & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_MOVE:
-                //一旦符合重绘条件就重绘
-                if (touchEngine.answerTouch(event)) {
-                    if (touchEngine.isChangeBackground()){
-                        setbHasDrawTheBackground(false);
-                    }
-                    invalidate();
-                }
-                break;
-            case MotionEvent.ACTION_DOWN:
-                touchEngine.setTouchMode(TouchParam.SINGLE_TOUCH);
-                touchEngine.setDownX(event.getX());
-                touchEngine.setDownY(event.getY());
-                drawEngine.setDownPoint(-1);
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                if (event.getPointerCount() >= 2) {
-                    float middle;
-                    if (event.getX(0) > event.getX(1)) {
-                        middle = (event.getX(0) - event.getX(1)) / 2 + event.getX(1);
-                    } else {
-                        middle = (event.getX(1) - event.getX(0)) / 2 + event.getX(0);
-                    }
-                    touchEngine.setTwoPointsMiddleX(middle);
-                    if (event.getY(0) > event.getY(1)){
-                        middle = (event.getY(0) - event.getY(1)) / 2 + event.getY(1);
-                    }else{
-                        middle = (event.getY(1) - event.getY(0)) / 2 + event.getY(0);
-                    }
-                    touchEngine.setTwoPointsMiddleY(middle);
-                    touchEngine.setTouchMode(TouchParam.DOUBLE_TOUCH);
-                    touchEngine.setDoubleTapX(event.getX(0), event.getX(1));
-                    touchEngine.setDoubleTapY(event.getY(0), event.getY(1));
-                    touchEngine.setDoubleTouchDistance((float) Math.sqrt(Math.abs(Math.pow(event.getX(0) - event.getX(1),2) + Math.pow(event.getY(0) - event.getY(1),2))));
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-
-                break;
-            default:
-                break;
+                    break;
+                default:
+                    break;
+            }
+            gestureDetector.onTouchEvent(event);
         }
-        gestureDetector.onTouchEvent(event);
         //此处需改为true，否则双指的条件无法执行
         return true;
     }

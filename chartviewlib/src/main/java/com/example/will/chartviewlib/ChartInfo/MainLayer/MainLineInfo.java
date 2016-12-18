@@ -207,4 +207,17 @@ public class MainLineInfo extends BaseLineInfo{
     public void setNormalOffsetX(float normalOffsetX) {
         this.normalOffsetX = normalOffsetX;
     }
+
+    /**
+     * 扫描模式的图像缓冲区
+     */
+    private List<Float> scanBufferList = new ArrayList<>();
+
+    public List<Float> getScanBufferList() {
+        return scanBufferList;
+    }
+
+    public void setScanBufferList(List<Float> scanBufferList) {
+        this.scanBufferList = scanBufferList;
+    }
 }

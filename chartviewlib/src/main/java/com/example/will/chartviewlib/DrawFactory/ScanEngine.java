@@ -1,5 +1,6 @@
 package com.example.will.chartviewlib.DrawFactory;
 
+import android.graphics.Paint;
 import android.util.Log;
 
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.AxisInfo;
@@ -20,7 +21,7 @@ import static com.example.will.chartviewlib.LineChartView.LEFT_AXIS;
 
 public class ScanEngine {
 
-    private static final int SCAN_BUFFER_SZIE = 10000;
+    public static final int SCAN_BUFFER_SZIE = 10000;
     private List<MainLineInfo> mainLineInfoList;
 
     public List<MainLineInfo> getMainLineInfoList() {
@@ -69,14 +70,16 @@ public class ScanEngine {
      * 绘制扫描式的波形
      * @param canvasTool
      */
-    public void drawScanLine(CanvasTool canvasTool){
-        for (int i = 0; i < mainLineInfoList.size(); i ++){
+    public void drawScanLine(CanvasTool canvasTool) {
+        for (int i = 0; i < mainLineInfoList.size(); i++) {
             MainLineInfo mainLineInfo = mainLineInfoList.get(i);
-            if (mainLineInfo.isVisibility()){
+            if (mainLineInfo.isVisibility()) {
                 try {
-                    drawOneMainLine(canvasTool, mainLineInfo);
-                }catch (Exception e){
-                    Log.v("Exception",String.valueOf(e));
+                    if (mainLineInfo.getDataList().size() > 0) {
+                        drawOneMainLine(canvasTool, mainLineInfo);
+                    }
+                } catch (Exception e) {
+                    Log.v("Exception", String.valueOf(e));
                 }
             }
         }
@@ -91,33 +94,76 @@ public class ScanEngine {
         canvasTool.startDrawOnABitmap((int) chartWidth, (int) chartHeight);
 
         List<DataPoint> dataList = mainLineInfo.getDataList();
-        float radius = mainLineInfo.getMainPointInfo().getRadius();
 
-        int aViewPointsSum = DrawComputer.computePoints(mainLineInfo,chartWidth);
-        int aViewTheoryPointsSum = DrawComputer.computePoints(mainLineInfo,chartWidth - 15);
+        int aViewPointsSum = DrawComputer.computePoints(mainLineInfo,chartWidth - 15);
+        int aViewTheoryPointsSum = DrawComputer.computePoints(mainLineInfo,chartWidth);
 
-        List<Float> viewList = new ArrayList<>();
-        addPointsIntoViewList(viewList, dataList, aViewTheoryPointsSum, aViewPointsSum);
+        addPointsIntoViewList(mainLineInfo, dataList, aViewTheoryPointsSum, aViewPointsSum);
 
-
+        drawLineFunction(canvasTool, mainLineInfo, aViewTheoryPointsSum);
         canvasTool.flushBitmap(axisInfos[LEFT_AXIS].getSpace() + axisInfos[LEFT_AXIS].getAxisWidth() / 2, chartHeight + axisInfos[BOTTOM_AXIS].getSpace() + axisInfos[BOTTOM_AXIS].getAxisWidth() / 2);
     }
 
     /**
-     * 应该起始的点的索引
+     * 计算点的分布
+     * @param mainLineInfo
+     * @param dataList
+     * @param viewTheorySize
+     * @param viewSize
      */
-    private int startIndex = 0;
+    private void addPointsIntoViewList(MainLineInfo mainLineInfo, List<DataPoint> dataList, int viewTheorySize, int viewSize){
+        int startIndex = mainLineInfo.getStartIndex();
+        int scanSize = mainLineInfo.getScanBufferList().size();
+        int interval = viewTheorySize - viewSize;
+        if (scanSize != viewTheorySize){
+            if (scanSize < viewTheorySize){
+                for (int i = scanSize; i < viewTheorySize; i ++){
+                    mainLineInfo.getScanBufferList().add(null);
+                }
+            }else {
+                for (int i = scanSize - 1; i >= viewTheorySize; i --){
+                    mainLineInfo.getScanBufferList().remove(i);
+                }
+                startIndex = 0;
+            }
+        }
 
-    private void addPointsIntoViewList(List<Float> viewList, List<DataPoint> dataList, int viewTheorySize, int viewSize){
-        if (dataList.size() < viewTheorySize){
-            for (int i = 0; i < dataList.size(); i ++){
-                viewList.add(dataList.get(i).getYData());
+        mainLineInfo.getScanBufferList().set(startIndex, dataList.get(dataList.size() - 1).getYData());
+        for (int i = 1; i < interval + 1; i ++){
+            int index = i;
+            if (startIndex + i >= viewTheorySize){
+                index = -(startIndex - (viewTheorySize - startIndex + i));
             }
-        }else{
-            if (dataList.size() > SCAN_BUFFER_SZIE){
-                dataList.remove(0);
+            mainLineInfo.getScanBufferList().set(startIndex + index, null);
+        }
+        startIndex++;
+        if (startIndex >= viewTheorySize){
+            startIndex = 0;
+        }
+        mainLineInfo.setStartIndex(startIndex);
+    }
+
+    private void drawLineFunction(CanvasTool canvasTool, MainLineInfo mainLineInfo, int viewTheorySize){
+        float radius = mainLineInfo.getMainPointInfo().getRadius();
+        List<Float> scanBufferList = mainLineInfo.getScanBufferList();
+        for (int i = 0; i < viewTheorySize; i ++){
+            if (scanBufferList.get(i) != null){
+                float pointX = radius + i * (mainLineInfo.getHorizontalResolution() + radius * 2);
+                float pointHeight = DrawComputer.changeUserDataToChartViewData(scanBufferList.get(i),chartHeight,axisInfos[LEFT_AXIS]);
+                if (mainLineInfo.isHasLine() && i != 0 ){
+                    if (scanBufferList.get(i - 1) != null){
+                        canvasTool.drawLine(radius + (i - 1)* (mainLineInfo.getHorizontalResolution() + radius * 2),
+                                DrawComputer.changeUserDataToChartViewData(scanBufferList.get(i - 1), chartHeight,axisInfos[LEFT_AXIS]),
+                                pointX,
+                                pointHeight,
+                                mainLineInfo.getPaint());
+                    }
+                }
+                if (mainLineInfo.isHasPoint()){
+                    Paint paint = mainLineInfo.getMainPointInfo().getPaint();
+                    canvasTool.drawCircle(pointX,pointHeight,mainLineInfo.getMainPointInfo().getRadius(),paint);
+                }
             }
-            int interval = viewTheorySize - viewSize;
         }
     }
 }
