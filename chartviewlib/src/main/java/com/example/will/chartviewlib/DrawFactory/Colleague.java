@@ -7,4 +7,5 @@ package com.example.will.chartviewlib.DrawFactory;
  */
 
 public class Colleague {
+    private String name = "";
 }
