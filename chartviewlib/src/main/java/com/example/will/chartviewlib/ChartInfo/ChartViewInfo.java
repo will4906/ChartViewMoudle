@@ -2,6 +2,8 @@ package com.example.will.chartviewlib.ChartInfo;
 
 import android.graphics.Paint;
 
+import static com.example.will.chartviewlib.LineChartView.FORWARD_MODE;
+
 /**
  * @author will4906.
  * @Time 2016/11/23.
@@ -44,5 +46,18 @@ public class ChartViewInfo {
 
     public void setLimitY(int limitY) {
         this.limitY = limitY;
+    }
+
+    /**
+     * 绘制模式，默认为递进模式
+     */
+    private int drawMode = FORWARD_MODE;
+
+    public int getDrawMode() {
+        return drawMode;
+    }
+
+    public void setDrawMode(int drawMode) {
+        this.drawMode = drawMode;
     }
 }

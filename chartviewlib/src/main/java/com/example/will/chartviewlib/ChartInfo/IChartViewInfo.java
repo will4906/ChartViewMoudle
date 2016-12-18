@@ -12,5 +12,9 @@ public interface IChartViewInfo {
      */
     void setTextSize(float textSize);
 
-
+    /**
+     * 设置绘图模式
+     * @param drawMode
+     */
+    void setDrawMode(int drawMode);
 }

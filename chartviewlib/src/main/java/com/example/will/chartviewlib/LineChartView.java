@@ -45,6 +45,9 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
 
     public static final int BGLINE_VERTICAL = 90;
     public static final int BGLINE_HORIZONTAL = 0;
+
+    public static final int FORWARD_MODE = 0;           //递进模式
+    public static final int SCAN_MODE = 1;              //扫描模式
     /**
      * 绘制背景监听
      */
@@ -268,6 +271,11 @@ public class LineChartView extends BaseLineChart implements IAxisInfo,IChartView
         for (AxisInfoEnum s:AxisInfoEnum.values()) {
             s.getAxisInfo().setTextSize(textSize);
         }
+    }
+
+    @Override
+    public void setDrawMode(int drawMode) {
+        chartViewInfo.setDrawMode(drawMode);
     }
 
     @Override

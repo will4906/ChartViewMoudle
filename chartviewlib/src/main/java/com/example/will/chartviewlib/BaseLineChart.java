@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -103,7 +102,8 @@ public class BaseLineChart extends View  {
             touchEngine.setChangeBackground(false);
         }
         canvasTool.drawBitmap(backgroundBitmap,0,canvas.getHeight());
-        drawEngine.drawMainLine(canvasTool, canvas.getWidth(),canvas.getHeight());
+        //画图表的函数，以后再考虑是否要换位置放吧，暂时还不需要
+        drawEngine.drawMainLine(canvasTool);
     }
 
     protected TouchEngine touchEngine = new TouchEngine();

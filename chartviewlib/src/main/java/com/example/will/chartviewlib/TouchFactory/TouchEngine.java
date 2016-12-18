@@ -198,7 +198,7 @@ public class TouchEngine implements ITouchParam {
      * @param event
      */
     private boolean answerDoubleTouchY(MotionEvent event){
-        //TODO 关于Y轴方向的缩放有待升级
+        //TODO 关于Y轴方向的缩放有待升级，当两个或以上控件存在时，上下滑动和缩放某个会影响全部控件。这是个bug有待解决
         float userMax = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMax();
         float userMin = drawEngine.getAxisInfos()[LineChartView.LEFT_AXIS].getUserMin();
         float userLen = FloatTool.accurateMinus(userMax, userMin);

@@ -31,13 +31,15 @@ public class InformationMediator extends AbstractMediator{
     @Override
     public void change(Colleague colleague) {
         if (colleague == backgroundEngine){
-            drawEngine.setBackgroundWidth(backgroundEngine.getBackgroundWidth());
-            drawEngine.setBackgroundHeight(backgroundEngine.getBackgroundHeight());
-            drawEngine.setAxisInfos(backgroundEngine.getAxisInfos());
-            drawEngine.setChartWidth(backgroundEngine.getChartWidth());
-            drawEngine.setChartHeight(backgroundEngine.getChartHeight());
+            if (drawEngine != null){
+                drawEngine.setBackgroundWidth(backgroundEngine.getBackgroundWidth());
+                drawEngine.setBackgroundHeight(backgroundEngine.getBackgroundHeight());
+                drawEngine.setAxisInfos(backgroundEngine.getAxisInfos());               //这一句其实只要一次，因为是引用对象。
+                drawEngine.setChartWidth(backgroundEngine.getChartWidth());
+                drawEngine.setChartHeight(backgroundEngine.getChartHeight());
+            }
         }else if (colleague == drawEngine){
-
+            //这里暂时不知道要处理什么事情
         }
     }
 }

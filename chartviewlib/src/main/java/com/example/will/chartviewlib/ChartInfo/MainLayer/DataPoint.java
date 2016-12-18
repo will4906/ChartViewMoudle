@@ -11,7 +11,7 @@ import com.example.will.chartviewlib.ChartInfo.BaseInfo.BasePointInfo;
  */
 
 public class DataPoint {
-
+    //TODO 准备使用享元模式
     /**
      * 对应Y轴数据
      */

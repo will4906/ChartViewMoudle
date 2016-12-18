@@ -4,17 +4,13 @@ import android.graphics.Paint;
 
 import com.example.will.chartviewlib.ChartInfo.MainLayer.DataPoint;
 import com.example.will.chartviewlib.Common.CanvasTool;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.BgLineInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.ChartBgInfo;
-import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.DefaultBgLineInfo;
 import com.example.will.chartviewlib.ChartInfo.BackgroundInfo.AxisInfo;
 import com.example.will.chartviewlib.ChartInfo.ChartViewInfo;
 import com.example.will.chartviewlib.ChartInfo.MainLayer.MainLineInfo;
 import com.example.will.chartviewlib.TouchFactory.TouchParam;
-import com.example.will.chartviewlib.LineChartView;
 
-import static com.example.will.chartviewlib.LineChartView.BGLINE_HORIZONTAL;
-import static com.example.will.chartviewlib.LineChartView.BGLINE_VERTICAL;
+import static com.example.will.chartviewlib.LineChartView.FORWARD_MODE;
+import static com.example.will.chartviewlib.LineChartView.SCAN_MODE;
 import static com.example.will.chartviewlib.LineChartView.TOP_AXIS;
 import static com.example.will.chartviewlib.LineChartView.BOTTOM_AXIS;
 import static com.example.will.chartviewlib.LineChartView.RIGHT_AXIS;
@@ -125,7 +121,34 @@ public class DrawEngine extends Colleague{
     /**
      * 画波形图
      */
-    public void drawMainLine(CanvasTool canvasTool, int width, int height) {
+    public void drawMainLine(CanvasTool canvasTool) {
+        int drawMode = chartViewInfo.getDrawMode();
+        switch (drawMode){
+            case FORWARD_MODE:
+                drawForwardLine(canvasTool);
+                break;
+            case SCAN_MODE:
+                drawScanLine(canvasTool);
+                break;
+            default:
+                break;
+        }
+        informationMediator.change(this);
+    }
+
+    /**
+     * 绘制扫描式的波形
+     * @param canvasTool
+     */
+    private void drawScanLine(CanvasTool canvasTool){
+
+    }
+
+    /**
+     * 绘制递进式的波形
+     * @param canvasTool
+     */
+    private void drawForwardLine(CanvasTool canvasTool){
         int index = 0;
         for (MainLineInfo mainLineInfo : mainLineInfoList) {
             int aViewPointsSum = mainLineInfo.getInitAViewPointsSum();
@@ -149,7 +172,6 @@ public class DrawEngine extends Colleague{
         //最后处理
         afterMainLine();
     }
-
     /**
      * 处理完画图后要做的事情
      */
@@ -170,8 +192,6 @@ public class DrawEngine extends Colleague{
         synchronized (this){
             canvasTool.startDrawOnABitmap((int) chartWidth, (int) chartHeight);
             List<DataPoint> dataList = mainLineInfo.getDataList();
-
-            int chartPointsSum = computePoints(mainLineInfo, index, chartWidth);
 
             float radius = mainLineInfo.getMainPointInfo().getRadius();
             //计算
@@ -501,9 +521,9 @@ public class DrawEngine extends Colleague{
      * @param width
      * @return
      */
-    public int computePoints(MainLineInfo mainLineInfo, int index, float width){
-        float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
-        int pointSum = (int)(width / (radius * 2 + mainLineInfo.getHorizontalResolution()));
-        return ++pointSum;
-    }
+//    public int computePoints(MainLineInfo mainLineInfo, int index, float width){
+//        float radius = mainLineInfoList.get(index).getMainPointInfo().getRadius();
+//        int pointSum = (int)(width / (radius * 2 + mainLineInfo.getHorizontalResolution()));
+//        return ++pointSum;
+//    }
 }
